@@ -1,0 +1,4 @@
+<map>
+<configFile path="build.properties"/>
+<configFile path="src/log4j.properties"/>
+</map>

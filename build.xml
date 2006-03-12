@@ -1,0 +1,284 @@
+<project name="WebProxy" default="compile" basedir=".">
+
+
+    <property environment="env"/>
+    <property name="portal.home"        value="${env.PORTAL_HOME}"/>
+    <property name="server.home"        value="${env.CATALINA_HOME}"/>
+    
+    <property file="build.properties"/>
+    <property file="${user.home}/build.properties"/>
+    
+    <property name="server.shared.lib"  value="${server.home}/shared/lib"/>
+
+    <property name="app.name"      value="(set this in build.properties!)"/>
+    <property name="app.version"   value="(set this in build.properties!)"/>
+    <property name="build.home"    value="build"/>
+    <property name="dist.home"     value="dist"/>
+    <property name="jspc.home"     value="${build.home}/jspc"/>
+
+
+<!--  ==================== Compilation Control Options ==================== -->
+<!--
+    These properties control option settings on the Javac compiler when it
+    is invoked using the <javac> task.
+
+    compile.debug        Should compilation include the debug option?
+
+    compile.deprecation  Should compilation include the deprecation option?
+
+    compile.optimize     Should compilation include the optimize option?
+-->
+
+    <property name="compile.debug"       value="true"/>
+    <property name="compile.deprecation" value="false"/>
+    <property name="compile.optimize"    value="true"/>
+    <property name="compile.jsp"         value="true"/>
+
+
+<!-- ==================== Compilation Classpath =========================== -->
+<!--
+    Rather than relying on the CLASSPATH environment variable, Ant includes
+    features that makes it easy to dynamically construct the classpath you
+    need for each compilation.  The example below constructs the compile
+    classpath to include the servlet.jar file, as well as the other components
+    that Tomcat makes available to web applications automatically, plus anything
+    that you explicitly added.
+-->
+
+    <path id="compile.classpath">
+        <pathelement location="${commons-codec.jar}"/>
+    	<pathelement location="${commons-httpclient.jar}"/>
+        <pathelement location="${commons-io.jar}"/>
+    	<pathelement location="${commons-logging.jar}"/>
+        <pathelement location="${commons-pool.jar}"/>
+        <pathelement location="${junit.jar}"/>
+        <pathelement location="${NekoHtml.jar}"/>
+        <pathelement location="${oscache.jar}"/>
+        <pathelement location="${xml-apis.jar}"/>
+    	<pathelement location="${xalan.jar}"/>
+    	<pathelement location="${xercesImpl.jar}"/>
+
+        <pathelement location="${CommonStorage.jar}"/>
+        <pathelement location="${servlet.jar}"/>
+        <pathelement location="${portlet-api.jar}"/>
+        <pathelement location="${spring.jar}"/>
+        <pathelement location="${spring-sandbox.jar}"/>
+        <pathelement location="${PortalAPIAbstractionLayer.jar}"/>
+    </path>
+    
+        
+    <target name="environment_test" description="Testing environment variables">
+      	<echo message="Checking CATALINA_HOME environment variable that is required.."/>
+        <fail message="CATALINA_HOME is not set as an environment variable.">
+            <condition>
+                <not>
+                    <available file="${server.home}" type="dir"/>
+                </not>
+            </condition>
+        </fail>
+
+        <!-- if we made it this far, then CATALINA_HOME environment variable is set -->
+        <echo message="CATALINA_HOME found and set to ${server.home}"/>
+    </target>
+
+
+
+<!-- ==================== Clean Target ==================================== -->
+<!--
+  The "clean" target deletes any previous "build" and "dist" directory,
+  so that you can be ensured the application can be built from scratch.
+-->
+
+    <target name="clean"
+        description="Delete old build directory">
+        
+        <delete dir="${build.home}"/>
+        <delete dir="${dist.home}"/>
+    </target>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+<!--
+    The "compile" target transforms source files (from your "src" directory)
+    into object files in the appropriate location in the build directory.
+    This example assumes that you will be including your classes in an
+    unpacked directory hierarchy under "/WEB-INF/classes".
+-->
+
+    <target name="compile" description="Compile Java sources">
+
+        <!-- Compile Java classes as necessary -->
+        <mkdir    dir="${build.home}/WEB-INF/classes"/>
+        <javac srcdir="src"
+            destdir="${build.home}/WEB-INF/classes"
+            debug="${compile.debug}"
+            deprecation="${compile.deprecation}"
+            optimize="${compile.optimize}">
+            
+            <classpath refid="compile.classpath"/>
+        </javac>
+        
+        <!-- Copy non-java resources -->
+        <copy  todir="${build.home}/WEB-INF/classes">
+            <fileset dir="src" excludes="CVS,**/*.java"/>
+        </copy>
+    </target>
+    
+
+<!-- ==================== JSP Compile =================================== -->
+<!--
+    The "jspc" target compiles all the JSPs in the application. The compiled
+    classes are not used during packaging but this provides a check for the
+    developer to ensure their JSPs are well formed.
+-->
+    
+    <target name="jspc" description="Compile JSP's" depends="compile" if="${compile.jsp}">
+        <!-- Custom definition for Jasper classpath -->
+        <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+            <classpath id="jspc.classpath"> 
+                <fileset dir="${server.home}/bin"> 
+                    <include name="*.jar"/> 
+                </fileset> 
+                <fileset dir="${server.home}/server/lib"> 
+                    <include name="*.jar"/> 
+                </fileset> 
+                <fileset dir="${server.home}/common/lib"> 
+                    <include name="*.jar"/> 
+                </fileset> 
+                <fileset dir="${server.home}/shared/lib"> 
+                    <include name="*.jar"/> 
+                </fileset> 
+            </classpath> 
+        </taskdef>
+
+        <!-- pre-compile the JSP files -->
+        <mkdir dir="${jspc.home}"/>
+        <jasper2 
+            verbose="2"
+            validateXml="false" 
+            uriroot="${basedir}/web" 
+            outputDir="${jspc.home}"/>
+
+        <!-- compile the JSP compiled files -->    
+        <javac
+            srcdir="${jspc.home}"
+            destdir="${jspc.home}">
+
+            <classpath>
+                <pathelement location="${build.home}/WEB-INF/classes"/> 
+                <path refid="compile.classpath"/>
+                <path refid="jspc.classpath"/>
+            </classpath> 
+        </javac>
+    </target>
+
+
+
+<!-- ==================== Dist Target =================================== -->
+<!--
+    The "dist" target creates a WAR from the compiled source and other
+    resource files.
+-->
+
+    <target name="dist" depends="compile, jspc"
+        description="Deploy application to servlet container">
+        
+        <copy todir="${build.home}">
+            <fileset dir="web" excludes="CVS"/>
+        </copy>   
+
+        <!-- Copy the classes of the build directory -->
+        <mkdir dir="${dist.home}"/>
+        <jar destfile="${dist.home}/${app.name}.war">
+            <fileset dir="${build.home}" excludes="jspc/**/*"/>
+        </jar>
+
+    </target>
+
+<!--==================== Deploy Target ====================-->
+<!--
+    The "deploy" target uses the uPortal deployPortletApp
+    target to deploy the portlet into the container
+-->
+    <target name="deploy" depends="dist"
+            description="Deploys the portlet into uPortal">
+
+        <ant antfile="${portal.home}/uPortal/build.xml" target="deployPortletApp" inheritall="false">
+            <property name="portletApp" value="${basedir}/${dist.home}/${app.name}.war"/>
+        </ant>
+        
+        <echo message="Copying dependencies from ${extlibdir} to ${server.shared.lib}"/>
+        <copy overwrite="false" todir="${server.shared.lib}">
+            <fileset dir="${extlibdir}" includes="**/*.jar"/>
+        </copy>
+    </target>
+  
+<!-- ==================== Javadoc Target ================================== -->
+<!--
+    The "javadoc" target creates Javadoc API documentation for the Java
+    classes included in your application.  Normally, this is only required
+    when preparing a distribution release, but is available as a separate
+    target in case the developer wants to create Javadocs independently.
+-->
+    <target name="javadoc" depends="compile"
+        description="Create Javadoc API documentation">
+
+        <mkdir dir="${dist.home}/docs/api"/>
+        <javadoc packagenames="*"
+            sourcepath="src"
+            classpathref="compile.classpath"
+            destdir="${dist.home}/docs/api"
+            author="true"
+            version="true"
+            windowtitle="${app.name} ${app.version} API Documentation">
+            
+            <doctitle><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></doctitle>
+            <header><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></header>
+            <bottom><![CDATA[<i>Copyright &#169; 2004, The Board of Regents of the University of Wisconsin System, All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
+        
+<!-- ==================== Compile Tests Target ================================== -->
+<!--
+    The "compiletests" target compiles all source and resources under the
+    "tests" source folder.
+-->
+    <target name="compiletests" depends="compile"
+        description="Compile JUnit Tests">
+        
+        <javac srcdir="tests"
+            destdir="${build.home}/WEB-INF/classes"
+            debug="${compile.debug}"
+            deprecation="${compile.deprecation}"
+            optimize="${compile.optimize}">
+            
+            <classpath refid="compile.classpath"/>
+        </javac>
+
+        <!-- Copy everything in media except for the source files -->
+        <copy  todir="${build.home}/WEB-INF/classes">
+            <fileset dir="tests" excludes="CVS,**/*.java"/>
+        </copy>
+    </target>
+        
+    
+<!-- ==================== Run Tests Target ================================== -->
+<!--
+    The "runtests" target runs all the junit tests.
+-->
+    <target name="runtests" depends="compiletests" description="Run JUnit Test Suite">
+        <junit fork="true" printsummary="on" showoutput="on" dir=".." >
+            <classpath>
+                <pathelement path="${build.home}/WEB-INF/classes"/>
+                <path location="${build.home}/WEB-INF/classes"/>
+                <path refid="compile.classpath"/>
+            </classpath>
+            <batchtest>
+                <fileset dir="${build.home}/WEB-INF/classes">
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+</project>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+ | Contains the bean definitions and relationships that are avalable
+ | to the spring WebApplicationContext
+ +-->
+<beans>
+    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" singleton="false" />
+    <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" singleton="false" />
+    
+    <bean id="SaxFilterBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+        <property name="wrappedList">
+            <list>
+                <!-- The order beans are specified in this list is reversed. The last filter will be the first executed -->
+                <ref bean="FuncNameUrlFilter"/>
+                <ref bean="PortletURLFilterBean"/>
+                <ref bean="AbsoluteUrlFilterBean"/>
+                <ref bean="ClippingFilterBean"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="BaseUrlFilterBean" abstract="true">
+        <property name="elements">
+            <map>
+                <entry key="A">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="AREA">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="BASE">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="LINK">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="IMG">
+                    <set>
+                        <value>SRC</value>
+                        <value>LOWSRC</value>
+                        <value>USEMAP</value>
+                    </set>
+                </entry>
+                <entry key="EMBED">
+                    <set>
+                        <value>SRC</value>
+                    </set>
+                </entry>
+                <entry key="FRAME">
+                    <set>
+                        <value>SRC</value>
+                    </set>
+                </entry>
+                <entry key="SCRIPT">
+                    <set>
+                        <value>SRC</value>
+                    </set>
+                </entry>
+                <entry key="Q">
+                    <set>
+                        <value>CITE</value>
+                    </set>
+                </entry>
+                <entry key="INS">
+                    <set>
+                        <value>CITE</value>
+                    </set>
+                </entry>
+                <entry key="DEL">
+                    <set>
+                        <value>CITE</value>
+                    </set>
+                </entry>														
+                <entry key="FORM">
+                    <set>
+                        <value>ACTION</value>
+                    </set>
+                </entry>
+                <entry key="META">
+                    <set>
+                        <value>URL</value>
+                    </set>
+                </entry>
+                <entry key="BODY">
+                    <set>
+                        <value>BACKGROUND</value>
+                    </set>
+                </entry>
+                <entry key="APPLET">
+                    <set>
+                        <value>CODEBASE</value>
+                    </set>
+                </entry>														
+            </map> 
+        </property>
+    </bean>
+
+    <bean id="FuncNameUrlFilter" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.FuncNameUrlFilter" singleton="false">
+    </bean>
+    
+    <bean id="AbsoluteUrlFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.AbsoluteUrlFilter" singleton="false">
+    </bean>	
+
+    <bean id="PortletURLFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.PortletUrlFilter" singleton="false">
+	</bean>
+	
+    <bean id="ClippingFilterBean" class="edu.wisc.my.webproxy.beans.filtering.ClippingFilter" singleton="false">
+        <property name="acceptableQNames">
+            <set>
+                <value>br</value>
+                <value>img</value>
+                <value>meta</value>
+                <value>link</value>
+                <value>input</value>
+                <value>col</value>
+                <value>b</value>
+            </set>
+        </property>
+    </bean>
+    
+        
+    <bean id="ContentTypeBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+        <property name="wrappedList">
+            <list>
+                <value>text/html</value>
+                <value>XHTML/1.0</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="ConfigBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+        <property name="wrappedList">
+            <list>
+                <ref bean="GeneralConfigBean"/>
+                <ref bean="PageCacheConfigBean"/>
+                <ref bean="HttpHeaderConfigBean"/>
+                <ref bean="StaticHtmlBean"/>
+                <ref bean="HttpClientConfigBean"/>
+                <ref bean="ClippingConfigBean"/>
+                <ref bean="HTMLParserConfigBean"/>
+            </list>
+        </property>
+    </bean>
+    
+    
+    <bean id="GeneralConfigBean" class="edu.wisc.my.webproxy.beans.config.GeneralConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/generalConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="HttpHeaderConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/httpHeaderConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="StaticHtmlBean" class="edu.wisc.my.webproxy.beans.config.StaticHtmlConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/staticHtmlConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="HttpClientConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/httpClientConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="ClippingConfigBean" class="edu.wisc.my.webproxy.beans.config.ClippingConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/clippingConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="HTMLParserConfigBean" class="edu.wisc.my.webproxy.beans.config.HtmlParserConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/htmlParserConfig.jsp</value>
+        </property>
+    </bean>
+    <bean id="PageCacheConfigBean" class="edu.wisc.my.webproxy.beans.config.CacheConfigImpl" singleton="false">
+        <property name="jsp">
+            <value>/WEB-INF/jsp/cacheConfig.jsp</value>
+        </property>
+    </bean>
+    
+    <bean id="StateStore" class="edu.wisc.my.webproxy.beans.http.CommonStorageStateStore">
+    </bean>
+    
+    <bean id="PageCache" class="edu.wisc.my.webproxy.beans.cache.oscache.OsCachePageCache">
+        <property name="cacheProperties">
+            <props>
+                <prop key="cache.memory">true</prop>
+                <prop key="cache.capacity">64</prop>
+                <prop key="cache.algorithm">com.opensymphony.oscache.base.algorithm.LRUCache</prop>
+                <prop key="cache.blocking">false</prop>
+                <prop key="cache.unlimited.disk">false</prop>
+                <prop key="cache.persistence.class">edu.wisc.my.webproxy.beans.cache.oscache.FilteringPersistenceListener</prop>
+                <prop key="cache.persistence.filter.groups">PERSIST</prop>
+                <prop key="cache.persistence.filter.delegateClass">edu.wisc.my.webproxy.beans.cache.oscache.CommonStoragePersistenceListener</prop>
+                <prop key="cache.persistence.commonStorage.hashing">SHA-512,SHA-384,SHA-256,SHA-1,MD5,MD2</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

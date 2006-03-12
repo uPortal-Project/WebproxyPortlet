@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                         "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <display-name>Authenticated Web Proxy Portlet</display-name>
+	
+	<!--
+     | This loads the applicationContext.xml spring bean config
+	 | when the servlet context starts. The WebApplicationContext
+	 | object representing the spring bean config is avalable in the
+	 | servlet context.
+	 +-->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+    
+    <listener>
+        <listener-class>edu.wisc.my.webproxy.servlet.SessionMappingListener</listener-class>
+    </listener>
+    
+    <servlet>
+        <servlet-name>ProxyServlet</servlet-name>
+        <servlet-class>edu.wisc.my.webproxy.servlet.ProxyServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ProxyServlet</servlet-name>
+        <url-pattern>/ProxyServlet/*</url-pattern>
+    </servlet-mapping>
+</web-app>

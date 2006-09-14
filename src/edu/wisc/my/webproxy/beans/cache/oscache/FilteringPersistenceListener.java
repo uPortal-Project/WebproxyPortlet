@@ -38,13 +38,9 @@ package edu.wisc.my.webproxy.beans.cache.oscache;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.Config;
 import com.opensymphony.oscache.base.persistence.CachePersistenceException;
-import com.opensymphony.oscache.base.persistence.PersistenceListener;
 
 
 /**
@@ -54,9 +50,6 @@ import com.opensymphony.oscache.base.persistence.PersistenceListener;
  * {@link com.opensymphony.oscache.base.CacheEntry}. If it is not it will not
  * be persisted no matter what the group. 
  * <br>
- * The delegate {@link com.opensymphony.oscache.base.persistence.PersistenceListener} is
- * configured using the property defined by {@link #DELEGATE_CLASS_PROP}.
- * <br>
  * The set of groups to be persisted os configured using the property
  * {@link #PERSISTED_GROUPS_PROP}. The group names are comma delimited and case
  * sensitive.
@@ -64,123 +57,113 @@ import com.opensymphony.oscache.base.persistence.PersistenceListener;
  * @author Eric Dalquist <a href="mailto:edalquist@unicon.net">edalquist@unicon.net</a>
  * @version $Id$
  */
-public class FilteringPersistenceListener implements PersistenceListener {
-    private static final Log LOG = LogFactory.getLog(FilteringPersistenceListener.class);
-    
+public class FilteringPersistenceListener extends DelegatingPersistenceListener {
     public static final String DELEGATE_CLASS_PROP = "cache.persistence.filter.delegateClass";
     public static final String PERSISTED_GROUPS_PROP = "cache.persistence.filter.groups";
     
-    private PersistenceListener delegate;
     private Set persistedGroups;
+    
+    
+    /**
+     * @return Returns the persistedGroups.
+     */
+    public Set getPersistedGroups() {
+        return this.persistedGroups;
+    }
 
     /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#isStored(java.lang.String)
+     * @param persistedGroups The persistedGroups to set.
      */
-    public boolean isStored(String key) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("isStored(" + key + ")");
+    public void setPersistedGroups(Set persistedGroups) {
+        this.persistedGroups = persistedGroups;
+    }
+
+    
+    /**
+     * @see edu.wisc.my.webproxy.beans.cache.oscache.DelegatingPersistenceListener#getDelegateClassPropertyName()
+     */
+    protected String getDelegateClassPropertyName() {
+        return DELEGATE_CLASS_PROP;
+    }
+
+    /**
+     * @see edu.wisc.my.webproxy.beans.cache.oscache.DelegatingPersistenceListener#configureInternal(com.opensymphony.oscache.base.Config)
+     */
+    protected void configureInternal(Config config) {
+        final String groups = config.getProperty(PERSISTED_GROUPS_PROP);
         
-        return this.delegate.isStored(key);
+        if (groups == null) {
+            if (this.persistedGroups == null) {
+                throw new IllegalArgumentException("'" + PERSISTED_GROUPS_PROP + "' is not set but required or setPersistedGroups must be called.");
+            }
+            else {
+                return;
+            }
+        }
+        
+        if (this.persistedGroups != null) {
+            this.logger.warn("PersistedGroups is already set to '" + this.persistedGroups + "', they will be overriden by the groups defined by '" + PERSISTED_GROUPS_PROP + "'");
+        }
+        
+        this.persistedGroups = CacheUtils.splitStringToSet(groups, ",");
+        
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Persisting groups matching: " + this.persistedGroups);
+        }
     }
 
     /**
      * @see com.opensymphony.oscache.base.persistence.PersistenceListener#isGroupStored(java.lang.String)
      */
     public boolean isGroupStored(String groupName) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("isGroupStored(" + groupName + ")");
-        
-        return this.delegate.isGroupStored(groupName);
-    }
-
-    /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#clear()
-     */
-    public void clear() throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("clear()");
-        
-        this.delegate.clear();
-    }
-
-    /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#configure(com.opensymphony.oscache.base.Config)
-     */
-    public PersistenceListener configure(Config config) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("configure(" + config.getProperties() + ")");
-        
-        final String delegateClassName = config.getProperty(DELEGATE_CLASS_PROP);
-        if (delegateClassName == null)
-            throw new IllegalArgumentException(DELEGATE_CLASS_PROP + " is not set but required");
-
-        final String groups = config.getProperty(PERSISTED_GROUPS_PROP);
-        if (groups == null)
-            throw new IllegalArgumentException(PERSISTED_GROUPS_PROP + " is not set but required");
-
-        //Get the delegate PersistenceListener
-        try {
-            final Class delegateClass = Class.forName(delegateClassName);
-            this.delegate = (PersistenceListener)delegateClass.newInstance();
-        }
-        catch (ClassNotFoundException cnfe) {
-            throw new RuntimeException(cnfe);
-        }
-        catch (InstantiationException ie) {
-            throw new RuntimeException(ie);
-        }
-        catch (IllegalAccessException iae) {
-            throw new RuntimeException(iae);
-        }
-
-        this.persistedGroups = CacheUtils.splitStringToSet(groups, ",");
-        
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Using persistence class: " + this.delegate.getClass().getName());
-            LOG.debug("Persisting groups matching: " + this.persistedGroups);
-        }
-        
-        this.delegate = this.delegate.configure(config);
-        return this;
-    }
-
-    /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#remove(java.lang.String)
-     */
-    public void remove(String key) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("remove(" + key + ")");
-
-        this.delegate.remove(key);
+        return this.isGroupCachable(groupName) && super.isGroupStored(groupName);
     }
 
     /**
      * @see com.opensymphony.oscache.base.persistence.PersistenceListener#removeGroup(java.lang.String)
      */
     public void removeGroup(String groupName) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("removeGroup(" + groupName + ")");
-
-        this.delegate.removeGroup(groupName);
-    }
-
-    /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#retrieve(java.lang.String)
-     */
-    public Object retrieve(String key) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("retrieve(" + key + ")");
-
-        return this.delegate.retrieve(key);
+        if (this.isGroupCachable(groupName)) {
+            super.removeGroup(groupName);
+        }
     }
 
     /**
      * @see com.opensymphony.oscache.base.persistence.PersistenceListener#store(java.lang.String, java.lang.Object)
      */
     public void store(String key, Object obj) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("store(" + key + ", " + obj + ")");
+        if (this.isObjectCachable(obj)) {
+            super.store(key, obj);
+        }
+    }
 
+    /**
+     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#storeGroup(java.lang.String, java.util.Set)
+     */
+    public void storeGroup(String groupName, Set group) throws CachePersistenceException {
+        if (this.isGroupCachable(groupName)) {
+            super.storeGroup(groupName, group);
+        }
+    }
+
+    /**
+     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#retrieveGroup(java.lang.String)
+     */
+    public Set retrieveGroup(String groupName) throws CachePersistenceException {
+        if (this.isGroupCachable(groupName)) {
+            return super.retrieveGroup(groupName);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * Determines if an object to be cached is cachable.
+     */
+    private boolean isObjectCachable(Object obj) {
         if (obj instanceof CacheEntry) {
             final CacheEntry entry = (CacheEntry)obj;
             final Set entryGroups = entry.getGroups();
@@ -190,49 +173,34 @@ public class FilteringPersistenceListener implements PersistenceListener {
                     final String groupName = (String)groupItr.next();
                     
                     if (this.persistedGroups.contains(groupName)) {
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Storing '" + key + "' because of a match on '" + groupName + "'");
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.debug("Object='" + obj + "' is cachable because it is in group='" + groupName + "'");
+                        }
                         
-                        this.delegate.store(key, obj);
-                        return;
+                        return true;
                     }
                 }
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("No group match for '" + key + "' with group set '" + entryGroups + "'");
-        }
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("Object for '" + key + "' is not a CacheEntry. It will not be stored.");
-    }
-
-    /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#storeGroup(java.lang.String, java.util.Set)
-     */
-    public void storeGroup(String groupName, Set group) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("storeGroup(" + groupName + ", " + group + ")");
-
-        if (this.persistedGroups.contains(groupName)) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Storing group '" + groupName + "'");
-
-            this.delegate.storeGroup(groupName, group);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Object='" + obj + "' is not in any cachable groups");
+            }
+            
+            return false;
         }
         else {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Not storing group '" + groupName + "'");
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Object='" + obj + "' is no of type='" + CacheEntry.class + "' so it cannot be filtered and is not cachable.");
+            }
+            
+            return false;
         }
     }
-
+    
     /**
-     * @see com.opensymphony.oscache.base.persistence.PersistenceListener#retrieveGroup(java.lang.String)
+     * Determines if a group name is cachable
      */
-    public Set retrieveGroup(String groupName) throws CachePersistenceException {
-        if (LOG.isTraceEnabled())
-            LOG.trace("retrieveGroup(" + groupName + ")");
-
-        return this.delegate.retrieveGroup(groupName);
+    private boolean isGroupCachable(String groupName) {
+        return this.persistedGroups.contains(groupName);
     }
 }

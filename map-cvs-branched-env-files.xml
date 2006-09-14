@@ -1,4 +1,4 @@
 <map>
-<configFile path="build.properties"/>
 <configFile path="src/log4j.properties"/>
+<configFile path="web/WEB-INF/datasource.properties"/>
 </map>

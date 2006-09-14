@@ -1,15 +1,13 @@
 <project name="WebProxy" default="compile" basedir=".">
 
 
-    <property environment="env"/>
-    <property name="portal.home"        value="${env.PORTAL_HOME}"/>
-    <property name="server.home"        value="${env.CATALINA_HOME}"/>
-    
     <property file="build.properties"/>
     <property file="${user.home}/build.properties"/>
     
-    <property name="server.shared.lib"  value="${server.home}/shared/lib"/>
-
+    <property environment="env"/>
+    <property name="portal.home"        value="${env.PORTAL_HOME}/uPortal"/>
+    <property name="server.home"        value="${env.CATALINA_HOME}"/>
+        
     <property name="app.name"      value="(set this in build.properties!)"/>
     <property name="app.version"   value="(set this in build.properties!)"/>
     <property name="build.home"    value="build"/>
@@ -46,11 +44,14 @@
 -->
 
     <path id="compile.classpath">
+        <pathelement location="${commons-collections.jar}"/>
         <pathelement location="${commons-codec.jar}"/>
     	<pathelement location="${commons-httpclient.jar}"/>
         <pathelement location="${commons-io.jar}"/>
-    	<pathelement location="${commons-logging.jar}"/>
+    	<pathelement location="${commons-lang.jar}"/>
+        <pathelement location="${commons-logging.jar}"/>
         <pathelement location="${commons-pool.jar}"/>
+        <pathelement location="${commons-dbcp.jar}"/>
         <pathelement location="${junit.jar}"/>
         <pathelement location="${NekoHtml.jar}"/>
         <pathelement location="${oscache.jar}"/>
@@ -58,7 +59,6 @@
     	<pathelement location="${xalan.jar}"/>
     	<pathelement location="${xercesImpl.jar}"/>
 
-        <pathelement location="${CommonStorage.jar}"/>
         <pathelement location="${servlet.jar}"/>
         <pathelement location="${portlet-api.jar}"/>
         <pathelement location="${spring.jar}"/>
@@ -114,7 +114,8 @@
             destdir="${build.home}/WEB-INF/classes"
             debug="${compile.debug}"
             deprecation="${compile.deprecation}"
-            optimize="${compile.optimize}">
+            optimize="${compile.optimize}"
+            excludes="**/*CommonStorage*">
             
             <classpath refid="compile.classpath"/>
         </javac>
@@ -203,15 +204,12 @@
 -->
     <target name="deploy" depends="dist"
             description="Deploys the portlet into uPortal">
+        
+        <echo message="Deploying ${basedir}/${dist.home}/${app.name}.war using uPortal install ${portal.home}"/>
 
-        <ant antfile="${portal.home}/uPortal/build.xml" target="deployPortletApp" inheritall="false">
+        <ant antfile="${portal.home}/build.xml" target="deployPortletApp" inheritall="false">
             <property name="portletApp" value="${basedir}/${dist.home}/${app.name}.war"/>
         </ant>
-        
-        <echo message="Copying dependencies from ${extlibdir} to ${server.shared.lib}"/>
-        <copy overwrite="false" todir="${server.shared.lib}">
-            <fileset dir="${extlibdir}" includes="**/*.jar"/>
-        </copy>
     </target>
   
 <!-- ==================== Javadoc Target ================================== -->
@@ -280,5 +278,31 @@
                 </fileset>
             </batchtest>
         </junit>
+    </target>
+    
+
+<!-- ==================== Intialize DB Target ================================== -->
+<!--
+The "initdb" target drops then creats the needed database tables for the portlet
+-->
+    <target name="initdb" description="Initialized the database for WebProxy usage">
+        <property file="web/WEB-INF/datasource.properties"/>
+        
+        <path id="jdbc.classpath">
+            <pathelement location="${jdbc.jar}"/>
+        </path>
+        
+        <sql
+            driver="${jdbc.driverClassName}" 
+            url="${jdbc.url}"
+            userid="${jdbc.username}"
+            password="${jdbc.password}"
+            onerror="continue">
+            
+            <classpath refid="jdbc.classpath"/>
+            
+            <transaction src="doc/drop.sql"/>
+            <transaction src="doc/create.sql"/>
+        </sql>
     </target>
 </project>

@@ -72,6 +72,7 @@ import edu.wisc.my.webproxy.beans.http.State;
 import edu.wisc.my.webproxy.beans.http.StateStore;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
+import edu.wisc.my.webproxy.portlet.ApplicationContextLocator;
 import edu.wisc.my.webproxy.portlet.WebProxyPortlet;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
 
@@ -86,6 +87,23 @@ public class ProxyServlet extends HttpServlet {
     public static final String NAMESPACE_PREFIX_PARAM = "ns_prefix";
     public static final String NAMESPACE_SUFIX_PARAM = "ns_sufix";
     public static final String URL_PARAM = "url";
+    
+    
+
+    /**
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ApplicationContextLocator.setApplicationContext(context);
+        
+        try {
+            super.service(request, response);
+        }
+        finally {
+            ApplicationContextLocator.setApplicationContext(null);
+        }
+    }
 
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

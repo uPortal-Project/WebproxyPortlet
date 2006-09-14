@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry output="web/WEB-INF/classes" kind="src" path="src"/>
+	<classpathentry excluding="edu/wisc/my/webproxy/beans/http/CommonStorageStateStore.java|edu/wisc/my/webproxy/beans/cache/oscache/CommonStoragePersistenceListener.java" output="web/WEB-INF/classes" kind="src" path="src"/>
 	<classpathentry output="web/WEB-INF/classes" kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="ext-lib/PortalAPIAbstractionLayer.jar"/>
+	<classpathentry kind="lib" path="ext-lib/portlet-api-1.0.jar"/>
+	<classpathentry kind="lib" path="ext-lib/servlet.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-dbcp-1.2.1.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-httpclient-3.0-rc1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-io-1.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-pool-1.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/junit.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/nekohtml.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/oscache-2.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/spring.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-sandbox_20050120.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xalan.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xml-apis.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-io-1.0.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-pool-1.2.jar"/>
-	<classpathentry kind="lib" path="ext-lib/CommonStorage.jar"/>
-	<classpathentry kind="lib" path="ext-lib/PortalAPIAbstractionLayer.jar"/>
-	<classpathentry kind="lib" path="ext-lib/spring.jar"/>
-	<classpathentry kind="lib" path="ext-lib/spring-sandbox_20050120.jar"/>
-	<classpathentry kind="lib" path="/uPortal_Rdev/lib/portlet-api-1.0.jar"/>
-	<classpathentry kind="lib" path="/uPortal_Rdev/lib/servlet.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/junit.jar"/>
 	<classpathentry kind="output" path="build/WEB-INF/classes"/>
 </classpath>

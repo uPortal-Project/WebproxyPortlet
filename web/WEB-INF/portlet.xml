@@ -6,272 +6,452 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd
 http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
 
         <portlet>
-            <portlet-name>AuthenticatedWebProxy_wisc-software-sales</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_my-professional-development</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_my-doit-help-desk-cases</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_lost-and-found</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-        
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_doit-tech-store</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_electronic-shelf</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
             <portlet-name>AuthenticatedWebProxy_academic-planning-and-analysis</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
-            </portlet-info>
-        </portlet>
-
-        <portlet>
-            <portlet-name>AuthenticatedWebProxy_cintax</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
-            <supported-locale>en-US</supported-locale>
-            <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_campus-quick-links</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_campus-web-people-search</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_cintax</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_cintax-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_doit-consolidated-billing-invoice</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_doit-consolidated-billing-invoice-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+        
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_doit-tech-store</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_earnings-statement</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_earnings-statement-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_electronic-shelf</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_lost-and-found</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_lost-and-found-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_my-doit-help-desk-cases</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_my-doit-help-desk-cases-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_my-professional-development</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_my-professional-development-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_requisition-and-number-generator</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
-            <portlet-name>AuthenticatedWebProxy_weather</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-name>AuthenticatedWebProxy_requisition-and-number-generator-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
 
         <portlet>
             <portlet-name>AuthenticatedWebProxy_soar-registration</portlet-name>
-                <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
-            <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>*/*</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>config</portlet-mode>
-        </supports>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
             <supported-locale>en-US</supported-locale>
             <portlet-info>
-                    <title>Authenticated Web Proxy</title>
-                    <short-title>Web Proxy</short-title>
-                    <keywords>Authenticated, Web, Proxy</keywords>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_soar-registration-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_university-staff-benefits-statement</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_university-staff-benefits-statement-demo</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_weather</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>300</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
+            </portlet-info>
+        </portlet>
+
+        <portlet>
+            <portlet-name>AuthenticatedWebProxy_wisc-software-sales</portlet-name>
+            <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
+            <expiration-cache>-1</expiration-cache>
+            <supports>
+                <mime-type>*/*</mime-type>
+                <portlet-mode>view</portlet-mode>
+                <portlet-mode>edit</portlet-mode>
+                <portlet-mode>config</portlet-mode>
+            </supports>
+            <supported-locale>en-US</supported-locale>
+            <portlet-info>
+                <title>Authenticated Web Proxy</title>
+                <short-title>Web Proxy</short-title>
+                <keywords>Authenticated, Web, Proxy</keywords>
             </portlet-info>
         </portlet>
         
@@ -286,13 +466,7 @@ http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
         <window-state>EXCLUSIVE</window-state>
     </custom-window-state>
 	
-	
-
-    <user-attribute>
-        <description>password</description>
-        <name>password</name>
-    </user-attribute>
-      
+     
     <user-attribute>
         <description>givenName</description>
         <name>givenName</name>
@@ -312,6 +486,31 @@ http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
         <description>mail</description>
         <name>mail</name>
     </user-attribute>
+      
+     <user-attribute>
+        <description>cn</description>
+        <name>cn</name>
+    </user-attribute>
+
+    <user-attribute>
+        <description>postalAddress</description>
+        <name>postalAddress</name>
+    </user-attribute>
+
+    <user-attribute>
+        <description>postalCode</description>
+        <name>postalCode</name>
+    </user-attribute>
+    
+    <user-attribute>
+        <description>sn</description>
+        <name>sn</name>
+    </user-attribute>
+	
+    <user-attribute>
+        <description>telephoneNumber</description>
+        <name>telephoneNumber</name>
+    </user-attribute>          
       
       <!-- Begin UW specific user-attributes -->
     <!-- Keep these in the same order as found in personDirectory.xml -->
@@ -439,6 +638,32 @@ http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
         <name>wisceduhrpersonid</name>
         <description>wisceduhrpersonid</description>
     </user-attribute>
+    
+    <user-attribute>
+        <name>wisceduwiscworldeligible</name>
+        <description>wisceduwiscworldeligible</description>
+    </user-attribute>
+    
+    <user-attribute>
+        <name>wisceduudsdisplayname</name>
+        <description>wisceduudsdisplayname</description>
+    </user-attribute>
+    
+    <user-attribute>
+        <name>wiscedusalequityreport</name>
+        <description>wiscedusalequityreport</description>
+    </user-attribute>
+    
+    <user-attribute>
+        <name>wiscedustudentgroup</name>
+        <description>wiscedustudentgroup</description>
+    </user-attribute>
+    
+    <user-attribute>
+        <name>wisceduformerappointmentviewinportal</name>
+        <description>wisceduformerappointmentviewinportal</description>
+    </user-attribute>
+    
     <!-- Keep these in the same order as found in personDirectory.xml -->
     
 </portlet-app>

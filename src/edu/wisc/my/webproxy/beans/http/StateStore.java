@@ -45,11 +45,25 @@ package edu.wisc.my.webproxy.beans.http;
  * @version $Id$
  */
 public interface StateStore {
+    /**
+     * @param key Key to store the State with. Implementations must allow key lenghts up to 2000 characters, may not be null.
+     * @param state State to store, may not be null.
+     */
     public void storeState(String key, State state);
     
+    /**
+     * @param key Key to get the State for. Implementations must allow key lenghts up to 2000 characters, may not be null.
+     * @return Returns null if no State exists for the key.
+     */
     public State getState(String key);
     
+    /**
+     * @param key Key to delete State for. Implementations must allow key lenghts up to 2000 characters, may not be null.
+     */
     public void deleteState(String key);
     
+    /**
+     * Removes all State objects from the store.
+     */
     public void clearAll();
 }

@@ -6,6 +6,14 @@
  | to the spring WebApplicationContext
  +-->
 <beans>
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/datasource.properties</value>
+            </list>
+        </property>
+    </bean>
+    
     <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" singleton="false" />
     <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" singleton="false" />
     
@@ -189,8 +197,24 @@
         </property>
     </bean>
     
-    <bean id="StateStore" class="edu.wisc.my.webproxy.beans.http.CommonStorageStateStore">
+    
+    <bean id="StateStore" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager"><ref bean="transactionManager"/></property>
+        <property name="target"><ref local="StateStoreTarget"/></property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="store*">PROPAGATION_REQUIRED</prop>
+                <prop key="delete*">PROPAGATION_REQUIRED</prop>
+                <prop key="get*">readOnly</prop>
+            </props>
+        </property>
     </bean>
+    
+    <bean id="StateStoreTarget" class="edu.wisc.my.webproxy.beans.http.JdbcStateStore">
+        <property name="dataSource"><ref local="dataSource"/></property>
+        <property name="lobHandler"><ref local="lobHandler"/></property>
+    </bean>
+    
     
     <bean id="PageCache" class="edu.wisc.my.webproxy.beans.cache.oscache.OsCachePageCache">
         <property name="cacheProperties">
@@ -200,11 +224,68 @@
                 <prop key="cache.algorithm">com.opensymphony.oscache.base.algorithm.LRUCache</prop>
                 <prop key="cache.blocking">false</prop>
                 <prop key="cache.unlimited.disk">false</prop>
-                <prop key="cache.persistence.class">edu.wisc.my.webproxy.beans.cache.oscache.FilteringPersistenceListener</prop>
-                <prop key="cache.persistence.filter.groups">PERSIST</prop>
-                <prop key="cache.persistence.filter.delegateClass">edu.wisc.my.webproxy.beans.cache.oscache.CommonStoragePersistenceListener</prop>
-                <prop key="cache.persistence.commonStorage.hashing">SHA-512,SHA-384,SHA-256,SHA-1,MD5,MD2</prop>
+                <prop key="cache.persistence.class">edu.wisc.my.webproxy.beans.cache.oscache.SpringLocatingPersistenceListener</prop>
+                <prop key="cache.persistence.spring.beanName">filteringPersistenceListener</prop>
             </props>
         </property>
+    </bean>
+    
+    <bean id="filteringPersistenceListener" class="edu.wisc.my.webproxy.beans.cache.oscache.FilteringPersistenceListener">
+        <property name="delegateListener"><ref local="hashingPersistenceListener"/></property>
+        <property name="persistedGroups">
+            <set>
+                <value>PERSIST</value>
+            </set>
+        </property>
+    </bean>
+    
+    <bean id="hashingPersistenceListener" class="edu.wisc.my.webproxy.beans.cache.oscache.KeyHashingPersistenceListener">
+        <property name="delegateListener"><ref local="jdbcPersistenceListener"/></property>
+    </bean>
+    
+    
+    <bean id="jdbcPersistenceListener" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager"><ref bean="transactionManager"/></property>
+        <property name="target"><ref local="jdbcPersistenceListenerTarget"/></property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="clear*">PROPAGATION_REQUIRED</prop>
+                <prop key="remove*">PROPAGATION_REQUIRED</prop>
+                <prop key="store*">PROPAGATION_REQUIRED</prop>
+                <prop key="is*">readOnly</prop>
+                <prop key="retrieve*">readOnly</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="jdbcPersistenceListenerTarget" class="edu.wisc.my.webproxy.beans.cache.oscache.JdbcPersistenceListener">
+        <property name="dataSource"><ref local="dataSource"/></property>
+        <property name="lobHandler"><ref local="lobHandler"/></property>
+    </bean>
+    
+    
+    
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName"><value>${jdbc.driverClassName}</value></property>
+        <property name="url"><value>${jdbc.url}</value></property>
+        <property name="username"><value>${jdbc.username}</value></property>
+        <property name="password"><value>${jdbc.password}</value></property>
+        
+        <property name="initialSize"><value>8</value></property>
+        <property name="maxActive"><value>128</value></property>
+        <property name="maxIdle"><value>16</value></property>
+        <property name="minIdle"><value>8</value></property>
+        <property name="maxWait"><value>15000</value></property>
+    </bean>
+    
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+        <property name="nativeJdbcExtractor"><ref local="nativeJdbcExtractor"/></property>
+    </bean>
+    
+    <bean id="nativeJdbcExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
+    </bean>
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource"><ref local="dataSource"/></property>
     </bean>
 </beans>

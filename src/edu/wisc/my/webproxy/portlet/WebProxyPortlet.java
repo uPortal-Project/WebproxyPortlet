@@ -143,38 +143,46 @@ public class WebProxyPortlet extends GenericPortlet {
     }
     
     public void doDispatch(final RenderRequest request, final RenderResponse response) throws PortletException, IOException {
-        final PortletMode mode = request.getPortletMode();
-        final WindowState windowState = request.getWindowState();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Rendering with PortletMode='" + mode + "' and WindowState='" + windowState + "'");
-        }
+        final WebApplicationContext context = PortletWebApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
+        ApplicationContextLocator.setApplicationContext(context);
         
-        //If the windowstate is minimized do not call doView
-        if (!windowState.equals(WindowState.MINIMIZED)) {
-            if (PortletMode.VIEW.equals(mode) || PortletMode.EDIT.equals(mode)) {
-                if (!manualLogin(request, response)) {
-                    renderContent(request, response);
+        try {
+            final PortletMode mode = request.getPortletMode();
+            final WindowState windowState = request.getWindowState();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Rendering with PortletMode='" + mode + "' and WindowState='" + windowState + "'");
+            }
+            
+            //If the windowstate is minimized do not call doView
+            if (!windowState.equals(WindowState.MINIMIZED)) {
+                if (PortletMode.VIEW.equals(mode) || PortletMode.EDIT.equals(mode)) {
+                    if (!manualLogin(request, response)) {
+                        renderContent(request, response);
+                    }
+                }
+                else if (WebproxyConstants.CONFIG_MODE.equals(mode)) {
+                    ConfigPage currentConfig = getConfig(request.getPortletSession());
+    
+                    PortletRequestDispatcher headerDispatch = getPortletContext().getRequestDispatcher(HEADER);
+                    headerDispatch.include(request, response);
+    
+                    try {
+                        currentConfig.render(getPortletContext(), request, response);
+                    }
+                    catch (PortletException pe) {
+                        LOG.error("Caught an exception trying to retreive portlet preferences in configuration mode: ", pe);
+                    }
+    
+                    PortletRequestDispatcher footerDispatch = getPortletContext().getRequestDispatcher(FOOTER);
+                    footerDispatch.include(request, response);
+                }
+                else {
+                    throw new PortletException("'" + mode + "' Not Implemented");
                 }
             }
-            else if (WebproxyConstants.CONFIG_MODE.equals(mode)) {
-                ConfigPage currentConfig = getConfig(request.getPortletSession());
-
-                PortletRequestDispatcher headerDispatch = getPortletContext().getRequestDispatcher(HEADER);
-                headerDispatch.include(request, response);
-
-                try {
-                    currentConfig.render(getPortletContext(), request, response);
-                }
-                catch (PortletException pe) {
-                    LOG.error("Caught an exception trying to retreive portlet preferences in configuration mode: ", pe);
-                }
-
-                PortletRequestDispatcher footerDispatch = getPortletContext().getRequestDispatcher(FOOTER);
-                footerDispatch.include(request, response);
-            }
-            else {
-                throw new PortletException("'" + mode + "' Not Implemented");
-            }
+        }
+        finally {
+            ApplicationContextLocator.setApplicationContext(null);
         }
     }
 

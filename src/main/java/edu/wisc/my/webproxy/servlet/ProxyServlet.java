@@ -133,7 +133,6 @@ public class ProxyServlet extends HttpServlet {
         String url = request.getParameter(URL_PARAM);
 
         final HttpSession portletSession = SessionMappingListener.getSession(sid);
-        
         if (portletSession == null) {
             IllegalStateException ise = new IllegalStateException("No HttpSession found for sid=" + sid);
             LOG.error(ise, ise);
@@ -141,13 +140,13 @@ public class ProxyServlet extends HttpServlet {
         }
 
         final PortletPreferences prefs = (PortletPreferences)portletSession.getAttribute(prefix + PortletPreferences.class.getName() + sufix);
-        
         if (prefs == null) {
             IllegalStateException ise = new IllegalStateException("No PortletPreferences found for sid=" + sid + ", ns_prefix=" + prefix + ". ns_sufix=" + sufix);
             LOG.error(ise, ise);
             throw ise;
         }
-
+        
+        final String namespace = (String)portletSession.getAttribute(prefix + WebproxyConstants.NAMESPACE + sufix);
 
         final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -155,7 +154,7 @@ public class ProxyServlet extends HttpServlet {
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-            final String cacheKey = WebProxyPortlet.generateCacheKey(url);
+            final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -183,9 +182,9 @@ public class ProxyServlet extends HttpServlet {
             if (stateStore != null) {
                 final String stateKey;
                 if (sharedStateKey != null)
-                    stateKey = WebProxyPortlet.generateStateKey(sharedStateKey);
+                    stateKey = WebProxyPortlet.generateStateKey(sharedStateKey, namespace);
                 else
-                    stateKey = WebProxyPortlet.generateStateKey(WebproxyConstants.CURRENT_STATE);
+                    stateKey = WebProxyPortlet.generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
 
                 httpState = stateStore.getState(stateKey);
             }
@@ -272,7 +271,7 @@ public class ProxyServlet extends HttpServlet {
                         LOG.info("Request '" + url + "' timed out. Attempting to use expired cache data.");
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-                        final String cacheKey = WebProxyPortlet.generateCacheKey(url);
+                        final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 

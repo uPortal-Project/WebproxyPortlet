@@ -200,6 +200,7 @@ public class WebProxyPortlet extends GenericPortlet {
 
         //Get users session
         PortletSession session = request.getPortletSession();
+        session.setAttribute(WebproxyConstants.NAMESPACE, response.getNamespace());
 
         
         String sUrl = (String)session.getAttribute(GeneralConfigImpl.BASE_URL);
@@ -238,7 +239,7 @@ public class WebProxyPortlet extends GenericPortlet {
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-            final String cacheKey = generateCacheKey(sUrl);
+            final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -358,7 +359,7 @@ public class WebProxyPortlet extends GenericPortlet {
                         LOG.info("Request '" + sUrl + "' timed out. Attempting to use expired cache data.");
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-                        final String cacheKey = generateCacheKey(sUrl);
+                        final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 
@@ -489,7 +490,7 @@ public class WebProxyPortlet extends GenericPortlet {
                     if (sUseCache) {
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
     
-                        final String cacheKey = generateCacheKey(sUrl);
+                        final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
 
                         final int cacheExprTime = ConfigUtils.parseInt(myPreferences.getValue(CacheConfigImpl.CACHE_TIMEOUT, null), -1);
                         final boolean persistData = new Boolean(myPreferences.getValue(CacheConfigImpl.PERSIST_CACHE, null)).booleanValue();
@@ -746,17 +747,21 @@ public class WebProxyPortlet extends GenericPortlet {
         return null;
     }
 
-    public static String generateCacheKey(String pageUrl) {
+    public static String generateCacheKey(String pageUrl, String namespace) {
         final StringBuffer cacheKeyBuf = new StringBuffer();
 
+        cacheKeyBuf.append(namespace);
+        cacheKeyBuf.append(".");
         cacheKeyBuf.append(pageUrl);
 
         return cacheKeyBuf.toString();
     }
     
-    public static String generateStateKey(String key) {
+    public static String generateStateKey(String key, String namespace) {
         final StringBuffer cacheKeyBuf = new StringBuffer();
         
+        cacheKeyBuf.append(namespace);
+        cacheKeyBuf.append(".");
         cacheKeyBuf.append(key);
 
         return cacheKeyBuf.toString();
@@ -1302,11 +1307,12 @@ public class WebProxyPortlet extends GenericPortlet {
         if (sessionPersistenceEnabled && httpState == null) {
             final StateStore stateStore = (StateStore)context.getBean("StateStore", StateStore.class);
             if (stateStore != null) {
+                final String namespace = (String)session.getAttribute(WebproxyConstants.NAMESPACE);
                 final String stateKey;
                 if (sharedStateKey != null)
-                    stateKey = generateStateKey(sharedStateKey);
+                    stateKey = generateStateKey(sharedStateKey, namespace);
                 else
-                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE);
+                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
                 
                 httpState = stateStore.getState(stateKey);
             }
@@ -1330,11 +1336,12 @@ public class WebProxyPortlet extends GenericPortlet {
         if (sessionPersistenceEnabled) {
             final StateStore stateStore = (StateStore)context.getBean("StateStore", StateStore.class);
             if (stateStore != null) {
+                final String namespace = (String)session.getAttribute(WebproxyConstants.NAMESPACE);
                 final String stateKey;
                 if (sharedStateKey != null)
-                    stateKey = generateStateKey(sharedStateKey);
+                    stateKey = generateStateKey(sharedStateKey, namespace);
                 else
-                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE);
+                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
     
                 stateStore.storeState(stateKey, state);
             }

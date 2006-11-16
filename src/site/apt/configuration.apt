@@ -1,0 +1,158 @@
+Configuration Examples
+
+* Proxying Google
+
+    This example will proxy Google but clicks on search results will not be proxied. The
+    HTTP timeout is set to ensure that if Google is unreachable the portlet will not hang
+    indefinitely waiting to connect.
+    
+*---------------------------------------------------------------------+-----------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sBaseUrl               | http://www.google.com             |
+*---------------------------------------------------------------------+-----------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPortletUrl            | google\.com                       |
+*---------------------------------------------------------------------+-----------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPortletState          | NORMAL                            |
+*---------------------------------------------------------------------+-----------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sListType              | INCLUDE                           |
+*---------------------------------------------------------------------+-----------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.httpTimeout                | 5                                 |
+*---------------------------------------------------------------------+-----------------------------------+
+
+
+Full Configuration Options List
+
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<Preference Name>>                                                 | <<Value Type>> | <<Description>>                          |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<General Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sBaseUrl               | single    | The initial URL to proxy |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sEditUrl               | single    | The URL to display in the EDIT PortletMode |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPortletUrl            | multi     | An ordered list of regular expressions used to match URLs for proxying |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPortletState          | multi     | The portlet WindowState the URL that matches the expression should be rendered in |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sListType              | single    | If the list is an include list (matched URLs are re|written for proxying) or exclude (non|matched URLs are re|written) [INCLUDE or EXCLUDE] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.funcNameUrlRegEx       | multi     | An ordered list of regular expressions used to match URLs for proxying and rendering with an fname target |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.funcNameUrlStates      | multi     | The portlet WindowState the URL that matches the fname expression should be rendered in |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.funcNameListType       | single    | If the fname expression list is an include list (matched URLs are re|written for proxying) or exclude (non|matched URLs are re|written) [INCLUDE or EXCLUDE] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.funcNameTarget         | single    | The fname to target with proxied fname urls |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPreInterceptor        | single    | The class to use as a pre|interceptor to execute logic before the remote request is made |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.general.config.sPostInterceptor       | single    | The class to use as a post|interceptor to execute logic before the remote request is made |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<Caching Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.cache.useCache                        | single    | TRUE to enable content caching, FALSE to disable content caching |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.cache.cacheTimeOut                    | single    | How long in seconds the cached content is valid for (|1 means forever) |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.cache.useExpired                      | single    | TRUE to used expired cached content if the proxied site cannot be reached, FALSE will show a failure if the cached content is expired and the proxied site cannot be reached |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.cache.retryDelay                      | single    | How long in seconds after a failed request to the proxied site before the request is retried |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.cache.persistCache                    | single    | TRUE to persist the cached content to a database, FALSE to only store cached content in memory |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<Commons HTTP Client Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.httpTimeout                | single    | HTTP Socket Connect timeout |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.redirects                  | single    | The maximum number of redirects to follow |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sAuthType                  | single    | If Authentication is enabled, the type of authentication to perform [BASIC, NTLM or FORM] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sAuthenticationUrl         | single    | The URL to authenticate to if different than the application URL |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.authEnable                 | single    | If Authentication is needed for the proxied application [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.userName                   | single    | If BASIC or NTLM authentication the username to use |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.promptUserName             | single    | If not specifying a userName should the portal user be propmted for the username |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.persistUserName            | single    | If prompting for the username should it be stored in the PortletPreferences for the user so they don't need to provide it during a later session [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.password                   | single    | If BASIC or NTLM authentication the password to use |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.promptPassword             | single    | If not specifying a password should the portal user be propmted for the password |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.persistPassword            | single    | If prompting for the password should it be stored in the PortletPreferences for the user so they don't need to provide it during a later session [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sessionKey                 | single    | If the proxied application's session should be shared with other instances of the WebProxy portlet enter a the key to use for sharing here |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sessionPersistenceEnable   | single    | If the proxied application's session should be persisted for re|use the next time the user logs in [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.domain                     | single    | If NTLM authentication the domain to use |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.promptDomain               | single    | If not specifying a domain should the portal user be propmted for the domain |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.persistDomain              | single    | If prompting for the domain should it be stored in the PortletPreferences for the user so they don't need to provide it during a later session [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sessionTimeout             | single    | The timeout of the proxied application's session in minutes |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sDynamicParameterNames     | multi     | If FORM authentication an ordered list of form parameter names to prompt the user for before authentication |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sDynamicParameterValues    | multi     | If FORM authentication an ordered list of form parameter values entered by the user, if persistence for the parameter name is enabled |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sDynamicParameterPersist   | multi     | If FORM authentication an ordered list of [true or false] flags indicating if each named dynamic parameter should be persisted after the user enters it |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sDynamicParameterSensitive | multi     | If FORM authentication an ordered list of [true or false] flags indicating if the prompt for the user should be displayed as a PASSWORD input instead of a TEXT input |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sStaticParameterNames      | multi     | If FORM authentication an ordered list of form parameter names to send when authenticating |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpclient.sStaticParameterValues     | multi     | If FORM authentication an ordered list of form parameter values to send when authenticating |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<HTTP Header Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpheader.sHeaderName                | multi     | An ordered list of HTTP header names to send with every request, the value for each name is found in the corresponding position of the sHeaderValue preference |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.httpheader.sHeaderValue               | multi     | An ordered list of HTTP header values to send with every request |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<Static Content Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.statichtml.sStaticHeader              | single    | A HTML snippet to print before every proxied page |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.statichtml.sStaticFooter              | single    | A HTML snippet to print after every proxied page |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<Content Clipping Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.clipping.sClippingDisable             | single    | TRUE to enable content clipping, FALSE to disable content clipping |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.clipping.sXPath                       | multi     | A list of XML paths (not XPath) used for clipping content, while the expression is matched by the position in the document content is allowed through |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.clipping.sComment                     | multi     | A list of comments to use for clipping content, while between each matching comment content is let through |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.clipping.sElement                     | multi     | A list of elements to use for clipping content, while between each matching element content is let through |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| <<HTML Parser Preferences>> | | |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.htmlparser.sScriptStripComment        | single    | Should comments containing javascript be stripped from the output [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.htmlparser.sInsertDocType             | single    | Should a DOCTYPE entry be inserted in the output [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.htmlparser.sBalanceTags               | single    | Should the parser attempt to balance the HTML tags [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.htmlparser.sStripComments             | single    | Should comments be stripped from the output [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+| edu.wisc.my.webproxy.webproxy.htmlparser.sReportErrors              | single    | Should parse errors be reported, just causes them to be logged [true or false] |
+*---------------------------------------------------------------------+-----------+-----------------------------------------------+
+
+

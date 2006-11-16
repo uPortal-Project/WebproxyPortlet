@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <!--
  | Contains the bean definitions and relationships that are avalable
  | to the spring WebApplicationContext
  +-->
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+    
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
         <property name="locations">
             <list>
@@ -14,10 +21,10 @@
         </property>
     </bean>
     
-    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" singleton="false" />
-    <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" singleton="false" />
+    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" scope="prototype" />
+    <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" scope="prototype" />
     
-    <bean id="SaxFilterBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+    <bean id="SaxFilterBean" class="edu.wisc.my.webproxy.beans.SpringList" scope="prototype">
         <property name="wrappedList">
             <list>
                 <!-- The order beans are specified in this list is reversed. The last filter will be the first executed -->
@@ -113,16 +120,16 @@
         </property>
     </bean>
 
-    <bean id="FuncNameUrlFilter" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.FuncNameUrlFilter" singleton="false">
+    <bean id="FuncNameUrlFilter" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.FuncNameUrlFilter" scope="prototype">
     </bean>
     
-    <bean id="AbsoluteUrlFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.AbsoluteUrlFilter" singleton="false">
+    <bean id="AbsoluteUrlFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.AbsoluteUrlFilter" scope="prototype">
     </bean>	
 
-    <bean id="PortletURLFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.PortletUrlFilter" singleton="false">
+    <bean id="PortletURLFilterBean" parent="BaseUrlFilterBean" class="edu.wisc.my.webproxy.beans.filtering.PortletUrlFilter" scope="prototype">
 	</bean>
 	
-    <bean id="ClippingFilterBean" class="edu.wisc.my.webproxy.beans.filtering.ClippingFilter" singleton="false">
+    <bean id="ClippingFilterBean" class="edu.wisc.my.webproxy.beans.filtering.ClippingFilter" scope="prototype">
         <property name="acceptableQNames">
             <set>
                 <value>br</value>
@@ -137,7 +144,7 @@
     </bean>
     
         
-    <bean id="ContentTypeBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+    <bean id="ContentTypeBean" class="edu.wisc.my.webproxy.beans.SpringList" scope="prototype">
         <property name="wrappedList">
             <list>
                 <value>text/html</value>
@@ -146,7 +153,7 @@
         </property>
     </bean>
     
-    <bean id="ConfigBean" class="edu.wisc.my.webproxy.beans.SpringList" singleton="false">
+    <bean id="ConfigBean" class="edu.wisc.my.webproxy.beans.SpringList" scope="prototype">
         <property name="wrappedList">
             <list>
                 <ref bean="GeneralConfigBean"/>
@@ -161,37 +168,37 @@
     </bean>
     
     
-    <bean id="GeneralConfigBean" class="edu.wisc.my.webproxy.beans.config.GeneralConfigImpl" singleton="false">
+    <bean id="GeneralConfigBean" class="edu.wisc.my.webproxy.beans.config.GeneralConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/generalConfig.jsp</value>
         </property>
     </bean>
-    <bean id="HttpHeaderConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl" singleton="false">
+    <bean id="HttpHeaderConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/httpHeaderConfig.jsp</value>
         </property>
     </bean>
-    <bean id="StaticHtmlBean" class="edu.wisc.my.webproxy.beans.config.StaticHtmlConfigImpl" singleton="false">
+    <bean id="StaticHtmlBean" class="edu.wisc.my.webproxy.beans.config.StaticHtmlConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/staticHtmlConfig.jsp</value>
         </property>
     </bean>
-    <bean id="HttpClientConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl" singleton="false">
+    <bean id="HttpClientConfigBean" class="edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/httpClientConfig.jsp</value>
         </property>
     </bean>
-    <bean id="ClippingConfigBean" class="edu.wisc.my.webproxy.beans.config.ClippingConfigImpl" singleton="false">
+    <bean id="ClippingConfigBean" class="edu.wisc.my.webproxy.beans.config.ClippingConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/clippingConfig.jsp</value>
         </property>
     </bean>
-    <bean id="HTMLParserConfigBean" class="edu.wisc.my.webproxy.beans.config.HtmlParserConfigImpl" singleton="false">
+    <bean id="HTMLParserConfigBean" class="edu.wisc.my.webproxy.beans.config.HtmlParserConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/htmlParserConfig.jsp</value>
         </property>
     </bean>
-    <bean id="PageCacheConfigBean" class="edu.wisc.my.webproxy.beans.config.CacheConfigImpl" singleton="false">
+    <bean id="PageCacheConfigBean" class="edu.wisc.my.webproxy.beans.config.CacheConfigImpl" scope="prototype">
         <property name="jsp">
             <value>/WEB-INF/jsp/cacheConfig.jsp</value>
         </property>

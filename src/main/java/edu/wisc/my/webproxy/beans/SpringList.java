@@ -47,118 +47,119 @@ import java.util.ListIterator;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class SpringList implements List {
-    private List wrappedList;
+public class SpringList<E> implements List<E> {
+    private List<E> wrappedList;
 
-    public List getWrappedList() {
+    public List<E> getWrappedList() {
         return wrappedList;
     }
 
-    public void setWrappedList(List wrappedList) {
+    public void setWrappedList(List<E> wrappedList) {
         this.wrappedList = wrappedList;
     }
 
-    public void add(int index, Object element) {
-        wrappedList.add(index, element);
+    public boolean add(E o) {
+        return this.wrappedList.add(o);
     }
 
-    public boolean add(Object o) {
-        return wrappedList.add(o);
+    public void add(int index, E element) {
+        this.wrappedList.add(index, element);
     }
 
-    public boolean addAll(int index, Collection c) {
-        return wrappedList.addAll(index, c);
+    public boolean addAll(Collection<? extends E> c) {
+        return this.wrappedList.addAll(c);
     }
 
-    public boolean addAll(Collection c) {
-        return wrappedList.addAll(c);
+    public boolean addAll(int index, Collection<? extends E> c) {
+        return this.wrappedList.addAll(index, c);
     }
 
     public void clear() {
-        wrappedList.clear();
+        this.wrappedList.clear();
     }
 
     public boolean contains(Object o) {
-        return wrappedList.contains(o);
+        return this.wrappedList.contains(o);
     }
 
-    public boolean containsAll(Collection c) {
-        return wrappedList.containsAll(c);
+    public boolean containsAll(Collection<?> c) {
+        return this.wrappedList.containsAll(c);
     }
 
-    public boolean equals(Object obj) {
-        return wrappedList.equals(obj);
+    public boolean equals(Object o) {
+        return this.wrappedList.equals(o);
     }
 
-    public Object get(int index) {
-        return wrappedList.get(index);
+    public E get(int index) {
+        return this.wrappedList.get(index);
     }
 
     public int hashCode() {
-        return wrappedList.hashCode();
+        return this.wrappedList.hashCode();
     }
 
     public int indexOf(Object o) {
-        return wrappedList.indexOf(o);
+        return this.wrappedList.indexOf(o);
     }
 
     public boolean isEmpty() {
-        return wrappedList.isEmpty();
+        return this.wrappedList.isEmpty();
     }
 
-    public Iterator iterator() {
-        return wrappedList.iterator();
+    public Iterator<E> iterator() {
+        return this.wrappedList.iterator();
     }
 
     public int lastIndexOf(Object o) {
-        return wrappedList.lastIndexOf(o);
+        return this.wrappedList.lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
-        return wrappedList.listIterator();
+    public ListIterator<E> listIterator() {
+        return this.wrappedList.listIterator();
     }
 
-    public ListIterator listIterator(int index) {
-        return wrappedList.listIterator(index);
+    public ListIterator<E> listIterator(int index) {
+        return this.wrappedList.listIterator(index);
     }
 
-    public Object remove(int index) {
-        return wrappedList.remove(index);
+    public E remove(int index) {
+        return this.wrappedList.remove(index);
     }
 
     public boolean remove(Object o) {
-        return wrappedList.remove(o);
+        return this.wrappedList.remove(o);
     }
 
-    public boolean removeAll(Collection c) {
-        return wrappedList.removeAll(c);
+    public boolean removeAll(Collection<?> c) {
+        return this.wrappedList.removeAll(c);
     }
 
-    public boolean retainAll(Collection c) {
-        return wrappedList.retainAll(c);
+    public boolean retainAll(Collection<?> c) {
+        return this.wrappedList.retainAll(c);
     }
 
-    public Object set(int index, Object element) {
-        return wrappedList.set(index, element);
+    public E set(int index, E element) {
+        return this.wrappedList.set(index, element);
     }
 
     public int size() {
-        return wrappedList.size();
+        return this.wrappedList.size();
     }
 
-    public List subList(int fromIndex, int toIndex) {
-        return wrappedList.subList(fromIndex, toIndex);
+    public List<E> subList(int fromIndex, int toIndex) {
+        return this.wrappedList.subList(fromIndex, toIndex);
     }
 
     public Object[] toArray() {
-        return wrappedList.toArray();
+        return this.wrappedList.toArray();
     }
 
-    public Object[] toArray(Object[] a) {
-        return wrappedList.toArray(a);
+    public <T> T[] toArray(T[] a) {
+        return this.wrappedList.toArray(a);
     }
 
+    @Override
     public String toString() {
-        return wrappedList.toString();
+        return this.wrappedList.toString();
     }
 }

@@ -196,11 +196,11 @@ public class HttpClientConfigImpl extends JspConfigPage {
         final String[] dynamicParamPersist = ConfigUtils.checkNullStringArray(request.getParameterValues(DYNAMIC_PARAM_PERSIST), new String[0]);
         final String[] dynamicParamSensitive = ConfigUtils.checkNullStringArray(request.getParameterValues(DYNAMIC_PARAM_SENSITIVE), new String[0]);
 
-        final List dynamicParamNamesList = new ArrayList(dynamicParamNames.length);
-        final Set dynamicParamPersistSet = new HashSet(Arrays.asList(dynamicParamPersist)); 
-        final List dynamicParamPersistList = new ArrayList(dynamicParamPersistSet.size());
-        final Set dynamicParamSensitiveSet = new HashSet(Arrays.asList(dynamicParamSensitive)); 
-        final List dynamicParamSensitiveList = new ArrayList(dynamicParamSensitiveSet.size());
+        final List<String> dynamicParamNamesList = new ArrayList<String>(dynamicParamNames.length);
+        final Set<String> dynamicParamPersistSet = new HashSet<String>(Arrays.asList(dynamicParamPersist)); 
+        final List<String> dynamicParamPersistList = new ArrayList<String>(dynamicParamPersistSet.size());
+        final Set<String> dynamicParamSensitiveSet = new HashSet<String>(Arrays.asList(dynamicParamSensitive)); 
+        final List<String> dynamicParamSensitiveList = new ArrayList<String>(dynamicParamSensitiveSet.size());
 
         for (int index = 0; index < dynamicParamNames.length; index++) {
             final String paramName = ConfigUtils.checkEmptyNullString(dynamicParamNames[index], null);
@@ -228,8 +228,8 @@ public class HttpClientConfigImpl extends JspConfigPage {
         final String[] staticParamValues = ConfigUtils.checkNullStringArray(request.getParameterValues(STATIC_PARAM_VALUES), new String[0]);
         
         if (staticParamNames.length == staticParamValues.length) {
-            final List staticParamNamesList = new ArrayList(staticParamNames.length);
-            final List staticParamValuesList = new ArrayList(staticParamValues.length);
+            final List<String> staticParamNamesList = new ArrayList<String>(staticParamNames.length);
+            final List<String> staticParamValuesList = new ArrayList<String>(staticParamValues.length);
     
             for (int index = 0; index < staticParamNames.length; index++) {
                 final String paramName = ConfigUtils.checkEmptyNullString(staticParamNames[index], null);

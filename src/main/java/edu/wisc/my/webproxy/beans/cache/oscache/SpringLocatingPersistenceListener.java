@@ -26,7 +26,7 @@ import edu.wisc.my.webproxy.portlet.ApplicationContextLocator;
 public class SpringLocatingPersistenceListener implements PersistenceListener {
     public static final String BEAN_NAME_PROP = "cache.persistence.spring.beanName";
     
-    private static final Set initializedBeans = new HashSet();
+    private static final Set<String> initializedBeans = new HashSet<String>();
     
     protected final Log logger = LogFactory.getLog(this.getClass());
     private String beanName;

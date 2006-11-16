@@ -50,8 +50,8 @@ import java.util.StringTokenizer;
 public final class CacheUtils {
     private CacheUtils() {}
     
-    public static Set splitStringToSet(String data, String delim) {
-        final Set tokens = new HashSet();
+    public static Set<String> splitStringToSet(String data, String delim) {
+        final Set<String> tokens = new HashSet<String>();
 
         for (final StringTokenizer dataTokenizer = new StringTokenizer(data, delim); dataTokenizer.hasMoreTokens();) {
             final String token = dataTokenizer.nextToken();
@@ -61,8 +61,8 @@ public final class CacheUtils {
         return  Collections.unmodifiableSet(tokens);
     }
     
-    public static List splitStringToList(String data, String delim) {
-        final List tokens = new LinkedList();
+    public static List<String> splitStringToList(String data, String delim) {
+        final List<String> tokens = new LinkedList<String>();
 
         for (final StringTokenizer dataTokenizer = new StringTokenizer(data, delim); dataTokenizer.hasMoreTokens();) {
             final String token = dataTokenizer.nextToken();

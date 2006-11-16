@@ -39,7 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import edu.wisc.my.portlet.mock.MockPortletPreferences;
+
+import org.springframework.mock.web.portlet.MockPortletPreferences;
 
 
 /**
@@ -50,7 +51,7 @@ public class PortletPreferencesWrapperTest extends TestCase {
     private PortletPreferencesWrapper wrapper = null;
     
     protected void setUp() throws Exception {
-        final Map userAttrs = new HashMap();
+        final Map<String, String> userAttrs = new HashMap<String, String>();
         userAttrs.put("user.name.given", "John");
         userAttrs.put("user.name.middle", "Paul");
         userAttrs.put("user.name.last", "Doe");

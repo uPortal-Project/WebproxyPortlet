@@ -87,15 +87,15 @@ public class ClippingConfigImpl extends JspConfigPage {
     }
 
     private String[] parseArray(final String[] data) {
-        final List dataList = new ArrayList(data.length);
+        final List<String> dataList = new ArrayList<String>(data.length);
         
-        for (int index = 0; index < data.length; index++) {
-            final String d = ConfigUtils.checkEmptyNullString(data[index], null);
+        for (final String item : data) {
+            final String d = ConfigUtils.checkEmptyNullString(item, null);
             
             if (d != null)
                 dataList.add(ConfigUtils.checkEmptyNullString(d, ""));
         }
         
-        return (String[])dataList.toArray(new String[dataList.size()]);
+        return dataList.toArray(new String[dataList.size()]);
     }
 }

@@ -15,14 +15,14 @@ import org.springframework.context.ApplicationContext;
  * @version $Revision$
  */
 public final class ApplicationContextLocator {
-    private static final ThreadLocal appContextLocal = new ThreadLocal();
+    private static final ThreadLocal<ApplicationContext> appContextLocal = new ThreadLocal<ApplicationContext>();
     
     public static void setApplicationContext(ApplicationContext context) {
         appContextLocal.set(context);
     }
     
     public static ApplicationContext getApplicationContext() {
-        return (ApplicationContext)appContextLocal.get();
+        return appContextLocal.get();
     }
     
     

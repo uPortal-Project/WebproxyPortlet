@@ -97,8 +97,8 @@ public class GeneralConfigImpl extends JspConfigPage {
         final String[] portletUrlStates = ConfigUtils.checkNullStringArray(request.getParameterValues(PORTLET_URL_REWRITE_STATES), new String[0]);
         
         if (portletUrlMasks.length == portletUrlStates.length) {
-            final List portletUrlMaskList = new ArrayList(portletUrlMasks.length);
-            final List urlWindowStateList = new ArrayList(portletUrlStates.length);
+            final List<String> portletUrlMaskList = new ArrayList<String>(portletUrlMasks.length);
+            final List<String> urlWindowStateList = new ArrayList<String>(portletUrlStates.length);
     
             for (int index = 0; index < portletUrlMasks.length; index++) {
                 final String urlMask = ConfigUtils.checkEmptyNullString(portletUrlMasks[index], null);
@@ -111,8 +111,8 @@ public class GeneralConfigImpl extends JspConfigPage {
                 }
             }
         
-            prefs.setValues(PORTLET_URL_REWRITE_MASKS, (String[])portletUrlMaskList.toArray(new String[portletUrlMaskList.size()]));
-            prefs.setValues(PORTLET_URL_REWRITE_STATES, (String[])urlWindowStateList.toArray(new String[urlWindowStateList.size()]));
+            prefs.setValues(PORTLET_URL_REWRITE_MASKS, portletUrlMaskList.toArray(new String[portletUrlMaskList.size()]));
+            prefs.setValues(PORTLET_URL_REWRITE_STATES, urlWindowStateList.toArray(new String[urlWindowStateList.size()]));
         }
         else {
             errorMessages.append("Portlet URL rewrite mask and window state lists have inconsistent lengths.\n");
@@ -133,8 +133,8 @@ public class GeneralConfigImpl extends JspConfigPage {
         final String[] fNameUrlStates = ConfigUtils.checkNullStringArray(request.getParameterValues(FNAME_URL_REWRITE_STATES), new String[0]);
         
         if (fNameUrlMasks.length == fNameUrlStates.length) {
-            final List fNameUrlMaskList = new ArrayList(fNameUrlMasks.length);
-            final List urlWindowStateList = new ArrayList(fNameUrlStates.length);
+            final List<String> fNameUrlMaskList = new ArrayList<String>(fNameUrlMasks.length);
+            final List<String> urlWindowStateList = new ArrayList<String>(fNameUrlStates.length);
     
             for (int index = 0; index < fNameUrlMasks.length; index++) {
                 final String urlMask = ConfigUtils.checkEmptyNullString(fNameUrlMasks[index], null);
@@ -147,8 +147,8 @@ public class GeneralConfigImpl extends JspConfigPage {
                 }
             }
         
-            prefs.setValues(FNAME_URL_REWRITE_MASKS, (String[])fNameUrlMaskList.toArray(new String[fNameUrlMaskList.size()]));
-            prefs.setValues(FNAME_URL_REWRITE_STATES, (String[])urlWindowStateList.toArray(new String[urlWindowStateList.size()]));
+            prefs.setValues(FNAME_URL_REWRITE_MASKS, fNameUrlMaskList.toArray(new String[fNameUrlMaskList.size()]));
+            prefs.setValues(FNAME_URL_REWRITE_STATES, urlWindowStateList.toArray(new String[urlWindowStateList.size()]));
         }
         else {
             errorMessages.append("fName URL rewrite mask and window state lists have inconsistent lengths.\n");

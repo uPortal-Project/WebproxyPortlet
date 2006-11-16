@@ -74,8 +74,8 @@ public class HttpHeaderConfigImpl extends JspConfigPage {
         final String[] headerValues = ConfigUtils.checkNullStringArray(request.getParameterValues(HEADER_VALUE),  new String[] {"", "", ""});
         
         if (headerNames.length == headerValues.length) {
-            final List headerNamesList = new ArrayList(headerNames.length);
-            final List headerValuesList = new ArrayList(headerValues.length);
+            final List<String> headerNamesList = new ArrayList<String>(headerNames.length);
+            final List<String> headerValuesList = new ArrayList<String>(headerValues.length);
     
             for (int index = 0; index < headerNames.length; index++) {
                 final String name = ConfigUtils.checkEmptyNullString(headerNames[index], null);
@@ -88,8 +88,8 @@ public class HttpHeaderConfigImpl extends JspConfigPage {
                 }
             }
         
-            prefs.setValues(HEADER_NAME, (String[])headerNamesList.toArray(new String[headerNamesList.size()]));
-            prefs.setValues(HEADER_VALUE, (String[])headerValuesList.toArray(new String[headerValuesList.size()]));
+            prefs.setValues(HEADER_NAME, headerNamesList.toArray(new String[headerNamesList.size()]));
+            prefs.setValues(HEADER_VALUE, headerValuesList.toArray(new String[headerValuesList.size()]));
         }
         else {
             errorMessages.append("Header name and value lists have inconsistent lengths.\n");

@@ -275,7 +275,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 final String[] headerNames = myPreferences.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                 final String[] headerValues = myPreferences.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                 if (headerNames.length == headerValues.length) {
-                    final List headerList = new ArrayList(headerNames.length);
+                    final List<Header> headerList = new ArrayList<Header>(headerNames.length);
                     
                     for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
                         final Header h = httpRequest.createHeader();
@@ -284,7 +284,7 @@ public class WebProxyPortlet extends GenericPortlet {
                         headerList.add(h);
                     }
                     
-                    httpRequest.setHeaders((Header[])headerList.toArray(new Header[headerList.size()]));
+                    httpRequest.setHeaders(headerList.toArray(new Header[headerList.size()]));
                 }
                 else {
                     LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
@@ -299,7 +299,7 @@ public class WebProxyPortlet extends GenericPortlet {
 
                     //If post add any parameters to the method
                     if (sRequestType.equals(WebproxyConstants.POST_REQUEST)) {
-                        final List postParameters = new ArrayList(request.getParameterMap().size());
+                        final List<ParameterPair> postParameters = new ArrayList<ParameterPair>(request.getParameterMap().size());
                         for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
                             final String paramName = (String)e.nextElement();
 
@@ -313,7 +313,7 @@ public class WebProxyPortlet extends GenericPortlet {
                             }
                         }
 
-                        final ParameterPair[] params = (ParameterPair[])postParameters.toArray(new ParameterPair[postParameters.size()]);
+                        final ParameterPair[] params = postParameters.toArray(new ParameterPair[postParameters.size()]);
                         httpRequest.setParameters(params);
                     }
                 }
@@ -685,7 +685,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 }
             }
 
-            final List sLoginAttributes = new ArrayList(sDynamicParameterNames.length + sStaticParameterNames.length);
+            final List<ParameterPair> sLoginAttributes = new ArrayList<ParameterPair>(sDynamicParameterNames.length + sStaticParameterNames.length);
 
             for (int dynamicIndex = 0; dynamicIndex < sDynamicParameterNames.length; dynamicIndex++) {
                 final String value;
@@ -720,7 +720,7 @@ public class WebProxyPortlet extends GenericPortlet {
             final String authUrl = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.AUTH_URL, ""), "");
             authPost.setUrl(authUrl);
 
-            authPost.setParameters((ParameterPair[])sLoginAttributes.toArray(new ParameterPair[sLoginAttributes.size()]));
+            authPost.setParameters(sLoginAttributes.toArray(new ParameterPair[sLoginAttributes.size()]));
 
             final Response authResponse = httpManager.doRequest(authPost);
             session.setAttribute(HttpClientConfigImpl.SESSION_TIMEOUT, new Long(System.currentTimeMillis()));
@@ -905,7 +905,7 @@ public class WebProxyPortlet extends GenericPortlet {
                     final String[] headerNames = pp.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                     final String[] headerValues = pp.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                     if (headerNames.length == headerValues.length) {
-                        final List headerList = new ArrayList(headerNames.length);
+                        final List<Header> headerList = new ArrayList<Header>(headerNames.length);
                         
                         for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
                             final Header h = httpRequest.createHeader();
@@ -914,7 +914,7 @@ public class WebProxyPortlet extends GenericPortlet {
                             headerList.add(h);
                         }
                         
-                        httpRequest.setHeaders((Header[])headerList.toArray(new Header[headerList.size()]));
+                        httpRequest.setHeaders(headerList.toArray(new Header[headerList.size()]));
                     }
                     else {
                         LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
@@ -1024,15 +1024,11 @@ public class WebProxyPortlet extends GenericPortlet {
             }
 
             if (!matches) {
-                final int protocolEnd = sUrl.indexOf("//") + 2;
-                final String fileBase;
-                if (protocolEnd > 0)  {
-                    fileBase = sUrl.substring(protocolEnd);
-                }
-                else {
-                    fileBase = "";
-                }
-                
+                final int protocolEnd = sUrl.indexOf("//");
+                final int queryStringStart = sUrl.indexOf("?");
+                final int fileBaseStart = (protocolEnd < 0 ? 0 : protocolEnd + 2); //Add 2 to exclude the protocol seperator
+                final int fileBaseEnd = (queryStringStart < 0 ? sUrl.length() : queryStringStart);
+                final String fileBase = sUrl.substring(fileBaseStart, fileBaseEnd);
                 
                 final StringBuffer servletUrl = new StringBuffer();
                 servletUrl.append(request.getContextPath());
@@ -1088,6 +1084,10 @@ public class WebProxyPortlet extends GenericPortlet {
                     SessionMappingListener.setSession((HttpSession)session);
                 }
                 
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Redirecting request to '" + servletUrl + "'");
+                }
+
                 response.sendRedirect(servletUrl.toString());
                 return;
             }

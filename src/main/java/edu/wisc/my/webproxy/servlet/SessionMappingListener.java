@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.commons.collections.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SessionMappingListener implements HttpSessionListener {
     private static final Log LOG = LogFactory.getLog(SessionMappingListener.class);
-    private static final Map sessionMap = Collections.synchronizedMap(new WeakValueMap());
+    private static final Map sessionMap = Collections.synchronizedMap(new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK));
     
     /** 
      * Gets the session with the specified ID.

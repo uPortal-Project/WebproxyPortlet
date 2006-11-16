@@ -213,7 +213,7 @@ public class ProxyServlet extends HttpServlet {
                 final String[] headerNames = prefs.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                 final String[] headerValues = prefs.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                 if (headerNames.length == headerValues.length) {
-                    final List headerList = new ArrayList(headerNames.length);
+                    final List<Header> headerList = new ArrayList<Header>(headerNames.length);
 
                     for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
                         final Header h = httpRequest.createHeader();

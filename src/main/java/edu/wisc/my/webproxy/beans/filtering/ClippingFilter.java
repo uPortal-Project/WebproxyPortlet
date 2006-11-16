@@ -36,8 +36,10 @@
 
 package edu.wisc.my.webproxy.beans.filtering;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -64,15 +66,15 @@ import edu.wisc.my.webproxy.beans.config.ClippingConfigImpl;
  */
 public class ClippingFilter extends ChainingSaxFilter {
 
-    LinkedList[] xPath = null;
+    List<List<String>> xPath = null;
 
-    LinkedList currentPath = new LinkedList();
+    List<String> currentPath = new LinkedList<String>();
 
     private Set notAcceptable = null;
 
     private String[] sElement = null;
 
-    private Map comments = new HashMap();
+    private Map<String, String> comments = new HashMap<String, String>();
 
     private boolean commentMatch = false;
 
@@ -105,12 +107,16 @@ public class ClippingFilter extends ChainingSaxFilter {
      * @param path array of Strings containing paths
      */
     public void setXPath(String[] path) {
-        xPath = new LinkedList[path.length];
+        xPath = new ArrayList<List<String>>(path.length);
+        
         for (int pathIndex = 0; pathIndex < path.length; pathIndex++) {
-            xPath[pathIndex] = new LinkedList();
+            final LinkedList<String> pathPartList = new LinkedList<String>();
+            xPath.add(pathPartList);
+            
             StringTokenizer st = new StringTokenizer(path[pathIndex], "/");
-            while (st.hasMoreTokens())
-                xPath[pathIndex].add(st.nextToken());
+            while (st.hasMoreTokens()) {
+                pathPartList.add(st.nextToken());
+            }
         }
     }
 
@@ -142,7 +148,7 @@ public class ClippingFilter extends ChainingSaxFilter {
      * @return xPath an array of LinkedList containing xPaths 
      */
 
-    public LinkedList[] getXPath() {
+    public List<List<String>> getXPath() {
         return this.xPath;
     }
 
@@ -157,37 +163,45 @@ public class ClippingFilter extends ChainingSaxFilter {
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         if (!disable) {
             this.currentPath.add(qName);
+            
             //loop thru each xPath to see if clipping is set to true.
             if (xPath != null) {
-                for (int xPathIndex = 0; xPathIndex > xPath.length; xPathIndex++) {
+                for (final List<String> pathPartList : this.xPath) {
                     //check current path to see if equals defined clipping
                     // xPath
-                    for (int myPathIndex = 0; myPathIndex < this.xPath[xPathIndex].size() && myPathIndex < this.currentPath.size(); myPathIndex++) {
-                        if (myPathIndex < currentPath.size() && currentPath.get(myPathIndex) != null
-                                && ((String)currentPath.get(myPathIndex)).equalsIgnoreCase((String)xPath[xPathIndex].get(myPathIndex))) {
+                    for (int myPathIndex = 0; myPathIndex < pathPartList.size() && myPathIndex < this.currentPath.size(); myPathIndex++) {
+                        final String currentPathPart = currentPath.get(myPathIndex);
+                        final String testPathPart = pathPartList.get(myPathIndex);
+                        
+                        if (myPathIndex < currentPath.size() && currentPathPart != null && currentPathPart.equalsIgnoreCase(testPathPart)) {
                             xPathMatch = true;
                             break;
                         }
-                        else
+                        else {
                             xPathMatch = false;
+                        }
                     }
                 }
             }
+            
             if (sElement != null)
-                for (int elementIndex = 0; elementIndex < this.sElement.length; elementIndex++) {
-                    if (currentPath.contains(this.sElement[elementIndex])) {
+                for (final String testElement : this.sElement) {
+                    if (currentPath.contains(testElement)) {
                         elementMatch = true;
                         break;
                     }
-                    else
+                    else {
                         elementMatch = false;
+                    }
                 }
 
-            if (xPathMatch || elementMatch || commentMatch)
+            if (xPathMatch || elementMatch || commentMatch) {
                 super.startElement(uri, localName, qName, atts);
+            }
         }
-        else
+        else {
             super.startElement(uri, localName, qName, atts);
+        }
     }
 
     /**
@@ -215,35 +229,41 @@ public class ClippingFilter extends ChainingSaxFilter {
             }
             //loop thru each xPath to see if clipping is set to true.
             if (xPath != null) {
-                for (int xPathIndex = 0; xPathIndex > xPath.length; xPathIndex++) {
+                for (final List<String> pathPartList : xPath) {
                     //check current path to see if equals defined clipping
                     // xPath
-                    for (int myPathIndex = 0; myPathIndex < this.xPath[xPathIndex].size(); myPathIndex++) {
-                        if (myPathIndex < currentPath.size() && currentPath.get(myPathIndex) != null
-                                && ((String)currentPath.get(myPathIndex)).equalsIgnoreCase((String)xPath[xPathIndex].get(myPathIndex))) {
+                    for (int myPathIndex = 0; myPathIndex < pathPartList.size(); myPathIndex++) {
+                        final String currentPathPart = currentPath.get(myPathIndex);
+                        final String testPathPart = pathPartList.get(myPathIndex);
+                        
+                        if (myPathIndex < currentPath.size() && currentPathPart != null && currentPathPart.equalsIgnoreCase(testPathPart)) {
                             xPathMatch = true;
                             break;
                         }
-                        else
+                        else {
                             xPathMatch = false;
+                        }
                     }
                 }
             }
             if (sElement != null)
-                for (int elementIndex = 0; elementIndex < this.sElement.length; elementIndex++) {
-                    if (currentPath.contains(this.sElement[elementIndex])) {
+                for (final String testElement : this.sElement) {
+                    if (currentPath.contains(testElement)) {
                         elementMatch = true;
                         break;
                     }
-                    else
+                    else {
                         elementMatch = false;
+                    }
                 }
 
-            if (xPathMatch || elementMatch || commentMatch)
+            if (xPathMatch || elementMatch || commentMatch) {
                 super.endElement(uri, localName, qName);
+            }
         }
-        else
+        else {
             super.endElement(uri, localName, qName);
+        }
     }
 
     public void characters(char[] ch, int start, int len) throws SAXException {

@@ -9,7 +9,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,10 +32,10 @@ public class KeyHashingPersistenceListener extends DelegatingPersistenceListener
     public static final String DELEGATE_CLASS_PROP  = "cache.persistence.hashing.delegateClass";
     
     private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-    private static final List DEFAULT_ALGORITHMS;
+    private static final List<String> DEFAULT_ALGORITHMS;
     
     static {
-        final List algorithmsBuilder = new ArrayList(6);
+        final List<String> algorithmsBuilder = new ArrayList<String>(6);
         
         algorithmsBuilder.add("SHA-512");
         algorithmsBuilder.add("SHA-384");
@@ -50,7 +49,7 @@ public class KeyHashingPersistenceListener extends DelegatingPersistenceListener
     
     /** An ObjectPool is used to reduce the number of MessageDigest objects that have to be created */
     private final ObjectPool messageDigestPool;
-    private List hashAlgorithms = null;
+    private List<String> hashAlgorithms = null;
     
 
     public KeyHashingPersistenceListener() {
@@ -79,13 +78,13 @@ public class KeyHashingPersistenceListener extends DelegatingPersistenceListener
     /**
      * @return Returns the hashAlgorithms.
      */
-    public List getHashAlgorithms() {
+    public List<String> getHashAlgorithms() {
         return this.hashAlgorithms;
     }
     /**
      * @param hashAlgorithms The hashAlgorithms to set.
      */
-    public void setHashAlgorithms(List hashAlgorithms) {
+    public void setHashAlgorithms(List<String> hashAlgorithms) {
         this.hashAlgorithms = hashAlgorithms;
     }
 
@@ -327,8 +326,10 @@ public class KeyHashingPersistenceListener extends DelegatingPersistenceListener
             }
             
             //Search for a usable hash algorithm
-            for (final Iterator algItr = hashAlgorithms.iterator(); algItr.hasNext() && digest == null; ) {
-                final String algorithm = (String)algItr.next();
+            for (final String algorithm : KeyHashingPersistenceListener.this.hashAlgorithms) {
+                if (digest == null) {
+                    break;
+                }
                 
                 try {
                     digest = MessageDigest.getInstance(algorithm);

@@ -141,6 +141,18 @@ public class WebProxyPortlet extends GenericPortlet {
         instance = this;
     }
     
+    @Override
+    public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException {
+        
+        // We're overriding render() on GenericPortlet for the sole purpose of 
+        // *not* executing the following commented below, which would typically 
+        // set all titles from this portlet to 'Authenticated Web Proxy.'
+        //
+        // response.setTitle(getTitle(request));
+        doDispatch(request, response);
+
+    }
+
     public void doDispatch(final RenderRequest request, final RenderResponse response) throws PortletException, IOException {
         final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
         ApplicationContextLocator.setApplicationContext(context);

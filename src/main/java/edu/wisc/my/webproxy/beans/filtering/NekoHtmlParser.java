@@ -93,6 +93,16 @@ public class NekoHtmlParser implements HtmlParser, ProxyComponent {
             defaultParser.setFeature("http://cyberneko.org/html/features/scanner/script/strip-comment-delims", scriptStripComment);
             defaultParser.setFeature("http://cyberneko.org/html/features/scanner/style/strip-comment-delims", stripComments);
 
+            // AW (2008/09/03):  The 'strip-cdata-delims' feature removes CDATA 
+            // delimiters ('<![CDATA[' and ']]>') from <script> elements found 
+            // within the source DOM.  These delimiters are sometimes placed 
+            // there b/c JavaScript commonly contains characters that would need 
+            // escaping in XML.  The delimiters, conversely, break JavaScript in 
+            // HTML.  Since there is currently no forseeable scenario where these 
+            // delimiters should *not* be removed, we just set this option to 
+            // 'true.'  
+            defaultParser.setFeature("http://cyberneko.org/html/features/scanner/script/strip-cdata-delims", true);            
+            
             defaultParser.setFeature("http://cyberneko.org/html/features/scanner/notify-builtin-refs", true);
             defaultParser.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);
         }

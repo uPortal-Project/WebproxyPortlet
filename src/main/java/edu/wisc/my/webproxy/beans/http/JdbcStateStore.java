@@ -8,6 +8,7 @@ package edu.wisc.my.webproxy.beans.http;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -139,6 +140,7 @@ public class JdbcStateStore extends JdbcDaoSupport implements StateStore {
             return null;
         }
         
+        this.purgeCookies(state);
         return state;
     }
 
@@ -164,8 +166,26 @@ public class JdbcStateStore extends JdbcDaoSupport implements StateStore {
         }
     }
     
-    
-    
+    /**
+     * Remove expired cookies from the state
+     */
+    protected void purgeCookies(final State state) {
+        final Cookie[] cookies = state.getCookies();
+        if (cookies != null) {
+            final List<Cookie> validCookies = new ArrayList<Cookie>(cookies.length);
+            for (Cookie cookie : cookies) {
+                //Only keep cookies that have an expiration date and is not expired
+                if (cookie.getExpiryDate() != null && !cookie.isExpired()) {
+                    validCookies.add(cookie);
+                }
+            }
+            state.clearCookies();
+
+            if (validCookies.size() > 0) {
+                state.addCookies(validCookies.toArray(new Cookie[validCookies.size()]));
+            }
+         }
+     }
     
     private class StateExistsQuery extends MappingSqlQuery {
         private static final String SQL = 

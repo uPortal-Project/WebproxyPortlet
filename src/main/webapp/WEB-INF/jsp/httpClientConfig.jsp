@@ -13,6 +13,7 @@
     final boolean authEnable         		= new Boolean(prefs.getValue(HttpClientConfigImpl.AUTH_ENABLE, null)).booleanValue();
     final boolean sessionPersistenceEnable	= new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
 	final String maxRedirects        		= prefs.getValue(HttpClientConfigImpl.MAX_REDIRECTS, "");
+	final boolean circularRedirects         = new Boolean(prefs.getValue(HttpClientConfigImpl.CIRCULAR_REDIRECTS, null)).booleanValue();
     final String authType            		= prefs.getValue(HttpClientConfigImpl.AUTH_TYPE, "");
     final String authUrl             		= prefs.getValue(HttpClientConfigImpl.AUTH_URL, "");
     final String sessionKey	  		 		= prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, "");
@@ -39,9 +40,12 @@
 </p>
 <p>
 	Maximum Redirects: <input type="text" name="<%=HttpClientConfigImpl.MAX_REDIRECTS%>" value="<%=maxRedirects%>">
+    <br/>
+    <input type="checkbox" value="true" name="<%=HttpClientConfigImpl.CIRCULAR_REDIRECTS%>" <%=(circularRedirects ? "checked=\"checked\"" : "")%>/>
+    Allow Circular Redirects
 </p>
 <p>
-    <input type="checkbox" value="true" name="<%=HttpClientConfigImpl.AUTH_ENABLE%>" value="true" <%=(authEnable ? "checked=\"checked\"" : "")%>/>
+    <input type="checkbox" value="true" name="<%=HttpClientConfigImpl.AUTH_ENABLE%>" <%=(authEnable ? "checked=\"checked\"" : "")%>/>
 	Enable Authentication
 </p>
 <p>

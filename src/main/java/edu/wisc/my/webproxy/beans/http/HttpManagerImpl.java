@@ -53,6 +53,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
@@ -160,8 +161,10 @@ public final class HttpManagerImpl extends HttpManager {
             
         }
         
-        //TODO remove proxy config before prod
-        //this.client.getHostConfiguration().setProxy("localhost", 7999);
+        final String circularRedirectsStr = prefs.getValue(HttpClientConfigImpl.CIRCULAR_REDIRECTS, null);
+        if (circularRedirectsStr != null) {
+            this.client.getParams().setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.valueOf(circularRedirectsStr));
+        }
     }
 
     private void setStaticHeaders(Header[] headers, HttpMethod method) {

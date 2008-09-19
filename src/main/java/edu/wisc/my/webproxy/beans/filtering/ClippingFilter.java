@@ -214,6 +214,10 @@ public class ClippingFilter extends ChainingSaxFilter {
      */
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (!disable) {
+            if (xPathMatch || elementMatch || commentMatch) {
+                super.endElement(uri, localName, qName);
+            }
+
             boolean removeFromXPath = true;
             int index = this.currentPath.size();
             //remove endElements from currentPath
@@ -246,7 +250,7 @@ public class ClippingFilter extends ChainingSaxFilter {
                     }
                 }
             }
-            if (sElement != null)
+            if (sElement != null) {
                 for (final String testElement : this.sElement) {
                     if (currentPath.contains(testElement)) {
                         elementMatch = true;
@@ -256,10 +260,8 @@ public class ClippingFilter extends ChainingSaxFilter {
                         elementMatch = false;
                     }
                 }
-
-            if (xPathMatch || elementMatch || commentMatch) {
-                super.endElement(uri, localName, qName);
             }
+
         }
         else {
             super.endElement(uri, localName, qName);

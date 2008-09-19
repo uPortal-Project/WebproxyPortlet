@@ -59,6 +59,7 @@ public class HttpClientConfigImpl extends JspConfigPage {
     
     public static final String HTTP_TIMEOUT     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("httpTimeout").toString(); 
     public static final String MAX_REDIRECTS    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("redirects").toString();
+    public static final String CIRCULAR_REDIRECTS    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("circularRedirects").toString();
     public static final String AUTH_TYPE        = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("sAuthType").toString();
     public static final String AUTH_URL         = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("sAuthenticationUrl").toString();
     
@@ -124,6 +125,8 @@ public class HttpClientConfigImpl extends JspConfigPage {
             errorMessages.append("Invalid max redirects specified '").append(maxRedirectsStr).append("'\n");
         }
         
+        final Boolean circularRedirects = Boolean.valueOf(request.getParameter(CIRCULAR_REDIRECTS));
+        prefs.setValue(CIRCULAR_REDIRECTS, circularRedirects.toString());
         
         String httpTimeoutStr = null;
         try {

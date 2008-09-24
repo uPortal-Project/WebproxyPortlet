@@ -21,10 +21,9 @@
         <system>Jira</system>
     </issueManagement>
     <scm>
-        <url>http://developer.ja-sig.org/source/browse/jasig/portal_portlets/WebproxyPortlet</url>
-        <developerConnection>scm:cvs:pserver:${maven.username}@developer.ja-sig.org:/home/cvs/jasig:portal_portlets/WebproxyPortlet</developerConnection>
-        <connection>scm:cvs:pserver:anonymous@developer.ja-sig.org:/home/cvs/jasig:portal_portlets/WebproxyPortlet</connection>
-        <tag>1.0.0-SNAPSHOT</tag>
+        <connection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/trunk/</connection>
+        <developerConnection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/trunk/</developerConnection>
+        <url>http://developer.ja-sig.org/source/browse/jasigsvn/portlets/WebproxyPortlet</url>
     </scm>
     <distributionManagement>
         <repository>

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jasig.portlet</groupId>
     <artifactId>WebProxyPortlet</artifactId>
     <packaging>war</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     
     <name>Web Proxy Portlet</name>
     <description>Provides web site content inclusion via a JSR-168 portlet.</description>
@@ -21,10 +20,9 @@
         <system>Jira</system>
     </issueManagement>
     <scm>
-        <url>http://developer.ja-sig.org/source/browse/jasig/portal_portlets/WebproxyPortlet</url>
-        <developerConnection>scm:cvs:pserver:${maven.username}@developer.ja-sig.org:/home/cvs/jasig:portal_portlets/WebproxyPortlet</developerConnection>
-        <connection>scm:cvs:pserver:anonymous@developer.ja-sig.org:/home/cvs/jasig:portal_portlets/WebproxyPortlet</connection>
-        <tag>1.0.0-SNAPSHOT</tag>
+        <connection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.0.0</connection>
+        <developerConnection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.0.0</developerConnection>
+        <url>http://developer.ja-sig.org/source/browse/jasigsvn/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.0.0</url>
     </scm>
     <distributionManagement>
         <repository>

@@ -42,7 +42,7 @@ package edu.wisc.my.webproxy.beans.http;
  * 
  * @version $Id$
  */
-public interface Header {
+public interface IHeader {
 	
 	/**
      * Return the name.
@@ -61,21 +61,5 @@ public interface Header {
     
     String getValue();
     
-    /**
-     * Set the name.
-     *
-     * @param name The new name
-     * @see #getName()
-     */
-    
-    void setName(String name);
-    
-    /**
-     * Set the value.
-     *
-     * @param value The new value.
-     */
-    
-    void setValue(String value);
 }
 

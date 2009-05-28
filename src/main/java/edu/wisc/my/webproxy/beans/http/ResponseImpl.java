@@ -42,14 +42,15 @@ package edu.wisc.my.webproxy.beans.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import edu.wisc.my.webproxy.portlet.WebProxyPortlet;
 
@@ -65,25 +66,27 @@ public class ResponseImpl implements Response{
     
     private static final Log LOG = LogFactory.getLog(WebProxyPortlet.class);
     
-    HttpMethod method;
+    HttpUriRequest method;
     HttpClient client;
+    HttpResponse response;
     
     /**
 	 * Creates a response object
-	 * @param method the HttpMethod used to make the remote request
+	 * @param method the HttpUriRequest used to make the remote request
 	 * @param client the HttpClient client instance that made the request
 	 * 
 	 */
 
-    public ResponseImpl(HttpMethod method, HttpClient client) throws HttpTimeoutException, IOException {
-       //constructor for test impl
+    public ResponseImpl(HttpUriRequest method, HttpClient client) throws HttpTimeoutException, IOException {
     	this.client = client;
     	this.method = method;
+    	
     	try {
-		int statusCode = client.executeMethod(method);
+			this.response = this.client.execute(this.method);
+			int statusCode = response.getStatusLine().getStatusCode();
 			
 			if (statusCode != HttpStatus.SC_OK) {  
-                LOG.info(("Method failed: " + method.getStatusLine()));
+                LOG.info(("Method failed: " + response.getStatusLine()));
 		      }
 
 		} catch (ConnectTimeoutException cte) {
@@ -99,7 +102,7 @@ public class ResponseImpl implements Response{
     public InputStream getResponseBodyAsStream() {
     	InputStream is = null;
         try {
-			is = method.getResponseBodyAsStream();
+			is = response.getEntity().getContent();
 		} catch (IOException e) {
             LOG.error("Caught an IOException when retrieving the response body: ", e);
 		}
@@ -113,33 +116,24 @@ public class ResponseImpl implements Response{
     public String getContentType() {
     	String contentType = null;
     
-    	Header header = method.getResponseHeader("Content-Type");
-        if (header != null) {
-        	contentType = header.getValue();
+    	Header[] headers = response.getHeaders("Content-Type");
+        if (headers.length > 0) {
+        	contentType = headers[0].getValue();
         }
 
         return contentType;
     }
 
     /* (non-Javadoc)
-     * @see edu.wisc.my.webproxy.beans.http.Response#getState()
-     */
-    public State getState() {
-    	org.apache.commons.httpclient.HttpState httpState = client.getState();
-        State state = new HttpClientStateImpl(httpState);    	 
-        return state;
-    }
-
-    /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.Response#getHeaders()
      */
-    public edu.wisc.my.webproxy.beans.http.Header[] getHeaders() {
+    public edu.wisc.my.webproxy.beans.http.IHeader[] getHeaders() {
         
-    	org.apache.commons.httpclient.Header[] httpClientHeaders = method.getResponseHeaders();
-    	edu.wisc.my.webproxy.beans.http.Header[] myHeaders =  new edu.wisc.my.webproxy.beans.http.Header[httpClientHeaders.length];
+    	Header[] httpClientHeaders = response.getAllHeaders();
+    	IHeader[] myHeaders =  new edu.wisc.my.webproxy.beans.http.IHeader[httpClientHeaders.length];
     	for (int i=0; i < httpClientHeaders.length; i++)
     	{
-    	myHeaders[i] = new HeaderImpl(httpClientHeaders[i].getName(), httpClientHeaders[i].getValue());	
+    		myHeaders[i] = new HeaderImpl(httpClientHeaders[i].getName(), httpClientHeaders[i].getValue());	
     	}
     	
         return myHeaders;
@@ -149,25 +143,18 @@ public class ResponseImpl implements Response{
      * @see edu.wisc.my.webproxy.beans.http.Response#getStatusCode()
      */
     public int getStatusCode() {
-        return method.getStatusCode();
+        return response.getStatusLine().getStatusCode();
     }
     
     public String getRequestUrl() {
-        try {
-            return method.getURI().toString();
-        }
-        catch (URIException ue) {
-        }
-        
-        return null;
+        return method.getURI().toString();
     }
 
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.Response#close()
      */
     public void close() {
-        method.releaseConnection();
-        
+    	// doesn't seem to be anything to do here
     }
 
 }

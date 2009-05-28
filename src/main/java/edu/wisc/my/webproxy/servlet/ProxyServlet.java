@@ -62,13 +62,12 @@ import edu.wisc.my.webproxy.beans.config.ConfigUtils;
 import edu.wisc.my.webproxy.beans.config.GeneralConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl;
-import edu.wisc.my.webproxy.beans.http.Header;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
+import edu.wisc.my.webproxy.beans.http.HttpManagerService;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
+import edu.wisc.my.webproxy.beans.http.IHeader;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
-import edu.wisc.my.webproxy.beans.http.State;
-import edu.wisc.my.webproxy.beans.http.StateStore;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
 import edu.wisc.my.webproxy.portlet.ApplicationContextLocator;
@@ -168,30 +167,11 @@ public class ProxyServlet extends HttpServlet {
             }
         }
 
+        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+        
         //Get Persisted HTTP State
-        State httpState;
-        final String sharedStateKey = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, null), null);
-        if (sharedStateKey != null)
-            httpState = (State)portletSession.getAttribute(sharedStateKey);
-        else
-            httpState = (State)portletSession.getAttribute(prefix + WebproxyConstants.CURRENT_STATE + sufix);
+        HttpManager httpManager = findingService.findManager(request, prefs, portletSession);
 
-        final boolean sessionPersistenceEnabled = new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
-        if (sessionPersistenceEnabled && httpState == null) {
-            final StateStore stateStore = (StateStore)context.getBean("StateStore", StateStore.class);
-            if (stateStore != null) {
-                final String stateKey;
-                if (sharedStateKey != null)
-                    stateKey = WebProxyPortlet.generateStateKey(sharedStateKey, namespace);
-                else
-                    stateKey = WebProxyPortlet.generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
-
-                httpState = stateStore.getState(stateKey);
-            }
-        }
-
-
-        final HttpManager httpManager = (HttpManager)context.getBean("HttpManagerBean", HttpManager.class);
         Response httpResponse = null;
         try {
             httpManager.setup(prefs);
@@ -202,9 +182,6 @@ public class ProxyServlet extends HttpServlet {
                 //create request object
                 final Request httpRequest = httpManager.createRequest();
 
-                //set the state on the request object     
-                httpRequest.setState(httpState);
-
                 //set URL in request
                 httpRequest.setUrl(url);
 
@@ -212,16 +189,14 @@ public class ProxyServlet extends HttpServlet {
                 final String[] headerNames = prefs.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                 final String[] headerValues = prefs.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                 if (headerNames.length == headerValues.length) {
-                    final List<Header> headerList = new ArrayList<Header>(headerNames.length);
+                    final List<IHeader> headerList = new ArrayList<IHeader>(headerNames.length);
 
                     for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
-                        final Header h = httpRequest.createHeader();
-                        h.setName(headerNames[headerIndex]);
-                        h.setValue(headerValues[headerIndex]);
+                        final IHeader h = httpRequest.createHeader(headerNames[headerIndex], headerValues[headerIndex]);
                         headerList.add(h);
                     }
 
-                    httpRequest.setHeaders((Header[])headerList.toArray(new Header[headerList.size()]));
+                    httpRequest.setHeaders((IHeader[])headerList.toArray(new IHeader[headerList.size()]));
                 }
                 else {
                     LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
@@ -344,7 +319,7 @@ public class ProxyServlet extends HttpServlet {
             }
 
             //Find Content-Length header and set it on output stream if found
-            Header[] headers = httpResponse.getHeaders();
+            IHeader[] headers = httpResponse.getHeaders();
             for (int index = 0; index < headers.length; index++) {
                 if ("Content-Length".equals(headers[index].getName())) {
                     try {

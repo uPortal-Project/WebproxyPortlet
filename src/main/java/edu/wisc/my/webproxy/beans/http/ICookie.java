@@ -46,7 +46,7 @@ import java.util.Date;
  * @version $Id$ 
  * 
  */
-public interface Cookie extends Serializable {
+public interface ICookie extends Serializable {
 	
 	/**
      * Returns the comment describing the purpose of this cookie, or
@@ -104,7 +104,7 @@ public interface Cookie extends Serializable {
      * @see #setSecure(boolean)
      */
     
-    boolean getSecure();
+    boolean isSecure();
     
     /**
      * Returns true if this cookie has expired.
@@ -202,13 +202,5 @@ public interface Cookie extends Serializable {
     
     void setVersion(int v);
     
-    /**
-     * Set the name.
-     *
-     * @param name The new name
-     * @see #getName()
-     */
-    
-    void setName(String name);
 }
 

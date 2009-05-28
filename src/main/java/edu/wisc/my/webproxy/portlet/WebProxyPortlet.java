@@ -66,6 +66,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.portlet.context.PortletApplicationContextUtils;
 import org.xml.sax.InputSource;
@@ -86,16 +89,13 @@ import edu.wisc.my.webproxy.beans.config.StaticHtmlConfigImpl;
 import edu.wisc.my.webproxy.beans.filtering.ChainingSaxFilter;
 import edu.wisc.my.webproxy.beans.filtering.HtmlOutputFilter;
 import edu.wisc.my.webproxy.beans.filtering.HtmlParser;
-import edu.wisc.my.webproxy.beans.http.Credentials;
-import edu.wisc.my.webproxy.beans.http.Header;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
+import edu.wisc.my.webproxy.beans.http.HttpManagerService;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
-import edu.wisc.my.webproxy.beans.http.NtCredentials;
+import edu.wisc.my.webproxy.beans.http.IHeader;
 import edu.wisc.my.webproxy.beans.http.ParameterPair;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
-import edu.wisc.my.webproxy.beans.http.State;
-import edu.wisc.my.webproxy.beans.http.StateStore;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
 import edu.wisc.my.webproxy.servlet.ProxyServlet;
@@ -203,6 +203,7 @@ public class WebProxyPortlet extends GenericPortlet {
         //ContextLoaderListener which is configured in the web.xml for
         //this portlet
         final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
+        ApplicationContextLocator.setApplicationContext(context);
 
         //retrieve portlet preferences from PortletPreferencesWrapper object
         // substitution
@@ -242,7 +243,8 @@ public class WebProxyPortlet extends GenericPortlet {
         else
             sRequestType = null;
 
-        final HttpManager httpManager = (HttpManager)context.getBean("HttpManagerBean", HttpManager.class);
+        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+        final HttpManager httpManager = findingService.findManager(request);
         httpManager.setRenderData(request, response);
 
         this.doFormAuth(httpManager, request);
@@ -265,21 +267,15 @@ public class WebProxyPortlet extends GenericPortlet {
             }
         }
 
-        //Get Persisted HTTP State
-        State httpState = this.getState(request);
-
         Response httpResponse = null;
         try {
             boolean redirect = true;
             final int maxRedirects = ConfigUtils.parseInt(myPreferences.getValue(HttpClientConfigImpl.MAX_REDIRECTS, null), 5);
             for (int index = 0; index < maxRedirects && redirect; index++) {
+                this.doHttpAuth(request, httpManager);
+
                 //create request object
                 final Request httpRequest = httpManager.createRequest();
-
-                //set the state on the request object     
-                httpRequest.setState(httpState);
-
-                this.doHttpAuth(request, httpRequest);
 
                 //set URL in request
                 httpRequest.setUrl(sUrl);
@@ -288,16 +284,14 @@ public class WebProxyPortlet extends GenericPortlet {
                 final String[] headerNames = myPreferences.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                 final String[] headerValues = myPreferences.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                 if (headerNames.length == headerValues.length) {
-                    final List<Header> headerList = new ArrayList<Header>(headerNames.length);
+                    final List<IHeader> headerList = new ArrayList<IHeader>(headerNames.length);
                     
                     for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
-                        final Header h = httpRequest.createHeader();
-                        h.setName(headerNames[headerIndex]);
-                        h.setValue(headerValues[headerIndex]);
+                        final IHeader h = httpRequest.createHeader(headerNames[headerIndex], headerValues[headerIndex]);
                         headerList.add(h);
                     }
                     
-                    httpRequest.setHeaders(headerList.toArray(new Header[headerList.size()]));
+                    httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
                 }
                 else {
                     LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
@@ -435,10 +429,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 }
            
                 //store the state
-                httpState = httpResponse.getState();
-                if (httpState != null) {
-                    this.storeState(request, httpState);
-                }
+                findingService.saveHttpManager(request, httpManager);
 
                 //Check to see if redirected
                 final String tempUrl = checkRedirect(sUrl, httpResponse);
@@ -615,7 +606,7 @@ public class WebProxyPortlet extends GenericPortlet {
      * @param portletRequest
      * @param httpRequest
      */
-    private void doHttpAuth(final PortletRequest portletRequest, Request httpRequest) {
+    private void doHttpAuth(final PortletRequest portletRequest, HttpManager manager) {
         final PortletPreferences myPreferences = new PortletPreferencesWrapper(portletRequest.getPreferences(), (Map)portletRequest.getAttribute(PortletRequest.USER_INFO));
 
         final boolean authEnabled = new Boolean(myPreferences.getValue(HttpClientConfigImpl.AUTH_ENABLE, null)).booleanValue();
@@ -634,7 +625,7 @@ public class WebProxyPortlet extends GenericPortlet {
 
             final Credentials creds;
             if (HttpClientConfigImpl.AUTH_TYPE_BASIC.equals(authType)) {
-                creds = new Credentials(userName, password);
+                creds = new UsernamePasswordCredentials(userName, password);
             }
             else {
                 String domain = (String)session.getAttribute(HttpClientConfigImpl.DOMAIN);
@@ -643,14 +634,10 @@ public class WebProxyPortlet extends GenericPortlet {
 
                 final String host = portletRequest.getProperty("REMOTE_HOST");
 
-                creds = new NtCredentials(userName, password, domain, host);
+                creds = new NTCredentials(userName, password, domain, host);
             }
 
-            final State httpState = httpRequest.getState();
-            httpState.setUserCredentials(creds);
-
-            httpRequest.setState(httpState);
-            httpRequest.setAuthType(authType);
+            manager.setCredentials(creds);
         }
     }
 
@@ -726,10 +713,6 @@ public class WebProxyPortlet extends GenericPortlet {
 
             authPost.setType(WebproxyConstants.POST_REQUEST);
 
-            final State storedState = this.getState(request);
-            if (storedState != null)
-                authPost.setState(storedState);
-
             final String authUrl = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.AUTH_URL, ""), "");
             authPost.setUrl(authUrl);
 
@@ -741,11 +724,7 @@ public class WebProxyPortlet extends GenericPortlet {
             //Check for redirect
             final String redirUrl = checkRedirect(authUrl, authResponse);
             //Get new State
-            final State postState = authResponse.getState();
-            //save the new state
-            if (postState != null) {
-                this.storeState(request, postState);
-            }
+            // TODO: save state
 
             //close response
             authResponse.close();
@@ -866,13 +845,15 @@ public class WebProxyPortlet extends GenericPortlet {
             //ContextLoaderListener which is configured in the web.xml for
             //this portlet
             final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
+            ApplicationContextLocator.setApplicationContext(context);
 
             if (request.getPortletMode().equals(WebproxyConstants.CONFIG_MODE)) {
                 this.processConfigAction(request, response);
                 return;
             }
             
-            final HttpManager httpManager = (HttpManager)context.getBean("HttpManagerBean", HttpManager.class);
+            HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+            final HttpManager httpManager = findingService.findManager(request);
             httpManager.setActionData(request, response);
 
 
@@ -899,19 +880,17 @@ public class WebProxyPortlet extends GenericPortlet {
             this.doFormAuth(httpManager, request);
 
             String sContentType = null;
-            State persistedState = this.getState(request);
+
             Response httpResponse = null;
             try {
                 boolean redirect = true;
                 final int maxRedirects = ConfigUtils.parseInt(pp.getValue(HttpClientConfigImpl.MAX_REDIRECTS, null), 5);
                 
                 for (int index = 0; index < maxRedirects && redirect; index++) {
+                    this.doHttpAuth(request, httpManager);
+
                     //create request object
                     final Request httpRequest = httpManager.createRequest();
-
-                    httpRequest.setState(persistedState);
-
-                    this.doHttpAuth(request, httpRequest);
 
                     //set URL in request
                     httpRequest.setUrl(sUrl);
@@ -922,16 +901,14 @@ public class WebProxyPortlet extends GenericPortlet {
                     final String[] headerNames = pp.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
                     final String[] headerValues = pp.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
                     if (headerNames.length == headerValues.length) {
-                        final List<Header> headerList = new ArrayList<Header>(headerNames.length);
+                        final List<IHeader> headerList = new ArrayList<IHeader>(headerNames.length);
                         
                         for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
-                            final Header h = httpRequest.createHeader();
-                            h.setName(headerNames[headerIndex]);
-                            h.setValue(headerValues[headerIndex]);
+                            final IHeader h = httpRequest.createHeader(headerNames[headerIndex], headerValues[headerIndex]);
                             headerList.add(h);
                         }
                         
-                        httpRequest.setHeaders(headerList.toArray(new Header[headerList.size()]));
+                        httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
                     }
                     else {
                         LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
@@ -1002,11 +979,7 @@ public class WebProxyPortlet extends GenericPortlet {
                         }
                     }
 
-                    final State state = httpResponse.getState();
-                    if (state != null) {
-                        //   check if portlet was configered to persist sessions
-                        this.storeState(request, state);
-                    }
+                    findingService.saveHttpManager(request, httpManager);
 
                     final String tempUrl = checkRedirect(sUrl, httpResponse);
                     //if not redirect, set redirect to false to break from while
@@ -1248,7 +1221,7 @@ public class WebProxyPortlet extends GenericPortlet {
 
         if ((statusCode == Response.SC_MOVED_TEMPORARILY) || (statusCode == Response.SC_MOVED_PERMANENTLY) || (statusCode == Response.SC_SEE_OTHER)
                 || (statusCode == Response.SC_TEMPORARY_REDIRECT)) {
-            final Header[] headers = httpResponse.getHeaders();
+            final IHeader[] headers = httpResponse.getHeaders();
 
             for (int index = 0; index < headers.length; index++) {
                 if ("location".equalsIgnoreCase(headers[index].getName())) {
@@ -1303,60 +1276,4 @@ public class WebProxyPortlet extends GenericPortlet {
         return backButton.toString();
     }
     
-    private State getState(PortletRequest request) {
-        final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
-        final PortletSession session = request.getPortletSession();
-        final PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
-        
-        State httpState;
-        final String sharedStateKey = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, null), null);
-        if (sharedStateKey != null)
-            httpState = (State)session.getAttribute(sharedStateKey, PortletSession.APPLICATION_SCOPE);
-        else
-            httpState = (State)session.getAttribute(WebproxyConstants.CURRENT_STATE);
-        
-        final boolean sessionPersistenceEnabled = new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
-        if (sessionPersistenceEnabled && httpState == null) {
-            final StateStore stateStore = (StateStore)context.getBean("StateStore", StateStore.class);
-            if (stateStore != null) {
-                final String namespace = (String)session.getAttribute(WebproxyConstants.NAMESPACE);
-                final String stateKey;
-                if (sharedStateKey != null)
-                    stateKey = generateStateKey(sharedStateKey, namespace);
-                else
-                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
-                
-                httpState = stateStore.getState(stateKey);
-            }
-        }
-        
-        return httpState;
-    }
-    
-    private void storeState(PortletRequest request, State state) {
-        final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
-        final PortletSession session = request.getPortletSession();
-        final PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
-
-        final String sharedStateKey = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, null), null);
-        if (sharedStateKey != null)
-            session.setAttribute(sharedStateKey, state, PortletSession.APPLICATION_SCOPE);
-        else
-            session.setAttribute(WebproxyConstants.CURRENT_STATE, state);
-
-        final boolean sessionPersistenceEnabled = new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
-        if (sessionPersistenceEnabled) {
-            final StateStore stateStore = (StateStore)context.getBean("StateStore", StateStore.class);
-            if (stateStore != null) {
-                final String namespace = (String)session.getAttribute(WebproxyConstants.NAMESPACE);
-                final String stateKey;
-                if (sharedStateKey != null)
-                    stateKey = generateStateKey(sharedStateKey, namespace);
-                else
-                    stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
-    
-                stateStore.storeState(stateKey, state);
-            }
-        }
-    }
 }

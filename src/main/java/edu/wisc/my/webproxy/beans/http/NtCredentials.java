@@ -36,14 +36,14 @@ package edu.wisc.my.webproxy.beans.http;
 
 
 /**
- * {@link Credentials} for use with the NTLM authentication scheme which requires additional
+ * {@link ICredentials} for use with the NTLM authentication scheme which requires additional
  * information
  * 
  * @author Eric Dalquist <a href="mailto:edalquist@unicon.net">edalquist@unicon.net</a>
  * 
  * @version $Revision$
  */
-public class NtCredentials extends Credentials {
+public class NtCredentials extends ICredentials {
     private String domain;
     private String host;
     

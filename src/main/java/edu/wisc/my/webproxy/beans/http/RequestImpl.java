@@ -48,9 +48,9 @@ package edu.wisc.my.webproxy.beans.http;
  * @version $Id$
  */
 public class RequestImpl implements Request {
-    private State state;
+
     private ParameterPair[] postAttributes;
-    private Header[] headers;
+    private IHeader[] headers;
     private String url;
     private String type;
     private String authType;
@@ -67,8 +67,7 @@ public class RequestImpl implements Request {
      * @param type
      * @param authType
      */
-    public RequestImpl(State state, ParameterPair[] postAtributes, Header[] headers, String url, String type, String authType) {
-        this.setState(state);
+    public RequestImpl(ParameterPair[] postAtributes, IHeader[] headers, String url, String type, String authType) {
         this.setParameters(postAtributes);
         this.setHeaders(headers);
         this.setUrl(url);
@@ -76,35 +75,17 @@ public class RequestImpl implements Request {
         this.setAuthType(authType);
     }
 
-    /* (non-Javadoc)
-     * @see edu.wisc.my.webproxy.beans.http.Request#setState(edu.wisc.my.webproxy.beans.http.State)
-     */
-    public void setState(State s) {
-        this.state = s;
-
-    }
-
-    /* (non-Javadoc)
-     * @see edu.wisc.my.webproxy.beans.http.Request#getState()
-     */
-    public State getState() {
-        if (state == null)
-            state = new HttpClientStateImpl();
-
-        return state;
-    }
-
     /**
-     * @see edu.wisc.my.webproxy.beans.http.Request#addHeaders(edu.wisc.my.webproxy.beans.http.Header[])
+     * @see edu.wisc.my.webproxy.beans.http.Request#addHeaders(edu.wisc.my.webproxy.beans.http.IHeader[])
      */
-    public void setHeaders(Header[] h) {
+    public void setHeaders(IHeader[] h) {
         headers = h;
     }
 
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.Request#getHeaders()
      */
-    public Header[] getHeaders() {
+    public IHeader[] getHeaders() {
         return this.headers;
     }
 
@@ -139,8 +120,8 @@ public class RequestImpl implements Request {
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.Request#createHeader()
      */
-    public Header createHeader() {
-        return new HeaderImpl();
+    public IHeader createHeader(String name, String value) {
+        return new HeaderImpl(name, value);
     }
 
     /* (non-Javadoc)

@@ -70,22 +70,13 @@ public interface Response {
     String getContentType();
     
     /** 
-     * Retrieves the (@link State) that this reponse object contains.
-     *
-     * @return state the (@link State) that this response object contains.
-     * 
-     */
-    
-    State getState();
-    
-    /** 
      * Retrieves all the response headers as an array of Headers
      *
      * @return headers an array of response headers.
      * 
      */
     
-    Header[] getHeaders();
+    IHeader[] getHeaders();
     
     /** 
      * Retrieves the status code that is returned when a request is made

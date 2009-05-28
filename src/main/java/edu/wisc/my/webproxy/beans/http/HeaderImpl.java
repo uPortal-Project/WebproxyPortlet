@@ -39,7 +39,8 @@
  */
 package edu.wisc.my.webproxy.beans.http;
 
-import org.apache.commons.httpclient.Header;
+import org.apache.http.message.BasicHeader;
+
 
 /**
  * This class is the implementation of the methods defined in the (@link edu.wisc.my.webproxy.beans.http.Header) interface
@@ -48,14 +49,8 @@ import org.apache.commons.httpclient.Header;
  *
  * @version $Id$
  */
-public class HeaderImpl implements edu.wisc.my.webproxy.beans.http.Header {
-    private Header httpClientHeader;
-
-    //Default Constructor
-    public HeaderImpl() {
-        Header header = new Header();
-        this.httpClientHeader = header;
-    }
+public class HeaderImpl implements edu.wisc.my.webproxy.beans.http.IHeader {
+    private BasicHeader httpClientHeader;
 
     /**
      * The constructor with the name and value arguments.
@@ -64,7 +59,7 @@ public class HeaderImpl implements edu.wisc.my.webproxy.beans.http.Header {
      * @param value
      */
     public HeaderImpl(String name, String value) {
-        Header header = new Header(name, value);
+        BasicHeader header = new BasicHeader(name, value);
         this.httpClientHeader = header;
     }
 
@@ -80,21 +75,6 @@ public class HeaderImpl implements edu.wisc.my.webproxy.beans.http.Header {
      */
     public String getValue() {
         return this.httpClientHeader.getValue();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.wisc.my.webproxy.beans.http.Header#setName(java.lang.String)
-     */
-    public void setName(String name) {
-        this.httpClientHeader.setName(name);
-
-    }
-
-    /* (non-Javadoc)
-     * @see edu.wisc.my.webproxy.beans.http.Header#setValue(java.lang.String)
-     */
-    public void setValue(String value) {
-        this.httpClientHeader.setValue(value);
     }
 
 }

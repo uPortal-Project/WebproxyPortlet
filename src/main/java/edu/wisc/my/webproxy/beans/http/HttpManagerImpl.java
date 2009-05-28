@@ -41,19 +41,28 @@
 package edu.wisc.my.webproxy.beans.http;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.portlet.PortletPreferences;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
@@ -65,63 +74,59 @@ import edu.wisc.my.webproxy.portlet.WebproxyConstants;
  * @version $Id$
  */
 public final class HttpManagerImpl extends HttpManager {
-    private final HttpClient client = new HttpClient();
+    private DefaultHttpClient client;
+    
+    /**
+     * Default constructor
+     */
+    public HttpManagerImpl() {
+    }
 
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.HttpManager#doRequest(edu.wisc.my.webproxy.beans.http.Request)
      */
     public Response doRequest(Request request) throws HttpTimeoutException, IOException {
-        final HttpMethod method;
-        String requestType = request.getType();
+
+    	// get the request type
+    	String requestType = request.getType();
         int indx = requestType.indexOf('#');
         if (indx != -1)
         {
-        requestType = requestType.substring(0, indx);    
+        	requestType = requestType.substring(0, indx);    
         }
+        
+        // construct the HttpUriRequest
+        final HttpUriRequest method;
         if (WebproxyConstants.GET_REQUEST.equals(requestType)) {
-            method = new GetMethod(request.getUrl());
+            method = new HttpGet(request.getUrl());
         }
         else if (WebproxyConstants.POST_REQUEST.equals(requestType)) {
-            method = new PostMethod(request.getUrl());
+            method = new HttpPost(request.getUrl());
             
+            // append any parameters to the post request
             final ParameterPair[] postParameters = request.getParameters();
             if (postParameters != null) {
-                final NameValuePair[] realParameters = new NameValuePair[postParameters.length];
-                
+                List<NameValuePair> realParameters = new ArrayList<NameValuePair>();
                 for (int index = 0; index < postParameters.length; index++) {
-                    realParameters[index] = new NameValuePair(postParameters[index].getName(), postParameters[index].getValue());
+                    realParameters.add(new BasicNameValuePair(postParameters[index].getName(), postParameters[index].getValue()));
                 }
     
-                ((PostMethod)method).addParameters(realParameters);
+                ((HttpPost) method).setEntity(new UrlEncodedFormEntity(realParameters));
             }
         }
         else if (WebproxyConstants.HEAD_REQUEST.equals(requestType)) {
-            method = new HeadMethod(request.getUrl());
+            method = new HttpHead(request.getUrl());
         }
         else {
             throw new IllegalArgumentException("Unknown request type '" + requestType + "'");
         }
         
-        if (HttpClientConfigImpl.AUTH_TYPE_BASIC.equalsIgnoreCase(request.getAuthType())) {
-            final String username = request.getState().getUserCredentials().getUserName();
-            final String password = request.getState().getUserCredentials().getPassword();
-            
-            // if no username/password on the state object, then get it from the request object
-            if (username == null && password == null) {
-                throw new IllegalArgumentException("Both username and password are null for BASIC authentication");
+        // set any headers on the request method
+        if (request.getHeaders() != null) {
+        	IHeader[] headers = request.getHeaders();
+            for (int index = 0; index < headers.length; index++) {
+                method.setHeader(headers[index].getName(), headers[index].getValue());
             }
-
-            final Credentials creds = new UsernamePasswordCredentials(username, password);
-            client.getState().setCredentials(AuthScope.ANY, creds);
-            method.setDoAuthentication(true);
-        }
-
-        this.setStaticHeaders(request.getHeaders(), method);
-        
-        final State state = request.getState();
-        if (state != null) {
-            org.apache.commons.httpclient.HttpState httpState = ((HttpClientStateImpl)state).getWrappedState();
-            client.setState(httpState);
         }
         
         return new ResponseImpl(method, client);
@@ -130,6 +135,7 @@ public final class HttpManagerImpl extends HttpManager {
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.HttpManager#createRequest()
      */
+    @Override
     public Request createRequest() {
         return new RequestImpl();
     }
@@ -150,28 +156,108 @@ public final class HttpManagerImpl extends HttpManager {
     /*
      * @see edu.wisc.my.webproxy.beans.http.HttpManager#setup(javax.portlet.PortletPreferences)
      */
+    @Override
     public void setup(PortletPreferences prefs) {
+
+    	// get a new HttpClient instance
+    	client = createHttpClient(prefs);
+
         //Configure connection timeout
+    	HttpParams params = client.getParams();
         final String httpTimeoutStr = prefs.getValue(HttpClientConfigImpl.HTTP_TIMEOUT, "");
         try {
             final int httpTimeout = Integer.parseInt(httpTimeoutStr);
-            this.client.getHttpConnectionManager().getParams().setConnectionTimeout(httpTimeout * 1000);
+            HttpConnectionParams.setConnectionTimeout(params, httpTimeout * 1000);
         }
         catch (NumberFormatException nfe) {
             
         }
         
+        // configure circular redirects
         final String circularRedirectsStr = prefs.getValue(HttpClientConfigImpl.CIRCULAR_REDIRECTS, null);
         if (circularRedirectsStr != null) {
-            this.client.getParams().setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.valueOf(circularRedirectsStr));
+        	params.setBooleanParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, Boolean.valueOf(circularRedirectsStr));
         }
     }
 
-    private void setStaticHeaders(Header[] headers, HttpMethod method) {
-        if (headers != null) {
-            for (int index = 0; index < headers.length; index++) {
-                method.setRequestHeader(headers[index].getName(), headers[index].getValue());
-            }
+    /*
+     * (non-Javadoc)
+     * @see edu.wisc.my.webproxy.beans.http.HttpManager#addCookie(org.apache.http.cookie.Cookie)
+     */
+	@Override
+	public void addCookie(Cookie cookie) {
+		client.getCookieStore().addCookie(cookie);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see edu.wisc.my.webproxy.beans.http.HttpManager#addCookies(org.apache.http.cookie.Cookie[])
+	 */
+	@Override
+	public void addCookies(Cookie[] cookies) {
+		for (Cookie cookie : cookies) { 
+			client.getCookieStore().addCookie(cookie);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see edu.wisc.my.webproxy.beans.http.HttpManager#clearCookies()
+	 */
+	@Override
+	public void clearCookies() {
+		client.getCookieStore().clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see edu.wisc.my.webproxy.beans.http.HttpManager#getCookies()
+	 */
+	@Override
+	public List<Cookie> getCookies() {
+		return client.getCookieStore().getCookies();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see edu.wisc.my.webproxy.beans.http.HttpManager#getCredentials()
+	 */
+	@Override
+	public Credentials getCredentials() {
+		return client.getCredentialsProvider().getCredentials(AuthScope.ANY);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see edu.wisc.my.webproxy.beans.http.HttpManager#setCredentials(org.apache.http.auth.Credentials)
+	 */
+	@Override
+	public void setCredentials(Credentials credentials) {
+
+        // if no username/password on the state object, then get it from the request object
+        if (credentials.getUserPrincipal() == null && credentials.getPassword() == null) {
+            throw new IllegalArgumentException("Both username and password are null for BASIC authentication");
         }
-    }
+
+        client.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
+
+	}
+	
+	/**
+	 * Create a new HttpClient instance using the available portlet preferences.
+	 * This method may be used by subclasses to provide an alternate instance
+	 * of DefaultHttpClient.  The returned client should be sure to  use a 
+	 * thread-safe client connection manager.
+	 * 
+	 * @param prefs
+	 * @return new DefaultHttpClient instance
+	 */
+	protected DefaultHttpClient createHttpClient(PortletPreferences prefs) {
+		// construct a new DefaultHttpClient backed by a ThreadSafeClientConnManager
+	    DefaultHttpClient client = new DefaultHttpClient ();
+	    SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+	    HttpParams params = new BasicHttpParams();
+	    return new DefaultHttpClient (new ThreadSafeClientConnManager(params, registry), params); 
+	}
+	
 }

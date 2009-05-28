@@ -36,6 +36,7 @@
 package edu.wisc.my.webproxy.beans.http;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -44,6 +45,9 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import org.apache.http.auth.Credentials;
+import org.apache.http.cookie.Cookie;
 
 import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
 import edu.wisc.my.webproxy.beans.config.ProxyComponent;
@@ -83,13 +87,54 @@ public abstract class HttpManager implements ProxyComponent {
     /**
      * Responsible for setting up the HttpManager. This component must be
      * callable from a servlet as well so the portlet request and response
-     * methods are not available. 
+     * methods are not available.
+     * 
+     * This method *must* be called prior to attempting to use the HttpManager.
      * 
      * @param prefs The preferences to use for configuration.
      */
     public abstract void setup(PortletPreferences prefs);
     
+    /**
+     * Set the user authentication credentials.
+     * 
+     * @param credentials
+     */
+    public abstract void setCredentials(Credentials credentials);
     
+    /**
+     * Return the user authentication credentials.
+     * 
+     * @return
+     */
+    public abstract Credentials getCredentials();
+    
+    /**
+     * Add a cookie to the HttpManager.
+     * 
+     * @param cookie
+     */
+    public abstract void addCookie(Cookie cookie);
+    
+    /**
+     * Add an array of cookies to the HttpManager.
+     * 
+     * @param cookie
+     */
+    public abstract void addCookies(Cookie[] cookie);
+    
+    /**
+     * Clear all cookies currently available in the HttpManager.
+     */
+    public abstract void clearCookies();
+    
+    /**
+     * Return a list of all currently set cookies in the HttpManager.
+     * 
+     * @return
+     */
+    public abstract List<Cookie> getCookies();
+
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.config.ProxyComponent#setRenderData(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
      */
@@ -103,5 +148,6 @@ public abstract class HttpManager implements ProxyComponent {
     public final void setActionData(ActionRequest request, ActionResponse response) {
         this.setup(new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO)));
     }
+    
 }
 

@@ -47,38 +47,18 @@ package edu.wisc.my.webproxy.beans.http;
 public interface Request {
 	
 	/** 
-     * Sets the saved state on this object.
-     * It may be null
-     *
-     * @param s the State that needs to be set to kepp track of the session.
-     * 
-     */
-	
-    void setState(State s);
-    
-    /** 
-     * Retrieves the state that this  object contains
-     * It may be null
-     *
-     * @return state the State that this object contains.
-     * 
-     */
-    
-    State getState();
-    
-	/** 
      * Sets the Static Headers to this object 
      *
      * @param h the Headers to use for the request
      */
-    void setHeaders(Header[] h);
+    void setHeaders(IHeader[] h);
     
     /** 
      * Retrieves an array of Headers that this  object contains.
      *
      * @return Header[] an array of Headers that this object contains.
      */
-    Header[] getHeaders();
+    IHeader[] getHeaders();
     
     /** 
      * Sets the  base url that is needed to make the request.
@@ -127,7 +107,7 @@ public interface Request {
      * 
      */
     
-    Header createHeader();
+    IHeader createHeader(String name, String value);
     
     /** 
      * Sets all the post parameters on this object contained in map to make a post request

@@ -45,9 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import edu.wisc.my.webproxy.beans.http.Request;
 
 /**
- * A pre-interceptor is run afte rthe portlet has a full Request object created
+ * A pre-interceptor is run after the portlet has a full Request object created
  * to allow user code to take actions on that object before it is used to make
- * ht HTTP request to the remote application
+ * the HTTP request to the remote application
  */
 
 
@@ -60,7 +60,7 @@ public interface PreInterceptor {
     void intercept(RenderRequest request, RenderResponse response, Request httpResp);
 
     /**
-     * This intercept method is called for requests that happend during the action
+     * This intercept method is called for requests that happen during the action
      * of a portlet
      */
     void intercept(ActionRequest request, ActionResponse response, Request httpReq);

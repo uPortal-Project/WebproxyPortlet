@@ -35,35 +35,88 @@
 *******************************************************************************/
 package edu.wisc.my.webproxy.beans.http;
 
-
+import java.io.Serializable;
 
 /**
- * Defines methods used to store and retrieve a State object from
- * a persistent store.
+ * Represents a authentication credentials that is passed to remote
+ * application. This only applies to the Basic, Digest and NTLM forms of
+ * authentication.
  * 
- * @author Eric Dalquist <a href="mailto:edalquist@unicon.net">edalquist@unicon.net</a>
+ * @author nramzan
+ * 
  * @version $Id$
+ * 
  */
-public interface StateStore {
-    /**
-     * @param key Key to store the State with. Implementations must allow key lenghts up to 2000 characters, may not be null.
-     * @param state State to store, may not be null.
-     */
-    public void storeState(String key, State state);
+public class ICredentials implements Serializable {
+    
+    private String userName = null;
+    private String password = null;
     
     /**
-     * @param key Key to get the State for. Implementations must allow key lenghts up to 2000 characters, may not be null.
-     * @return Returns null if no State exists for the key.
+     * Default constructor.
+     * 
      */
-    public State getState(String key);
+    
+    public ICredentials() {
+        
+    }
     
     /**
-     * @param key Key to delete State for. Implementations must allow key lenghts up to 2000 characters, may not be null.
+     * The constructor with the username and password arguments.
+     *
+     * @param userName the user name
+     * @param password the password
      */
-    public void deleteState(String key);
+    
+    public ICredentials(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    /**
+     * Returns the password attribute.
+     *
+     * @return the password
+     * @see #setPassword(String)
+     */
+    
+    public String getPassword() {
+        return password;
+        
+    /**
+     * Password property setter. Password may not be null
+     *
+     * @param password
+     * @see #getPassword()
+     * 
+     */    
+        
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
     
     /**
-     * Removes all State objects from the store.
+     * Returns the username attribute.
+     *
+     * @return the userName
+     * @see #setUserName(String)
      */
-    public void clearAll();
+    
+    public String getUserName() {
+        return userName;
+    }
+    
+    /**
+     * User name property setter. Username may not be null.
+     *
+     * @param userName
+     * @see #getUserName()
+     * 
+     */
+    
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }
+

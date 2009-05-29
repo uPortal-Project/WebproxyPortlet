@@ -37,11 +37,9 @@ package edu.wisc.my.webproxy.beans.http;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -49,7 +47,6 @@ import javax.portlet.RenderResponse;
 import org.apache.http.auth.Credentials;
 import org.apache.http.cookie.Cookie;
 
-import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
 import edu.wisc.my.webproxy.beans.config.ProxyComponent;
 
 /**
@@ -93,7 +90,7 @@ public abstract class HttpManager implements ProxyComponent {
      * 
      * @param prefs The preferences to use for configuration.
      */
-    public abstract void setup(PortletPreferences prefs);
+    public abstract void setup(PortletRequest request);
     
     /**
      * Set the user authentication credentials.
@@ -139,14 +136,14 @@ public abstract class HttpManager implements ProxyComponent {
      * @see edu.wisc.my.webproxy.beans.config.ProxyComponent#setRenderData(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
      */
     public final void setRenderData(RenderRequest request, RenderResponse response) {
-        this.setup(new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO)));
+        this.setup(request);
     }
 
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.config.ProxyComponent#setActionData(javax.portlet.ActionRequest, javax.portlet.ActionResponse)
      */
     public final void setActionData(ActionRequest request, ActionResponse response) {
-        this.setup(new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO)));
+        this.setup(request);
     }
     
 }

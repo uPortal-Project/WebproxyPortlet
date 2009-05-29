@@ -167,14 +167,13 @@ public class ProxyServlet extends HttpServlet {
             }
         }
 
-        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
         
         //Get Persisted HTTP State
         HttpManager httpManager = findingService.findManager(request, prefs, portletSession);
 
         Response httpResponse = null;
         try {
-            httpManager.setup(prefs);
 
             boolean redirect = true;
             final int maxRedirects = ConfigUtils.parseInt(prefs.getValue(HttpClientConfigImpl.MAX_REDIRECTS, null), 5);

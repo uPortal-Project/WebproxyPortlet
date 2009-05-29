@@ -11,6 +11,8 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,8 @@ import edu.wisc.my.webproxy.servlet.ProxyServlet;
  * @author Jen Bourey, jbourey@unicon.net
  */
 public class HttpManagerService {
+	
+	private Log log = LogFactory.getLog(HttpManagerService.class);
 
 	private IWebProxyStateDao webProxyStateDao;
 	
@@ -62,7 +66,7 @@ public class HttpManagerService {
         // if no manager could be found in the session, create a new one
         if (httpManager == null) {
             httpManager = (HttpManager)context.getBean("HttpManagerBean", HttpManager.class);
-            httpManager.setup(request.getPreferences());
+            httpManager.setup(request);
         }
         
         // if session persistence is enabled, attempt to get any persisted cookies
@@ -155,7 +159,6 @@ public class HttpManagerService {
      * @return
      */
 	public HttpManager findManager(HttpServletRequest request, PortletPreferences prefs, HttpSession session) {
-        ApplicationContext context = ApplicationContextLocator.getApplicationContext();
         final String sharedStateKey = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, null), null);
         final String prefix = request.getParameter(ProxyServlet.NAMESPACE_PREFIX_PARAM);
         final String sufix = request.getParameter(ProxyServlet.NAMESPACE_SUFIX_PARAM);
@@ -167,39 +170,13 @@ public class HttpManagerService {
         else
         	httpManager = (HttpManager)session.getAttribute(prefix + WebproxyConstants.CURRENT_STATE + sufix);
 
-        // if no manager could be found in the session, create a new one
+        // if no manager could be found in the session, throw an error
         if (httpManager == null) {
-            httpManager = (HttpManager)context.getBean("HttpManagerBean", HttpManager.class);
-            httpManager.setup(prefs);
+            IllegalStateException ise = new IllegalStateException("No HttpManager found in the current session");
+            log.error(ise, ise);
+            throw ise;
         }
         
-        // if session persistence is enabled, attempt to get any persisted cookies
-        // from the store
-        final boolean sessionPersistenceEnabled = new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
-        if (sessionPersistenceEnabled) {
-        	// get state key
-            final String namespace = (String) session.getAttribute(prefix + WebproxyConstants.NAMESPACE + sufix);
-        	final String stateKey;
-        	if (sharedStateKey != null)
-        	    stateKey = generateStateKey(sharedStateKey, namespace);
-        	else
-        	stateKey = generateStateKey(WebproxyConstants.CURRENT_STATE, namespace);
-
-        	IWebProxyState state = webProxyStateDao.getState(stateKey);
-        	if (state != null) {
-        		for (ICookie cookie : state.getCookies()) {
-            		BasicClientCookie c = new BasicClientCookie(cookie.getName(), cookie.getValue());
-            		c.setComment(cookie.getComment());
-            		c.setDomain(cookie.getDomain());
-            		c.setExpiryDate(cookie.getExpiryDate());
-            		c.setPath(cookie.getPath());
-            		c.setSecure(cookie.isSecure());
-            		c.setVersion(cookie.getVersion());
-        			httpManager.addCookie(c);
-        		}
-        	}
-        }
-
     	return httpManager;
 	}
 

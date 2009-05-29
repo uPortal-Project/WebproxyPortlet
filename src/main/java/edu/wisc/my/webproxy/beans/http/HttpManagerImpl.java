@@ -43,9 +43,13 @@ package edu.wisc.my.webproxy.beans.http;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -64,6 +68,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
 
@@ -73,8 +78,11 @@ import edu.wisc.my.webproxy.portlet.WebproxyConstants;
  * @author nramzan
  * @version $Id$
  */
-public final class HttpManagerImpl extends HttpManager {
-    private DefaultHttpClient client;
+public class HttpManagerImpl extends HttpManager {
+
+	private static final Log log = LogFactory.getLog(HttpManagerImpl.class);
+
+	private DefaultHttpClient client;
     
     /**
      * Default constructor
@@ -157,10 +165,12 @@ public final class HttpManagerImpl extends HttpManager {
      * @see edu.wisc.my.webproxy.beans.http.HttpManager#setup(javax.portlet.PortletPreferences)
      */
     @Override
-    public void setup(PortletPreferences prefs) {
+    public void setup(PortletRequest request) {
 
     	// get a new HttpClient instance
-    	client = createHttpClient(prefs);
+    	client = createHttpClient(request);
+    	
+    	PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
 
         //Configure connection timeout
     	HttpParams params = client.getParams();
@@ -252,11 +262,12 @@ public final class HttpManagerImpl extends HttpManager {
 	 * @param prefs
 	 * @return new DefaultHttpClient instance
 	 */
-	protected DefaultHttpClient createHttpClient(PortletPreferences prefs) {
+	protected DefaultHttpClient createHttpClient(PortletRequest request) {
 		// construct a new DefaultHttpClient backed by a ThreadSafeClientConnManager
 	    DefaultHttpClient client = new DefaultHttpClient ();
 	    SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
 	    HttpParams params = new BasicHttpParams();
+	    log.debug("Returning new DefaultHttpClient");
 	    return new DefaultHttpClient (new ThreadSafeClientConnManager(params, registry), params); 
 	}
 	

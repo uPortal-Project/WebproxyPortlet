@@ -243,7 +243,7 @@ public class WebProxyPortlet extends GenericPortlet {
         else
             sRequestType = null;
 
-        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
         final HttpManager httpManager = findingService.findManager(request);
         httpManager.setRenderData(request, response);
 
@@ -852,7 +852,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 return;
             }
             
-            HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerFindingService", HttpManagerService.class);
+            HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
             final HttpManager httpManager = findingService.findManager(request);
             httpManager.setActionData(request, response);
 

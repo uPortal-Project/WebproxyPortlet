@@ -7,6 +7,15 @@
     
     <display-name>Authenticated Web Proxy Portlet</display-name>
 	
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>webproxy.root</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+    
     <!--
      | This loads the applicationContext.xml spring bean config
 	 | when the servlet context starts. The WebApplicationContext

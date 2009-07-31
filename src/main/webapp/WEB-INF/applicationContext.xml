@@ -22,6 +22,12 @@
     </bean>
     
     <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" scope="prototype" />
+<!-- Use this bean for Shibboleth support
+    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.ShibbolethEnabledHttpManagerImpl" scope="prototype">
+      <property name="spPrivateKey" value="C:/JavaClasses/sp-key.pem"/>
+      <property name="spCertificate" value="C:/JavaClasses/sp-cert.pem"/>
+    </bean>
+-->
     <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" scope="prototype" />
     
     <bean id="HttpManagerService" class="edu.wisc.my.webproxy.beans.http.HttpManagerService">

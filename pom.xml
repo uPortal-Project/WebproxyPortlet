@@ -75,6 +75,9 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <properties>
+      <pluto.version>1.1.7</pluto.version>
+    </properties>
     <dependencies>
         <!--
          | Run Time Dependencies
@@ -240,6 +243,12 @@
             <version>0.9.5</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -248,6 +257,20 @@
             <version>2.3</version>
             <type>jar</type>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasig.service</groupId>
+            <artifactId>delegated-saml-authentication</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>xml-apis</artifactId>
+            		<groupId>xml-apis</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <!--
@@ -268,6 +291,7 @@
             <type>jar</type>
             <scope>runtime</scope>
         </dependency>
+        
         
         <!--
          | Provided Dependencies
@@ -339,6 +363,8 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>${pom.artifactId}</finalName>
+    
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -359,6 +385,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-war-plugin</artifactId>
+              <configuration>
+                <webXml>${project.build.directory}/pluto-resources/web.xml</webXml>
+              </configuration>
+            </plugin>
+          
+            <plugin>
+              <groupId>org.apache.pluto</groupId>
+              <artifactId>maven-pluto-plugin</artifactId>
+              <version>${pluto.version}</version>
+              <executions>
+                <execution>
+                  <phase>generate-resources</phase>
+                  <goals>
+                    <goal>assemble</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+
+            
         </plugins>
     </build>
     <reporting>

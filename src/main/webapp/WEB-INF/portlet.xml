@@ -27,7 +27,6 @@
         <portlet-mode>config</portlet-mode>
     </custom-portlet-mode>
 
-
     <user-attribute>
         <description>givenName</description>
         <name>givenName</name>
@@ -72,4 +71,17 @@
         <description>telephoneNumber</description>
         <name>telephoneNumber</name>
     </user-attribute>
+
+<!-- Add the following attributes for Shibboleth support
+    <user-attribute>
+        <description>idpPublicKeys</description>
+        <name>idpPublicKeys</name>
+    </user-attribute>
+
+    <user-attribute>
+        <description>samlAssertion</description>
+        <name>samlAssertion</name>
+    </user-attribute>
+-->
+ 
 </portlet-app>

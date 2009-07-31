@@ -811,7 +811,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 }
             }
             else {
-                throw new IllegalArgumentException("Unknown authType specified '" + authType + "'");
+                return false;
             }
         }
 

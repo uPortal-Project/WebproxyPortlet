@@ -28,8 +28,23 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
 
 	private String spPrivateKey;
 	private String spCertificate;
+	private String portalEntityID;
 
-	public void setSpPrivateKey(String spPrivateKey) {
+	/**
+   * @return the portalEntityID
+   */
+  public String getPortalEntityID() {
+    return portalEntityID;
+  }
+
+  /**
+   * @param portalEntityID the portalEntityID to set
+   */
+  public void setPortalEntityID(String portalEntityID) {
+    this.portalEntityID = portalEntityID;
+  }
+
+  public void setSpPrivateKey(String spPrivateKey) {
 		this.spPrivateKey = spPrivateKey;
 	}
 
@@ -63,6 +78,7 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
         if (authEnabled && AUTH_TYPE_SHIBBOLETH.equals(authType)) {
     		String samlAssertion = getAssertion(request);
     		SAMLSession samlSession = new SAMLSession(samlAssertion);
+    		samlSession.setPortalEntityID(portalEntityID);
 
     		if (spPrivateKey != null && spCertificate != null) {
     			samlSession.setIdPClientPrivateKeyAndCert(spPrivateKey,

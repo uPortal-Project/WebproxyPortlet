@@ -92,6 +92,8 @@ public class HttpClientConfigImpl extends JspConfigPage {
     public static final String AUTH_TYPE_BASIC = "BASIC";
     public static final String AUTH_TYPE_NTLM  = "NTLM";
     public static final String AUTH_TYPE_FORM  = "FORM";
+    public static final String AUTH_TYPE_SHIBBOLETH  = "SHIBBOLETH";
+    public static final String AUTH_TYPE_CAS  = "CAS";
     
     
     public String getName() {
@@ -170,6 +172,10 @@ public class HttpClientConfigImpl extends JspConfigPage {
             prefs.setValue(AUTH_TYPE, AUTH_TYPE_NTLM);
         else if (AUTH_TYPE_FORM.equals(authType))
             prefs.setValue(AUTH_TYPE, AUTH_TYPE_FORM);
+        else if (AUTH_TYPE_SHIBBOLETH.equals(authType))
+            prefs.setValue(AUTH_TYPE, AUTH_TYPE_SHIBBOLETH);
+        else if (AUTH_TYPE_CAS.equals(authType))
+            prefs.setValue(AUTH_TYPE, AUTH_TYPE_CAS);
         else
             errorMessages.append("Invalid authorization type specified '").append(authType).append("'\n");
 

@@ -98,6 +98,7 @@ import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
+import edu.wisc.my.webproxy.beans.security.CasAuthenticationHandler;
 import edu.wisc.my.webproxy.servlet.ProxyServlet;
 import edu.wisc.my.webproxy.servlet.SessionMappingListener;
 
@@ -808,6 +809,23 @@ public class WebProxyPortlet extends GenericPortlet {
                     PortletRequestDispatcher manualLoginDispatch = getPortletContext().getRequestDispatcher(MANUAL);
                     manualLoginDispatch.include(request, response);
                     return true;
+                }
+            }
+            else if (HttpClientConfigImpl.AUTH_TYPE_CAS.equals(authType)) {
+                Boolean authenticated = (Boolean)session.getAttribute(CasAuthenticationHandler.CAS_AUTHENTICATED_SESSION_FLAG);
+                
+                if (authenticated != Boolean.TRUE) {
+                    final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
+                    CasAuthenticationHandler casHandler = (CasAuthenticationHandler) context.getBean("casAuthenticationHandler");
+                    Map userInfo = (Map) request.getAttribute(PortletRequest.USER_INFO);
+                    String myProxyTicket = (String) userInfo.get("casProxyTicket");
+                    String destination = casHandler.authenticate (request, myProxyTicket);
+                    
+                    // The authentication handler is expected to return a URL with a ticket attached
+                    if (destination != null) {
+                        session.setAttribute(GeneralConfigImpl.BASE_URL, destination);
+                        session.setAttribute(CasAuthenticationHandler.CAS_AUTHENTICATED_SESSION_FLAG, Boolean.TRUE);
+                    }
                 }
             }
             else {

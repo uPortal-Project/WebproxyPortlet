@@ -20,7 +20,46 @@
             </list>
         </property>
     </bean>
-    
+
+<!-- The following 4 beans are needed for proxy CAS authentication.  The first 3 are from the
+     Jasig Java CAS Client.
+     proxyStorage is a common storage that the ticket validator and filter use to keep a PGT for a Principal
+     ticketValidator is used to validateWebProxy portlet's proxy ticket and request its own PGT.  In this
+                     example, it is configured to accept any proxy.  Its constructor argument must
+                     be set to the CAS URL.  proxyCallbackUrl must be set to the Web Proxy Portlet's
+                     proxy ticket receptor (configured in web.xml).
+     proxyFilter is a filter that will receive the proxy tickets requested by ticketValidator.  Its
+                 proxyReceptorUrl shown in this example should be sufficient and must be relative to
+                 Web Proxy Portlet's own "base" URL.  The service property is not used by this filter
+                 as it does not perform ticket validation.
+     casAuthenticationHandler is Web Proxy Portlet's own bean that handles the CAS proxy authentication
+                              as per the CAS protocol specification.  The myService property must be
+                              set to the fully-qualified "base" URL of the portlet itself.  It is passed
+                              to CAS for ticket validation, and it must match what uPortal used when it
+                              obtained the proxy ticket for the portlet.
+-->
+<!-- 
+  <bean name="proxyStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl" />
+  
+  <bean id="ticketValidator" class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator">
+    <constructor-arg index="0" value="https://adam3:8443/cas" />
+    <property name="proxyCallbackUrl" value="http://localhost:8080/WebProxyPortlet/CasProxyReceptor" />
+    <property name="acceptAnyProxy" value="true" />
+    <property name="proxyGrantingTicketStorage" ref="proxyStorage" />
+  </bean>
+
+  <bean name="proxyFilter" class="org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter">
+    <property name="service" value="https://my.local.service.com/cas-client" />
+    <property name="proxyReceptorUrl" value="/CasProxyReceptor" />
+    <property name="ticketValidator" ref="ticketValidator" />
+    <property name="proxyGrantingTicketStorage" ref="proxyStorage" />
+  </bean>
+
+  <bean name="casAuthenticationHandler" class="edu.wisc.my.webproxy.beans.security.CasAuthenticationHandler">
+    <property name="ticketValidator" ref="ticketValidator" />
+    <property name="myService" value="http://localhost:8080/WebProxyPortlet" />
+  </bean>
+-->
     <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" scope="prototype" />
 <!-- Use this bean for Shibboleth support
     <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.ShibbolethEnabledHttpManagerImpl" scope="prototype">

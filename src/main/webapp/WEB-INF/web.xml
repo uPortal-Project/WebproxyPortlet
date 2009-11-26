@@ -39,4 +39,31 @@
         <servlet-name>ProxyServlet</servlet-name>
         <url-pattern>/ProxyServlet/*</url-pattern>
     </servlet-mapping>
+
+<!-- The following section should be enabled to add support for proxy CAS authentication
+     The servlet mapping is completely fake and uses the ProxyServlet definition.  The Jasig
+     Java CAS client filter intercepts a call to this endpoint and grabs the proxy ticket
+     received from CAS.
+-->
+<!--
+    <servlet-mapping>
+        <servlet-name>ProxyServlet</servlet-name>
+        <url-pattern>/CasProxyReceptor/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>CAS Proxy Filter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>proxyFilter</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CAS Proxy Filter</filter-name>
+        <url-pattern>/CasProxyReceptor/*</url-pattern>
+    </filter-mapping>
+-->
+     
 </web-app>

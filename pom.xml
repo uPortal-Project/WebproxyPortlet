@@ -77,6 +77,7 @@
     </licenses>
     <properties>
       <pluto.version>1.1.7</pluto.version>
+      <cas.client.version>3.1.9</cas.client.version>
     </properties>
     <dependencies>
         <!--
@@ -287,7 +288,7 @@
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>1.8.0.7</version>
+            <version>1.8.0.10</version>
             <type>jar</type>
             <scope>runtime</scope>
         </dependency>
@@ -360,6 +361,11 @@
                     <artifactId>spring-webmvc</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+        	<groupId>org.jasig.cas</groupId>
+        	<artifactId>cas-client-core</artifactId>
+        	<version>${cas.client.version}</version>
         </dependency>
     </dependencies>
     <build>

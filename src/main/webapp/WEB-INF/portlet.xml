@@ -72,6 +72,14 @@
         <name>telephoneNumber</name>
     </user-attribute>
 
+<!-- Add the following attribute to work with CAS proxy authentication -->
+<!-- 
+    <user-attribute>
+        <description>CAS Proxy Ticket</description>
+        <name>casProxyTicket</name>
+    </user-attribute>
+-->
+
 <!-- Add the following attributes for Shibboleth support
     <user-attribute>
         <description>idpPublicKeys</description>

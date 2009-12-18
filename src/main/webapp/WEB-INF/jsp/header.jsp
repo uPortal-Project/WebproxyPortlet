@@ -2,9 +2,7 @@
 	import="javax.portlet.*, 
 	        java.util.*, 
 	        edu.wisc.my.webproxy.beans.config.*"%>
-<%@ taglib uri='/WEB-INF/tld/portlet.tld' prefix='portlet'%>
-
-<portlet:defineObjects/>
+<%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <style type="text/css">
 	.workbox {

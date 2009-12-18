@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <parent>
+        <groupId>org.jasig</groupId>
+        <artifactId>jasig-parent</artifactId>
+        <version>12</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jasig.portlet</groupId>
     <artifactId>WebProxyPortlet</artifactId>
@@ -9,86 +15,32 @@
     
     <name>Web Proxy Portlet</name>
     <description>Provides web site content inclusion via a JSR-168 portlet.</description>
-    <url>http://developer.ja-sig.org/projects/WebProxyPortlet/</url>
-    <organization>
-        <name>Java Architectures Special Interest Group</name>
-        <url>http://www.ja-sig.org</url>
-    </organization>
-    <inceptionYear>2005</inceptionYear>
+    <url>${jasig-site-base}/WebProxyPortlet/</url>
+
     <issueManagement>
-        <url>http://www.ja-sig.org/issues/browse/WPP</url>
-        <system>Jira</system>
+        <url>${jasig-issues-base}/WPP</url>
+        <system>${jasig-issues-system}</system>
     </issueManagement>
     <scm>
-        <connection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/trunk/</connection>
-        <developerConnection>scm:svn:https://www.ja-sig.org/svn/portlets/WebproxyPortlet/trunk/</developerConnection>
-        <url>http://developer.ja-sig.org/source/browse/jasigsvn/portlets/WebproxyPortlet</url>
+        <connection>${jasig-scm-base-mvn}/portlets/WebproxyPortlet/trunk/</connection>
+        <developerConnection>${jasig-scm-base-mvn}/portlets/WebproxyPortlet/trunk/</developerConnection>
+        <url>${jasig-scm-view-base}/portlets/WebproxyPortlet</url>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>jasig-repository</id>
-            <name>JA-SIG Maven2 Repository</name>
-            <url>scp://developer.ja-sig.org/jasig/htdocs/developer/maven2</url>
-        </repository>
-    </distributionManagement>
+
     <repositories>
         <repository>
-            <id>jasig-repository</id>
-            <name>JA-SIG Maven2 Repository</name>
-            <url>http://developer.ja-sig.org/maven2</url>
+            <id>jasig-m2</id>
+            <name>JASIG Maven2 Repository</name>
+            <url>http://developer.jasig.org/repo/content/repositories/m2</url>
         </repository>
     </repositories>
-    <mailingLists>
-        <mailingList>
-            <name>JA-SIG Portal</name>
-            <subscribe>http://list.unm.edu/cgi-bin/wa?SUBED1=jasig-portal&amp;A=1</subscribe>
-            <unsubscribe>http://list.unm.edu/cgi-bin/wa?SUBED1=jasig-portal&amp;A=1</unsubscribe>
-            <archive>http://list.unm.edu/archives/jasig-portal.html</archive>
-        </mailingList>
-        <mailingList>
-            <name>JA-SIG Developers</name>
-            <subscribe>http://list.unm.edu/cgi-bin/wa?SUBED1=jasig-dev&amp;A=1</subscribe>
-            <unsubscribe>http://list.unm.edu/cgi-bin/wa?SUBED1=jasig-dev&amp;A=1</unsubscribe>
-            <archive>http://list.unm.edu/archives/jasig-dev.html</archive>
-        </mailingList>
-    </mailingLists>
-    <developers>
-        <developer>
-            <name>Eric Dalquist</name>
-            <id>edalquist</id>
-            <email>eric.dalquist@doit.wisc.edu</email>
-            <organization>UW - Madison</organization>
-            <roles>
-                <role>Project Admin</role>
-                <role>Developer</role>
-            </roles>
-            <url>http://www.ja-sig.org/wiki/display/~edalquist</url>
-            <timezone>-6</timezone>
-        </developer>
-    </developers>
-    <contributors>
-    </contributors>
-    <licenses>
-        <license>
-            <name>JA-SIG Collabrative Licence</name>
-            <url>http://www.uportal.org/license.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <properties>
-      <pluto.version>1.1.7</pluto.version>
-      <cas.client.version>3.1.9</cas.client.version>
-    </properties>
-    <dependencies>
-        <!--
-         | Run Time Dependencies
-         +-->
+    
+    <dependencyManagement>
+        <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>1.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>logkit</groupId>
@@ -112,17 +64,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>2.5.6</version>
         </dependency>
         
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc-portlet</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>2.5.6</version>
             <exclusions>
                 <!-- Including 'spring.jar' as a dependency so these are not needed -->
                 <exclusion>
@@ -151,33 +99,25 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>2.4</version>
         </dependency>
         
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>1.4</version>
         </dependency>
 
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.0-beta2</version>
-            <type>jar</type>
-            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -193,143 +133,120 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>1.3</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>1.5.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate</artifactId>
             <version>3.2.3.ga</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
             <version>3.3.1.GA</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-commons-annotations</artifactId>
             <version>3.3.0.ga</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>3.3.2.GA</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         
         <dependency>
-            <groupId>nekohtml</groupId>
+            <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
-            <version>0.9.5</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.9.13</version>
         </dependency>
         
         <dependency>
             <groupId>opensymphony</groupId>
             <artifactId>oscache</artifactId>
             <version>2.3</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jasig.service</groupId>
             <artifactId>delegated-saml-authentication</artifactId>
             <version>1.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
             <exclusions>
-            	<exclusion>
-            		<artifactId>xml-apis</artifactId>
-            		<groupId>xml-apis</groupId>
-            	</exclusion>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>   
+
+        <dependency>
+            <groupId>org.apache.pluto</groupId>
+            <artifactId>pluto-taglib</artifactId>
+            <version>1.1.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
-        <!--
-         | Runtime Dependencies
-         +-->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
-            <type>jar</type>
-            <scope>runtime</scope>
         </dependency>
         
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>1.8.0.10</version>
-            <type>jar</type>
-            <scope>runtime</scope>
         </dependency>
         
-        
-        <!--
-         | Provided Dependencies
-         +-->        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
-            <type>jar</type>
-            <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>javax.portlet</groupId>
             <artifactId>portlet-api</artifactId>
             <version>1.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
         </dependency>
-        
-        <!--
-         | Test Dependencies
-         +-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.1</version>
-            <type>jar</type>
-            <scope>test</scope>
+            <version>4.4</version>
         </dependency>
         
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>test</scope>
+            <version>2.5.6</version>
             <exclusions>
                 <!-- Including 'spring.jar' as a dependency so these are not needed -->
                 <exclusion>
@@ -363,9 +280,161 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.1.10</version>
+        </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <dependencies>
+        <!--
+         | Run Time Dependencies
+         +-->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>oscache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasig.service</groupId>
+            <artifactId>delegated-saml-authentication</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+        </dependency>   
+
+        <!-- Needed for taglib reference -->
+        <dependency>
+            <groupId>org.apache.pluto</groupId>
+            <artifactId>pluto-taglib</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+         | Runtime Dependencies
+         +-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        
+        <!--
+         | Provided Dependencies
+         +-->        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!--
+         | Test Dependencies
+         +-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
         	<groupId>org.jasig.cas</groupId>
         	<artifactId>cas-client-core</artifactId>
-        	<version>${cas.client.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -391,29 +460,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-war-plugin</artifactId>
-              <configuration>
-                <webXml>${project.build.directory}/pluto-resources/web.xml</webXml>
-              </configuration>
-            </plugin>
-          
-            <plugin>
-              <groupId>org.apache.pluto</groupId>
-              <artifactId>maven-pluto-plugin</artifactId>
-              <version>${pluto.version}</version>
-              <executions>
-                <execution>
-                  <phase>generate-resources</phase>
-                  <goals>
-                    <goal>assemble</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-
-            
         </plugins>
     </build>
     <reporting>

@@ -1,8 +1,7 @@
 <%@ page import="javax.portlet.*"%>
 <%@ page import="java.util.*"%>
 <%@ page import="edu.wisc.my.webproxy.beans.config.*"%>
-<%@ taglib uri='/WEB-INF/tld/portlet.tld' prefix='portlet'%>
-<portlet:defineObjects/>
+<%@ include file="/WEB-INF/jsp/include.jsp" %>
 <br/>
 <hr/>
 <%

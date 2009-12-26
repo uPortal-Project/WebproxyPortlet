@@ -13,7 +13,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
     
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>/WEB-INF/datasource.properties</value>
@@ -253,18 +253,21 @@
         </property>
     </bean>
     
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="cacheManagerName" value="WebProxyPortlet.CacheManager" />
+        <property name="configLocation" value="classpath:/ehcache.xml" />
+    </bean>
     
-    <bean id="PageCache" class="edu.wisc.my.webproxy.beans.cache.oscache.OsCachePageCache">
-        <property name="cacheProperties">
-            <props>
-                <prop key="cache.memory">true</prop>
-                <prop key="cache.capacity">64</prop>
-                <prop key="cache.algorithm">com.opensymphony.oscache.base.algorithm.LRUCache</prop>
-                <prop key="cache.blocking">false</prop>
-                <prop key="cache.unlimited.disk">false</prop>
-                <prop key="cache.persistence.class">edu.wisc.my.webproxy.beans.cache.oscache.SpringLocatingPersistenceListener</prop>
-                <prop key="cache.persistence.spring.beanName">filteringPersistenceListener</prop>
-            </props>
+    
+    <bean id="PageCache" class="edu.wisc.my.webproxy.beans.cache.ehcache.EhPageCache">
+        <property name="ehcache">
+            <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean" >
+                <property name="beanName" value="PageCache" />
+                <property name="timeToIdle" value="0" />
+                <property name="timeToLive" value="0" />
+                <property name="diskPersistent" value="false" />
+                <property name="maxElementsInMemory" value="10000" />
+            </bean>
         </property>
     </bean>
     
@@ -308,7 +311,7 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" />
     
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" lazy-init="false">
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor">
         <property name="defaultPersistenceUnitName" value="webProxyPersistence" />
     </bean>
     

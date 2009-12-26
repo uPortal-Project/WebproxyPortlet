@@ -33,10 +33,22 @@
             <name>JASIG Maven2 Repository</name>
             <url>http://developer.jasig.org/repo/content/repositories/m2</url>
         </repository>
+        <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype Releases Repo</name>
+            <url>http://oss.sonatype.org/content/repositories/sourceforge-releases</url>
+        </repository>
     </repositories>
     
     <dependencyManagement>
         <dependencies>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>1.5.10</version>
+        </dependency>
+        
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -140,6 +152,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate</artifactId>
             <version>3.2.3.ga</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -173,9 +191,9 @@
         </dependency>
         
         <dependency>
-            <groupId>opensymphony</groupId>
-            <artifactId>oscache</artifactId>
-            <version>2.3</version>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>1.7.1</version>
         </dependency>
 
         <dependency>
@@ -362,8 +380,8 @@
         </dependency>
         
         <dependency>
-            <groupId>opensymphony</groupId>
-            <artifactId>oscache</artifactId>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
         </dependency>
 
         <dependency>
@@ -399,6 +417,12 @@
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
             <scope>runtime</scope>
         </dependency>
         

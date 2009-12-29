@@ -14,18 +14,17 @@
     
     if(configPlacer.intValue() != 0){    
 %>
-    <input type="submit" name="previous" value="<< Previous">
+    <input type="submit" name="previous" value="Back">
 <%
     }    
-%>
-	<input type="submit" name="apply" value="Apply">
-<%
     if(configPlacer.intValue() != configList.size()-1) {
 %>
-    <input type="submit" name="next" value="Next >>">
+    <input type="submit" name="next" value="Next">
 <%
     }
 %>
+	<input type="submit" name="apply" value="Complete">
+    <input type="submit" name="cancel" value="Cancel">
 </form>
 <p>
     Do not use the buttons bellow until you have used the '<< Previous' 'Apply'

@@ -1116,7 +1116,7 @@ public class WebProxyPortlet extends GenericPortlet {
      * @param response
      * @throws ReadOnlyException
      */
-    private void processConfigAction(final ActionRequest request, final ActionResponse response) throws ReadOnlyException {
+    private void processConfigAction(final ActionRequest request, final ActionResponse response) throws PortletException {
         final PortletSession session = request.getPortletSession();
         final Map userInfo = (Map)request.getAttribute(PortletRequest.USER_INFO);
         final PortletPreferences pp = new PortletPreferencesWrapper(request.getPreferences(), userInfo);
@@ -1130,37 +1130,45 @@ public class WebProxyPortlet extends GenericPortlet {
                     }
                 }
                 else {
-                    ConfigPage tempConfig = getConfig(session);
-                    Integer configPlacer = (Integer)session.getAttribute("configPlacer");
-                    boolean error = false;
-                    try {
-                        tempConfig.process(request, response);
-                    }
-                    catch (Exception e) {
-                        LOG.error(new StringBuffer("Caught RuntimeException when calling action on ").append(tempConfig.getName()).toString(), e);
-                        response.setRenderParameter("msg", e.getMessage());
-                        error = true;
-                    }
-                    String sPrevious = request.getParameter("previous");
-                    String sNext = request.getParameter("next");
-                    if (sNext != null) {
-                        // user has clicked on next
-                        if(!error){
-                            configPlacer = new Integer(configPlacer.intValue() + 1);
-                        }
-                        session.setAttribute("configPlacer", configPlacer);
-                    }
-                    else if (sPrevious != null) {
-                        // user has clicked on back1
-                        if(!error){
-                            configPlacer = new Integer(configPlacer.intValue() - 1);
-                        }
-                        session.setAttribute("configPlacer", configPlacer);
+                    if (request.getParameter("cancel") != null) {
+                        //Signal that config is done
+                        response.setPortletMode(PortletMode.VIEW);
                     }
                     else {
-                        response.setRenderParameter("msg", "Thank you for submitting the parameters.");
-                        pp.reset("configPlacer");
-                        session.removeAttribute("configList");
+                        ConfigPage tempConfig = getConfig(session);
+                        Integer configPlacer = (Integer)session.getAttribute("configPlacer");
+                        boolean error = false;
+                        try {
+                            tempConfig.process(request, response);
+                        }
+                        catch (Exception e) {
+                            LOG.error(new StringBuffer("Caught RuntimeException when calling action on ").append(tempConfig.getName()).toString(), e);
+                            response.setRenderParameter("msg", e.getMessage());
+                            error = true;
+                        }
+                        if (request.getParameter("next") != null) {
+                            // user has clicked on next
+                            if(!error){
+                                configPlacer = new Integer(configPlacer.intValue() + 1);
+                            }
+                            session.setAttribute("configPlacer", configPlacer);
+                        }
+                        else if (request.getParameter("previous") != null) {
+                            // user has clicked on back1
+                            if(!error){
+                                configPlacer = new Integer(configPlacer.intValue() - 1);
+                            }
+                            session.setAttribute("configPlacer", configPlacer);
+                        }
+                        else if (request.getParameter("apply") != null) {
+                            //Signal that config is done
+                            response.setPortletMode(PortletMode.VIEW);
+                        }
+                        else {
+                            response.setRenderParameter("msg", "Thank you for submitting the parameters.");
+                            pp.reset("configPlacer");
+                            session.removeAttribute("configList");
+                        }
                     }
                 }
 

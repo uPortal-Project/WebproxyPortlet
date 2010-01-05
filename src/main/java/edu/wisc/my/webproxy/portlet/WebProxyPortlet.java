@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -62,13 +63,16 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ValidatorException;
 import javax.portlet.WindowState;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.jasig.web.util.LRUTrackingModelPasser;
+import org.jasig.web.util.ModelPasser;
+import org.jasig.web.util.SecureSessionKeyGenerator;
+import org.jasig.web.util.SessionKeyGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.portlet.context.PortletApplicationContextUtils;
 import org.xml.sax.InputSource;
@@ -100,7 +104,6 @@ import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
 import edu.wisc.my.webproxy.beans.security.CasAuthenticationHandler;
 import edu.wisc.my.webproxy.servlet.ProxyServlet;
-import edu.wisc.my.webproxy.servlet.SessionMappingListener;
 
 /**
  * 
@@ -119,6 +122,9 @@ public class WebProxyPortlet extends GenericPortlet {
     private static final String MANUAL = "/WEB-INF/jsp/manual.jsp";
 
     public final static String preferenceKey = WebProxyPortlet.class.getName();
+    
+    private SessionKeyGenerator sessionKeyGenerator = new SecureSessionKeyGenerator();
+    private ModelPasser modelPasser = new LRUTrackingModelPasser();
     
     
     private static WebProxyPortlet instance = null;
@@ -581,7 +587,7 @@ public class WebProxyPortlet extends GenericPortlet {
      * @param request
      */
     private String newGetUrl(String url, ActionRequest request) throws IOException {
-        StringBuffer newUrl = new StringBuffer(url).append("?");
+        StringBuilder newUrl = new StringBuilder(url).append("?");
 
         for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
             final String paramName = (String)e.nextElement();
@@ -1038,64 +1044,31 @@ public class WebProxyPortlet extends GenericPortlet {
                 final int fileBaseEnd = (queryStringStart < 0 ? sUrl.length() : queryStringStart);
                 final String fileBase = sUrl.substring(fileBaseStart, fileBaseEnd);
                 
-                final StringBuffer servletUrl = new StringBuffer();
+                final Map<Object, Object> model = new LinkedHashMap<Object, Object>();
+                
+                model.put(WebproxyConstants.REQUEST_TYPE, sRequestType);
+                model.put(ProxyServlet.URL_PARAM, sUrl);
+
+                if (WebproxyConstants.POST_REQUEST.equals(sRequestType)) {
+                    model.put(ProxyServlet.POST_PARAMETERS, request.getParameterMap());
+                }
+                
+                model.put(PortletPreferences.class.getName(), pp);
+                model.put(WebproxyConstants.NAMESPACE, session.getAttribute(WebproxyConstants.NAMESPACE));
+                model.put(ProxyServlet.HTTP_MANAGER, httpManager);
+                
+                final String sessionKey = this.sessionKeyGenerator.getNextSessionKey(session);
+                this.modelPasser.passModelToServlet(request, response, sessionKey, model);
+                
+                final StringBuilder servletUrl = new StringBuilder();
                 servletUrl.append(request.getContextPath());
                 servletUrl.append("/ProxyServlet/"); //TODO make this an init parameter
                 servletUrl.append(fileBase);
                 servletUrl.append("?");
-                servletUrl.append(URLEncoder.encode(ProxyServlet.URL_PARAM, "UTF-8"));
+                servletUrl.append(URLEncoder.encode(ProxyServlet.SESSION_KEY, "UTF-8"));
                 servletUrl.append("=");
-                servletUrl.append(URLEncoder.encode(sUrl, "UTF-8"));
+                servletUrl.append(URLEncoder.encode(sessionKey, "UTF-8"));
                 
-                servletUrl.append("&");
-                servletUrl.append(URLEncoder.encode(ProxyServlet.SESSION_ID_PARAM, "UTF-8"));
-                servletUrl.append("=");
-                servletUrl.append(URLEncoder.encode(session.getId(), "UTF-8"));
-                
-                final Object namespaceTestObj = new Object();
-                final String NAMESPACE_TEST_NAME = "NAMESPACE_TEST";
-                session.setAttribute(NAMESPACE_TEST_NAME, namespaceTestObj);
-                for (Enumeration nameEnum = session.getAttributeNames(PortletSession.APPLICATION_SCOPE); nameEnum.hasMoreElements(); ) {
-                    final String name = (String)nameEnum.nextElement();
-                    final Object value = session.getAttribute(name, PortletSession.APPLICATION_SCOPE);
-                    
-                    if (value.equals(namespaceTestObj)) {
-                        final String prefix;
-                        final String sufix;
-                        
-                        final int index = name.indexOf(NAMESPACE_TEST_NAME);
-                        if (index >= 0) {
-                            prefix = name.substring(0, index);
-                            sufix = name.substring(index + NAMESPACE_TEST_NAME.length());
-                        }
-                        else {
-                            prefix = "";
-                            sufix = "";
-                        }
-                        
-                        servletUrl.append("&");
-                        servletUrl.append(URLEncoder.encode(ProxyServlet.NAMESPACE_PREFIX_PARAM, "UTF-8"));
-                        servletUrl.append("=");
-                        servletUrl.append(URLEncoder.encode(prefix, "UTF-8"));
-                        
-                        servletUrl.append("&");
-                        servletUrl.append(URLEncoder.encode(ProxyServlet.NAMESPACE_SUFIX_PARAM, "UTF-8"));
-                        servletUrl.append("=");
-                        servletUrl.append(URLEncoder.encode(sufix, "UTF-8"));
-                    }
-                }
-                
-                session.setAttribute(PortletPreferences.class.getName(), request.getPreferences());
-                
-                //Make sure the session is in the shared map
-                if (session instanceof HttpSession && SessionMappingListener.getSession(session.getId()) == null) {
-                    SessionMappingListener.setSession((HttpSession)session);
-                }
-                
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Redirecting request to '" + servletUrl + "'");
-                }
-
                 response.sendRedirect(servletUrl.toString());
                 return;
             }
@@ -1240,9 +1213,11 @@ public class WebProxyPortlet extends GenericPortlet {
             throw new IllegalArgumentException("Unknown authType specified '" + authType + "'");
         }
     }
+    
+    private static final Pattern URL_WITH_PROTOCOL = Pattern.compile("[^:]*://.*");
+    private static final Pattern URL_BASE = Pattern.compile("([^:]*://[^/]*).*");
 
     public static String checkRedirect(String sUrl, Response httpResponse) {
-        StringBuffer myUrl = new StringBuffer(sUrl);
         int statusCode = httpResponse.getStatusCode();
 
         if ((statusCode == Response.SC_MOVED_TEMPORARILY) || (statusCode == Response.SC_MOVED_PERMANENTLY) || (statusCode == Response.SC_SEE_OTHER)
@@ -1252,23 +1227,40 @@ public class WebProxyPortlet extends GenericPortlet {
             for (int index = 0; index < headers.length; index++) {
                 if ("location".equalsIgnoreCase(headers[index].getName())) {
                     final String location = headers[index].getValue();
-
-                    //if location is null or blank, URL remains unchanged
-                    if ((location == null) || (location.equals("")))
-                        myUrl.append("/");
-                    //check to see if redirected to absolute URL
-                    else if (location.toUpperCase().startsWith("HTTP"))
-                        myUrl = new StringBuffer(location);
-                    //append location to old URL
-                    else
-                        myUrl.append(location);
-
-                    break;
+                    final String calculatedLocation;
+                    
+                    //Location is null, this may be invalid but just re-use the same URL
+                    if (location == null) {
+                        calculatedLocation = sUrl;
+                    }
+                    //Absolute redirect that includes the protocol and server
+                    else if (URL_WITH_PROTOCOL.matcher(location).matches()) {
+                        calculatedLocation =  location;
+                    }
+                    //Absolute redirect relative the the current server
+                    else if (location.startsWith("/")) {
+                        final Matcher matcher = URL_BASE.matcher(sUrl);
+                        if (!matcher.matches()) {
+                            throw new IllegalArgumentException("URL '" + sUrl + "' doesn't match regex: " + URL_BASE.pattern());
+                        }
+                        final String sUrlBase = matcher.group(1);
+                        calculatedLocation = sUrlBase + location;
+                    }
+                    //Broken redirect that is relative to the current path.
+                    else {
+                        calculatedLocation = sUrl.substring(0, sUrl.lastIndexOf('/')) + "/" + location;
+                    }
+                    
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Handling " + statusCode + " redirect from '" + sUrl + "' to  '" + location + "'. Calculated redirect URL is: " + calculatedLocation);
+                    }
+                    
+                    return calculatedLocation;
                 }
             }
         }
 
-        return myUrl.toString();
+        return sUrl;
     }
 
     private ConfigPage getConfig(PortletSession session) {
@@ -1298,8 +1290,7 @@ public class WebProxyPortlet extends GenericPortlet {
 
     //create Back Button to leave editMode
     private String createBackButton(RenderResponse response){
-        StringBuffer backButton = new StringBuffer("<br><form name=\"back\" action=\"").append(response.createActionURL()).append(">\" method=\"post\"><input type=\"submit\" name=\"").append(WebproxyConstants.BACK_BUTTON).append("\" value=\"Back to Application\"></form>");
+        StringBuilder backButton = new StringBuilder("<br><form name=\"back\" action=\"").append(response.createActionURL()).append(">\" method=\"post\"><input type=\"submit\" name=\"").append(WebproxyConstants.BACK_BUTTON).append("\" value=\"Back to Application\"></form>");
         return backButton.toString();
     }
-    
 }

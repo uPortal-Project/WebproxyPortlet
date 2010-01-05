@@ -25,10 +25,6 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
     
-    <listener>
-        <listener-class>edu.wisc.my.webproxy.servlet.SessionMappingListener</listener-class>
-    </listener>
-    
     <servlet>
         <servlet-name>ProxyServlet</servlet-name>
         <servlet-class>edu.wisc.my.webproxy.servlet.ProxyServlet</servlet-class>

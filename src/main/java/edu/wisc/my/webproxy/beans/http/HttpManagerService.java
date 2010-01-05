@@ -8,8 +8,6 @@ import java.util.Set;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +20,6 @@ import edu.wisc.my.webproxy.beans.config.ConfigUtils;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.portlet.ApplicationContextLocator;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
-import edu.wisc.my.webproxy.servlet.ProxyServlet;
 
 /**
  * HttpManagerFindingService is responsible for retrieving and saving 
@@ -149,36 +146,6 @@ public class HttpManagerService {
             webProxyStateDao.saveState(state);
         }
     }
-	
-    /**
-     * Find an HttpManager for a servlet request.
-     * 
-     * @param request
-     * @param prefs
-     * @param session
-     * @return
-     */
-	public HttpManager findManager(HttpServletRequest request, PortletPreferences prefs, HttpSession session) {
-        final String sharedStateKey = ConfigUtils.checkEmptyNullString(prefs.getValue(HttpClientConfigImpl.SHARED_SESSION_KEY, null), null);
-        final String prefix = request.getParameter(ProxyServlet.NAMESPACE_PREFIX_PARAM);
-        final String sufix = request.getParameter(ProxyServlet.NAMESPACE_SUFIX_PARAM);
-
-        // attempt to find the manager in the current user session
-        HttpManager httpManager;
-        if (sharedStateKey != null)
-            httpManager = (HttpManager)session.getAttribute(sharedStateKey);
-        else
-        	httpManager = (HttpManager)session.getAttribute(prefix + WebproxyConstants.CURRENT_STATE + sufix);
-
-        // if no manager could be found in the session, throw an error
-        if (httpManager == null) {
-            IllegalStateException ise = new IllegalStateException("No HttpManager found in the current session");
-            log.error(ise, ise);
-            throw ise;
-        }
-        
-    	return httpManager;
-	}
 
 	/**
 	 * Generate a state key, given a key and a namespace.

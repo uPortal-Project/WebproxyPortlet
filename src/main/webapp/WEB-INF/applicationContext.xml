@@ -267,6 +267,7 @@
                 <property name="timeToLive" value="0" />
                 <property name="diskPersistent" value="false" />
                 <property name="maxElementsInMemory" value="10000" />
+                <property name="cacheManager" ref="cacheManager" />
             </bean>
         </property>
     </bean>

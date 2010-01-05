@@ -19,10 +19,10 @@ import javax.persistence.Table;
 @Table(name = "WEB_PROXY_STATE_COOKIE")
 public class PersistedCookieImpl implements ICookie, Serializable {
 	
-	@Column( name = "NAME" )
+	@Column( name = "COOKIE_NAME" )
 	private String name;
 
-	@Column( name = "VALUE", length = 2048 )
+	@Column( name = "COOKIE_VALUE", length = 2048 )
 	private String value;
 	
 	@Column( name = "PATH" )
@@ -34,7 +34,7 @@ public class PersistedCookieImpl implements ICookie, Serializable {
 	@Column( name = "EXPIRY_DATE" )
 	private Date expiryDate;
 	
-	@Column( name = "COMMENT" )
+	@Column( name = "COOKIE_COMMENT" )
 	private String comment;
 	
 	@Column( name = "SECURE" )

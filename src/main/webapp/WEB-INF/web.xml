@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.4" 
-    xmlns="http://java.sun.com/xml/ns/j2ee" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    metadata-complete="true"
+    version="2.5">
     
     <display-name>Authenticated Web Proxy Portlet</display-name>
 	
@@ -24,6 +26,17 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+    
+    <filter>
+        <filter-name>OpenEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <servlet-name>*</servlet-name>
+    </filter-mapping>
     
     <servlet>
         <servlet-name>ProxyServlet</servlet-name>

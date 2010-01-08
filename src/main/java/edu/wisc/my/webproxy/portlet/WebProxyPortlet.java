@@ -36,7 +36,7 @@ package edu.wisc.my.webproxy.portlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,14 +74,17 @@ import org.jasig.web.util.ModelPasser;
 import org.jasig.web.util.SecureSessionKeyGenerator;
 import org.jasig.web.util.SessionKeyGenerator;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.portlet.context.PortletApplicationContextUtils;
+import org.springframework.web.portlet.context.PortletWebRequest;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
 import edu.wisc.my.webproxy.beans.cache.CacheEntry;
-import edu.wisc.my.webproxy.beans.cache.CacheOutputStream;
+import edu.wisc.my.webproxy.beans.cache.CacheWriter;
 import edu.wisc.my.webproxy.beans.cache.PageCache;
 import edu.wisc.my.webproxy.beans.config.CacheConfigImpl;
 import edu.wisc.my.webproxy.beans.config.ConfigPage;
@@ -97,6 +100,7 @@ import edu.wisc.my.webproxy.beans.http.HttpManager;
 import edu.wisc.my.webproxy.beans.http.HttpManagerService;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
 import edu.wisc.my.webproxy.beans.http.IHeader;
+import edu.wisc.my.webproxy.beans.http.IKeyManager;
 import edu.wisc.my.webproxy.beans.http.ParameterPair;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
@@ -160,11 +164,23 @@ public class WebProxyPortlet extends GenericPortlet {
 
     }
 
+    @Override
     public void doDispatch(final RenderRequest request, final RenderResponse response) throws PortletException, IOException {
         final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
         ApplicationContextLocator.setApplicationContext(context);
         
+        final WebRequestInterceptor interceptor = (WebRequestInterceptor)context.getBean("openEntityManagerInViewInterceptor", WebRequestInterceptor.class);
+        final WebRequest webRequest = new PortletWebRequest(request, response);
+
+        Exception dispatchException = null;
         try {
+            try {
+                interceptor.preHandle(webRequest);
+            }
+            catch (Exception e) {
+                throw new PortletException(e);
+            }
+            
             final PortletMode mode = request.getPortletMode();
             final WindowState windowState = request.getWindowState();
             if (LOG.isDebugEnabled()) {
@@ -198,9 +214,37 @@ public class WebProxyPortlet extends GenericPortlet {
                     throw new PortletException("'" + mode + "' Not Implemented");
                 }
             }
+            
+            try {
+                interceptor.postHandle(webRequest, null);
+            }
+            catch (Exception e) {
+                throw new PortletException(e);
+            }
+        }
+        catch (Exception e) {
+            dispatchException = e;
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            if (e instanceof PortletException) {
+                throw (PortletException)e;
+            }
+            if (e instanceof IOException) {
+                throw (IOException)e;
+            }
+            
+            throw new PortletException(e);
         }
         finally {
             ApplicationContextLocator.setApplicationContext(null);
+            
+            try {
+                interceptor.afterCompletion(webRequest, dispatchException);
+            }
+            catch (Exception e1) {
+                throw new PortletException(e1);
+            }
         }
     }
 
@@ -220,9 +264,6 @@ public class WebProxyPortlet extends GenericPortlet {
 
         //Get users session
         PortletSession session = request.getPortletSession();
-        session.setAttribute(WebproxyConstants.NAMESPACE, response.getNamespace());
-
-        
         String sUrl = (String)session.getAttribute(GeneralConfigImpl.BASE_URL);
         
         if (sUrl == null) {
@@ -260,7 +301,8 @@ public class WebProxyPortlet extends GenericPortlet {
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-            final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
+            final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+            final String cacheKey = keyManager.generateCacheKey(sUrl, request);
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -269,7 +311,7 @@ public class WebProxyPortlet extends GenericPortlet {
                     LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                 response.setContentType(cachedData.getContentType());
-                response.getPortletOutputStream().write(cachedData.getContent());
+                response.getWriter().write(cachedData.getContent());
                 return;
             }
         }
@@ -372,7 +414,8 @@ public class WebProxyPortlet extends GenericPortlet {
                         LOG.info("Request '" + sUrl + "' timed out. Attempting to use expired cache data.");
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-                        final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
+                        final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+                        final String cacheKey = keyManager.generateCacheKey(sUrl, request);
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 
@@ -390,7 +433,7 @@ public class WebProxyPortlet extends GenericPortlet {
                                 LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                             response.setContentType(cachedData.getContentType());
-                            response.getPortletOutputStream().write(cachedData.getContent());
+                            response.getWriter().write(cachedData.getContent());
                             return;
                         }
                     }
@@ -478,10 +521,10 @@ public class WebProxyPortlet extends GenericPortlet {
             
             //Get InputStream and OutputStream
             InputStream in = null;
-            OutputStream out = null;
+            Writer out = null;
             try {
                 in = httpResponse.getResponseBodyAsStream();
-                out = response.getPortletOutputStream();
+                out = response.getWriter();
 
                 if (!matches) {
                     //TODO Display page with direct link to content and back link to previous URL
@@ -494,13 +537,14 @@ public class WebProxyPortlet extends GenericPortlet {
 
                 	//prepend the back button to the outputstream
                     if (PortletMode.EDIT.equals(mode)) {
-                        out.write(createBackButton(response).getBytes());
+                        out.write(createBackButton(response));
                     }
                     //Matched a filterable content type, parse and filter stream.
                     if (sUseCache) {
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
     
-                        final String cacheKey = generateCacheKey(sUrl, response.getNamespace());
+                        final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+                        final String cacheKey = keyManager.generateCacheKey(sUrl, request);
 
                         final int cacheExprTime = ConfigUtils.parseInt(myPreferences.getValue(CacheConfigImpl.CACHE_TIMEOUT, null), -1);
                         final boolean persistData = new Boolean(myPreferences.getValue(CacheConfigImpl.PERSIST_CACHE, null)).booleanValue();
@@ -511,12 +555,12 @@ public class WebProxyPortlet extends GenericPortlet {
                         if (cacheExprTime >= 0)
                             entryBase.setExpirationDate(new Date(System.currentTimeMillis() + cacheExprTime * 1000));
     
-                        out = new CacheOutputStream(out, entryBase, cache, cacheKey, persistData);
+                        out = new CacheWriter(out, entryBase, cache, cacheKey, persistData);
                     }
                     //Write out static header data
                     final String sHeader = ConfigUtils.checkEmptyNullString(myPreferences.getValue(StaticHtmlConfigImpl.STATIC_HEADER, null), null);
                     if (sHeader != null) {
-                        out.write(sHeader.getBytes());
+                        out.write(sHeader);
                     }   
                     final HtmlParser htmlParser = (HtmlParser)context.getBean("HtmlParserBean", HtmlParser.class);
                     final HtmlOutputFilter outFilter = new HtmlOutputFilter(out);
@@ -556,7 +600,7 @@ public class WebProxyPortlet extends GenericPortlet {
                         //Write out static footer data
                         final String sFooter = ConfigUtils.checkEmptyNullString(myPreferences.getValue(StaticHtmlConfigImpl.STATIC_FOOTER, null), null);
                         if (sFooter != null) {
-                            out.write(sFooter.getBytes());
+                            out.write(sFooter);
                         }                        
                     }
                     finally {
@@ -745,26 +789,6 @@ public class WebProxyPortlet extends GenericPortlet {
         return null;
     }
 
-    public static String generateCacheKey(String pageUrl, String namespace) {
-        final StringBuffer cacheKeyBuf = new StringBuffer();
-
-        cacheKeyBuf.append(namespace);
-        cacheKeyBuf.append(".");
-        cacheKeyBuf.append(pageUrl);
-
-        return cacheKeyBuf.toString();
-    }
-    
-    public static String generateStateKey(String key, String namespace) {
-        final StringBuffer cacheKeyBuf = new StringBuffer();
-        
-        cacheKeyBuf.append(namespace);
-        cacheKeyBuf.append(".");
-        cacheKeyBuf.append(key);
-
-        return cacheKeyBuf.toString();
-    }
-
     private boolean manualLogin(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         PortletSession session = request.getPortletSession();
         PortletPreferences myPreferences = request.getPreferences();
@@ -843,6 +867,21 @@ public class WebProxyPortlet extends GenericPortlet {
     }
 
     public void processAction(final ActionRequest request, final ActionResponse response) throws PortletException, IOException {
+        final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
+        
+        final WebRequestInterceptor interceptor = (WebRequestInterceptor)context.getBean("openEntityManagerInViewInterceptor", WebRequestInterceptor.class);
+        final WebRequest webRequest = new PortletWebRequest(request, response);
+
+        try {
+            interceptor.preHandle(webRequest);
+        }
+        catch (Exception e) {
+            throw new PortletException(e);
+        }
+        
+        Exception dispatchException = null;
+        try {
+            
         final PortletMode mode = request.getPortletMode();
         final WindowState windowState = request.getWindowState();
         if (LOG.isDebugEnabled()) {
@@ -868,7 +907,6 @@ public class WebProxyPortlet extends GenericPortlet {
             //Gets a reference to the ApplicationContext created by the
             //ContextLoaderListener which is configured in the web.xml for
             //this portlet
-            final ApplicationContext context = PortletApplicationContextUtils.getWebApplicationContext(this.getPortletContext());
             ApplicationContextLocator.setApplicationContext(context);
 
             if (request.getPortletMode().equals(WebproxyConstants.CONFIG_MODE)) {
@@ -1054,8 +1092,10 @@ public class WebProxyPortlet extends GenericPortlet {
                 }
                 
                 model.put(PortletPreferences.class.getName(), pp);
-                model.put(WebproxyConstants.NAMESPACE, session.getAttribute(WebproxyConstants.NAMESPACE));
                 model.put(ProxyServlet.HTTP_MANAGER, httpManager);
+                
+                final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+                model.put(IKeyManager.PORTLET_INSTANCE_KEY, keyManager.getInstanceKey(request));
                 
                 final String sessionKey = this.sessionKeyGenerator.getNextSessionKey(session);
                 this.modelPasser.passModelToServlet(request, response, sessionKey, model);
@@ -1080,6 +1120,37 @@ public class WebProxyPortlet extends GenericPortlet {
                 response.setRenderParameter(WebproxyConstants.REQUEST_TYPE, sRequestType);
                 response.setRenderParameter(GeneralConfigImpl.BASE_URL, sUrl);
                 session.setAttribute(GeneralConfigImpl.BASE_URL, sUrl);
+            }
+        }
+        
+        try {
+            interceptor.postHandle(webRequest, null);
+        }
+        catch (Exception e) {
+            throw new PortletException(e);
+        }
+        
+        }
+        catch (Exception e) {
+            dispatchException = e;
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            if (e instanceof PortletException) {
+                throw (PortletException)e;
+            }
+            if (e instanceof IOException) {
+                throw (IOException)e;
+            }
+            
+            throw new PortletException(e);
+        }
+        finally {
+            try {
+                interceptor.afterCompletion(webRequest, dispatchException);
+            }
+            catch (Exception e) {
+                throw new PortletException(e);
             }
         }
     }

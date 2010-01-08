@@ -47,6 +47,7 @@ import java.util.Map;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,8 +66,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.springframework.web.portlet.util.PortletUtils;
 
 import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
@@ -79,8 +82,9 @@ import edu.wisc.my.webproxy.portlet.WebproxyConstants;
  * @version $Id$
  */
 public class HttpManagerImpl extends HttpManager {
-
-	private static final Log log = LogFactory.getLog(HttpManagerImpl.class);
+    private static final String HTTP_CLIENT_ATTR = HttpManagerImpl.class.getName() + ".HTTP_CLIENT";
+    
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	private DefaultHttpClient client;
     
@@ -168,7 +172,7 @@ public class HttpManagerImpl extends HttpManager {
     public void setup(PortletRequest request) {
 
     	// get a new HttpClient instance
-    	client = createHttpClient(request);
+    	client = getHttpClient(request);
     	
     	PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
 
@@ -253,22 +257,45 @@ public class HttpManagerImpl extends HttpManager {
 
 	}
 	
-	/**
-	 * Create a new HttpClient instance using the available portlet preferences.
-	 * This method may be used by subclasses to provide an alternate instance
-	 * of DefaultHttpClient.  The returned client should be sure to  use a 
-	 * thread-safe client connection manager.
-	 * 
-	 * @param prefs
-	 * @return new DefaultHttpClient instance
-	 */
-	protected DefaultHttpClient createHttpClient(PortletRequest request) {
-		// construct a new DefaultHttpClient backed by a ThreadSafeClientConnManager
-	    DefaultHttpClient client = new DefaultHttpClient ();
-	    SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-	    HttpParams params = new BasicHttpParams();
-	    log.debug("Returning new DefaultHttpClient");
-	    return new DefaultHttpClient (new ThreadSafeClientConnManager(params, registry), params); 
+	protected final DefaultHttpClient getHttpClient(PortletRequest request) {
+	    final PortletSession portletSession = request.getPortletSession();
+	    
+	    synchronized (PortletUtils.getSessionMutex(portletSession)) {
+            DefaultHttpClient client = (DefaultHttpClient)portletSession.getAttribute(HTTP_CLIENT_ATTR);
+	        if (client == null) {
+	            client = this.createHttpClient(request);
+	            
+	            final HttpParams params = client.getParams();
+	            params.setParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, "UTF-8");
+	            
+	            portletSession.setAttribute(HTTP_CLIENT_ATTR, client);
+	        }
+	        
+	        return client;
+        }
 	}
+
+	/**
+     * Create a new THREAD SAFE HttpClient instance using the available portlet preferences.
+     * This method may be used by subclasses to provide an alternate instance
+     * of DefaultHttpClient.  The returned client should be sure to  use a 
+     * thread-safe client connection manager.
+     * 
+     * @param prefs
+     * @return new DefaultHttpClient instance
+     */
+    protected DefaultHttpClient createHttpClient(PortletRequest request) {
+        DefaultHttpClient client;
+        client = new DefaultHttpClient ();
+        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+        HttpParams params = new BasicHttpParams();
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Creating new DefaultHttpClient for " + request.getRemoteUser());
+        }
+        
+        client = new DefaultHttpClient (new ThreadSafeClientConnManager(params, registry), params);
+        return client;
+    }
 	
 }

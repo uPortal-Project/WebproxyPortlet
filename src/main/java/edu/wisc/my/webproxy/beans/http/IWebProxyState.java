@@ -1,6 +1,6 @@
 package edu.wisc.my.webproxy.beans.http;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * IWebProxyState represents an interface representing the state of a user's
@@ -19,24 +19,17 @@ public interface IWebProxyState {
 	public String getStateKey();
 	
 	/**
-	 * Set the unique key associated with this state.
-	 * 
-	 * @param stateKey
-	 */
-	public void setStateKey(String stateKey);
-	
-	/**
 	 * Retrieve a list of cookies associated with this state.
 	 * 
 	 * @return
 	 */
-	public Collection<ICookie> getCookies();
+	public List<ICookie> getCookies();
 	
 	/**
 	 * Set the list of cookies associated with this state.
 	 * 
 	 * @param cookies
 	 */
-	public void setCookies(Collection<ICookie> cookies);
+	public void setCookies(List<ICookie> cookies);
 
 }

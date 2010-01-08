@@ -1,5 +1,6 @@
 package edu.wisc.my.webproxy.beans.http;
 
+
 /**
  * IWebProxyStateDao provides an interface for persisting and retrieving
  * web proxy state information.  This state may include information such as
@@ -26,5 +27,9 @@ public interface IWebProxyStateDao {
 	 * @return
 	 */
 	public IWebProxyState saveState(IWebProxyState state);
-	
+
+    /**
+     * Purge expired cookies
+     */
+    public void purgeExpiredCookies();
 }

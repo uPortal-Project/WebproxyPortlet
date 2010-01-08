@@ -67,6 +67,7 @@ import edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
 import edu.wisc.my.webproxy.beans.http.IHeader;
+import edu.wisc.my.webproxy.beans.http.IKeyManager;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
@@ -124,7 +125,7 @@ public class ProxyServlet extends HttpServlet {
         final String requestType = (String)model.get(WebproxyConstants.REQUEST_TYPE);
         final Map<String, String[]> postParameters = (Map<String, String[]>)model.get(POST_PARAMETERS);
         String url = (String)model.get(URL_PARAM);
-        final String namespace = (String)model.get(WebproxyConstants.NAMESPACE);
+        final String instanceKey = (String)model.get(IKeyManager.PORTLET_INSTANCE_KEY);
         
 
         final PortletPreferences prefs = (PortletPreferences)model.get(PortletPreferences.class.getName());
@@ -135,7 +136,8 @@ public class ProxyServlet extends HttpServlet {
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-            final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
+            final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+            final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -144,7 +146,7 @@ public class ProxyServlet extends HttpServlet {
                     LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                 response.setContentType(cachedData.getContentType());
-                response.getOutputStream().write(cachedData.getContent());
+                response.getWriter().write(cachedData.getContent());
                 return;
             }
         }
@@ -225,7 +227,8 @@ public class ProxyServlet extends HttpServlet {
                         LOG.info("Request '" + url + "' timed out. Attempting to use expired cache data.");
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-                        final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
+                        final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+                        final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 
@@ -243,7 +246,7 @@ public class ProxyServlet extends HttpServlet {
                                 LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                             response.setContentType(cachedData.getContentType());
-                            response.getOutputStream().write(cachedData.getContent());
+                            response.getWriter().write(cachedData.getContent());
                             return;
                         }
                     }

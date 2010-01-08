@@ -37,7 +37,10 @@ package edu.wisc.my.webproxy.beans.http;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.persistence.Transient;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
@@ -60,6 +63,7 @@ import edu.wisc.my.webproxy.beans.config.ProxyComponent;
  * 
  */
 public abstract class HttpManager implements ProxyComponent {
+    private transient final ReadWriteLock lock = new ReentrantReadWriteLock();
 	
 	/** 
      * Performs the request with the given request object.
@@ -146,5 +150,10 @@ public abstract class HttpManager implements ProxyComponent {
         this.setup(request);
     }
     
+
+    
+    public final ReadWriteLock getCookieLock() {
+        return this.lock;
+    }
 }
 

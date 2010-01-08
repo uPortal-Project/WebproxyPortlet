@@ -69,8 +69,11 @@
 -->
     <bean id="HtmlParserBean" class="edu.wisc.my.webproxy.beans.filtering.NekoHtmlParser" scope="prototype" />
     
+    <bean id="keyManager" class="edu.wisc.my.webproxy.beans.http.KeyManager" />
+    
     <bean id="HttpManagerService" class="edu.wisc.my.webproxy.beans.http.HttpManagerService">
         <property name="webProxyStateDao" ref="webProxyStateDao"/>
+        <property name="keyManager" ref="keyManager" />
     </bean>
     
     <bean id="SaxFilterBean" class="edu.wisc.my.webproxy.beans.SpringList" scope="prototype">
@@ -262,11 +265,7 @@
     <bean id="PageCache" class="edu.wisc.my.webproxy.beans.cache.ehcache.EhPageCache">
         <property name="ehcache">
             <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean" >
-                <property name="beanName" value="PageCache" />
-                <property name="timeToIdle" value="0" />
-                <property name="timeToLive" value="0" />
-                <property name="diskPersistent" value="false" />
-                <property name="maxElementsInMemory" value="10000" />
+                <property name="cacheName" value="PageCache" />
                 <property name="cacheManager" ref="cacheManager" />
             </bean>
         </property>
@@ -274,24 +273,27 @@
     
     
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName"><value>${hibernate.connection.driver_class}</value></property>
-        <property name="url"><value>${hibernate.connection.url}</value></property>
-        <property name="username"><value>${hibernate.connection.username}</value></property>
-        <property name="password"><value>${hibernate.connection.password}</value></property>
+        <property name="driverClassName" value="${hibernate.connection.driver_class}" />
+        <property name="url" value="${hibernate.connection.url}" />
+        <property name="username" value="${hibernate.connection.username}" />
+        <property name="password" value="${hibernate.connection.password}" />
         
-        <property name="initialSize"><value>8</value></property>
-        <property name="maxActive"><value>128</value></property>
-        <property name="maxIdle"><value>16</value></property>
-        <property name="minIdle"><value>8</value></property>
-        <property name="maxWait"><value>15000</value></property>
+        <property name="initialSize" value="2" />
+        <property name="maxActive" value="64" />
+        <property name="maxIdle" value="16" />
+        <property name="minIdle" value="8" />
+        <property name="maxWait" value="5000" />
     </bean>
     
     <!-- ********** Portlet DAOs ********** -->
     
-    <bean id="webProxyStateDao" class="edu.wisc.my.webproxy.beans.http.WebProxyStateJdbcDaoImpl">
+    <bean id="webProxyStateDao" class="edu.wisc.my.webproxy.beans.http.WebProxyStateJpaDaoImpl">
     </bean>
     
     <!-- ********** JPA Beans ********** -->
+    <bean id="openEntityManagerInViewInterceptor" class="org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
@@ -300,9 +302,13 @@
     </bean>
     
     <!-- Adapater that can inject a cacheProvider into the hibernate entity manager -->
-    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+    <bean id="jpaVendorAdapter" class="org.jasig.portal.spring.orm.jpa.HibernateJpaVendorAdapter">
         <property name="databasePlatform" value="${hibernate.dialect}" />
-        <property name="showSql" value="true"/>
+        <property name="cacheProvider" ref="cacheProvider" />
+    </bean>
+    
+    <bean id="cacheProvider" class="org.jasig.portal.utils.cache.hibernate.EhCacheProvider">
+        <property name="cacheManager" ref="cacheManager" />
     </bean>
     
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -317,4 +323,80 @@
     </bean>
     
     
+    <!-- ********** JMX Beans ********** -->
+    <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+        <property name="locateExistingServerIfPossible" value="true" />
+    </bean>
+    
+    <bean id="jmxAdapter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mbeanServer" />
+        <property name="ensureUniqueRuntimeObjectNames" value="true" />
+        <property name="assembler" ref="mbeanInfoAssembler" />
+        <property name="beans">
+            <map>
+                <entry key="WebProxyPortlet:section=Persistence,name=HibernateStatistics" value-ref="hibernateStatisticsMBean"/>
+                <entry key="WebProxyPortlet:section=Persistence,name=DataSource" value-ref="dataSource"/>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="mbeanInfoAssembler" class="org.springframework.jmx.export.assembler.MethodExclusionMBeanInfoAssembler">
+        <property name="ignoredMethodMappings">
+            <props>
+                <prop key="WebProxyPortlet:section=Persistence,name=DataSource">getConnection,getLogWriter,setLogWriter</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- Hibernate perstentce statistics -->
+    <bean id="hibernateStatisticsMBean" class="org.hibernate.jmx.StatisticsService">
+        <property name="statisticsEnabled" value="true"/>
+        <property name="sessionFactory">
+            <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+                <property name="targetObject" ref="entityManagerFactory" />
+                <property name="targetMethod" value="getSessionFactory" />
+            </bean>
+        </property>
+    </bean>
+
+    <!-- EhCache management and statistics -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="net.sf.ehcache.management.ManagementService" />
+        <property name="targetMethod" value="registerMBeans" />
+        <property name="arguments">
+            <list>
+                <ref bean="cacheManager" />
+                <ref bean="mbeanServer" />
+                <value>true</value>
+                <value>true</value>
+                <value>true</value>
+                <value>true</value>
+            </list>
+        </property>
+    </bean>
+    
+    
+    <!-- ********** Scheduler Beans ********** -->
+    <bean id="WebProxyTimerTasks" class="org.springframework.scheduling.timer.TimerFactoryBean">
+        <property name="scheduledTimerTasks">
+            <list>
+                <ref bean="scheduledTask"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="scheduledTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+        <!-- Delay 5 minutes -->
+        <property name="delay" value="300000"/>
+        <!-- Run hourly -->
+        <property name="period" value="3600000"/>
+        <property name="timerTask" ref="purgeExpiredCookies"/>
+    </bean>
+
+    <bean id="purgeExpiredCookies" class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+        <property name="targetObject" ref="webProxyStateDao"/>
+        <property name="targetMethod" value="purgeExpiredCookies"/>
+    </bean>
+
+
 </beans>

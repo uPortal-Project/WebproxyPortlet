@@ -83,7 +83,7 @@ public class NekoHtmlParser implements HtmlParser, ProxyComponent {
 
         try {
             defaultParser.setProperty("http://xml.org/sax/properties/lexical-handler", myHandler);
-            defaultParser.setProperty("http://cyberneko.org/html/properties/default-encoding", "ASCII");
+            defaultParser.setProperty("http://cyberneko.org/html/properties/default-encoding", "UTF-8");
             defaultParser.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
             defaultParser.setProperty("http://cyberneko.org/html/properties/names/attrs", "no-change");
             

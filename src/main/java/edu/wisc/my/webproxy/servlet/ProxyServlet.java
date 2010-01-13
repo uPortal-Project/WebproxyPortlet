@@ -41,17 +41,19 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletPreferences;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jasig.web.util.LRUTrackingModelPasser;
+import org.jasig.web.util.ModelPasser;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -63,9 +65,9 @@ import edu.wisc.my.webproxy.beans.config.GeneralConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
-import edu.wisc.my.webproxy.beans.http.HttpManagerService;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
 import edu.wisc.my.webproxy.beans.http.IHeader;
+import edu.wisc.my.webproxy.beans.http.IKeyManager;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
@@ -82,10 +84,13 @@ public class ProxyServlet extends HttpServlet {
     private Log LOG = LogFactory.getLog(ProxyServlet.class);
     
     public static final String SESSION_ID_PARAM = "sid";
-    public static final String NAMESPACE_PREFIX_PARAM = "ns_prefix";
-    public static final String NAMESPACE_SUFIX_PARAM = "ns_sufix";
     public static final String URL_PARAM = "url";
+    public static final String POST_PARAMETERS = "POST_PARAMETERS";
+    public static final String HTTP_MANAGER = "HTTP_MANAGER";
+    public static final String SESSION_KEY = "SESSION_KEY";
     
+
+    private ModelPasser modelPasser = new LRUTrackingModelPasser();
     
 
     /**
@@ -107,45 +112,23 @@ public class ProxyServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        StringBuffer log = new StringBuffer();
-//        log.append("doGet - ");
-//        log.append(request.getRequestURL());
-//        log.append(" - {");
-//        for (Enumeration nameEnum = request.getParameterNames(); nameEnum.hasMoreElements();) {
-//            String name = (String)nameEnum.nextElement();
-//            log.append(name).append("=[");
-//            String[] values = request.getParameterValues(name);
-//            for (int index = 0; index < values.length; index++) {
-//                log.append(values[index]);
-//                if (index < (values.length - 1))
-//                    log.append(", ");
-//            }
-//            log.append("], ");
-//        }
-//        log.delete(log.length() - 2, log.length());
-//        log.append("}");
-//        System.out.println(log);
+        final String sessionKey = request.getParameter(SESSION_KEY);
         
-        final String sid = request.getParameter(SESSION_ID_PARAM);
-        final String prefix = request.getParameter(NAMESPACE_PREFIX_PARAM);
-        final String sufix = request.getParameter(NAMESPACE_SUFIX_PARAM);
-        String url = request.getParameter(URL_PARAM);
-
-        final HttpSession portletSession = SessionMappingListener.getSession(sid);
-        if (portletSession == null) {
-            IllegalStateException ise = new IllegalStateException("No HttpSession found for sid=" + sid);
-            LOG.error(ise, ise);
-            throw ise;
-        }
-
-        final PortletPreferences prefs = (PortletPreferences)portletSession.getAttribute(prefix + PortletPreferences.class.getName() + sufix);
-        if (prefs == null) {
-            IllegalStateException ise = new IllegalStateException("No PortletPreferences found for sid=" + sid + ", ns_prefix=" + prefix + ". ns_sufix=" + sufix);
-            LOG.error(ise, ise);
-            throw ise;
+        final Map<Object, Object> model = this.modelPasser.getModelFromPortlet(request, response, sessionKey);
+        
+        if (model == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No model exists in the session for key '" + sessionKey + "'");
+            return;
         }
         
-        final String namespace = (String)portletSession.getAttribute(prefix + WebproxyConstants.NAMESPACE + sufix);
+        
+        final String requestType = (String)model.get(WebproxyConstants.REQUEST_TYPE);
+        final Map<String, String[]> postParameters = (Map<String, String[]>)model.get(POST_PARAMETERS);
+        String url = (String)model.get(URL_PARAM);
+        final String instanceKey = (String)model.get(IKeyManager.PORTLET_INSTANCE_KEY);
+        
+
+        final PortletPreferences prefs = (PortletPreferences)model.get(PortletPreferences.class.getName());
 
         final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -153,7 +136,8 @@ public class ProxyServlet extends HttpServlet {
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-            final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
+            final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+            final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -162,15 +146,13 @@ public class ProxyServlet extends HttpServlet {
                     LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                 response.setContentType(cachedData.getContentType());
-                response.getOutputStream().write(cachedData.getContent());
+                response.getWriter().write(cachedData.getContent());
                 return;
             }
         }
 
-        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
-        
         //Get Persisted HTTP State
-        HttpManager httpManager = findingService.findManager(request, prefs, portletSession);
+        HttpManager httpManager = (HttpManager)model.get(HTTP_MANAGER);
 
         Response httpResponse = null;
         try {
@@ -245,7 +227,8 @@ public class ProxyServlet extends HttpServlet {
                         LOG.info("Request '" + url + "' timed out. Attempting to use expired cache data.");
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
-                        final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
+                        final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
+                        final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 
@@ -263,7 +246,7 @@ public class ProxyServlet extends HttpServlet {
                                 LOG.trace("Using cached content for key '" + cacheKey + "'");
 
                             response.setContentType(cachedData.getContentType());
-                            response.getOutputStream().write(cachedData.getContent());
+                            response.getWriter().write(cachedData.getContent());
                             return;
                         }
                     }
@@ -274,8 +257,6 @@ public class ProxyServlet extends HttpServlet {
                     throw new ServletException(hte);
                     //TODO handle timeout cleanly
                 }
-
-                portletSession.setAttribute(prefix + HttpClientConfigImpl.SESSION_TIMEOUT + sufix, new Long(System.currentTimeMillis()));
 
                 //Check to see if post-interceptors are used
                 final String sPostInterceptor = ConfigUtils.checkEmptyNullString(prefs.getValue(GeneralConfigImpl.POST_INTERCEPTOR_CLASS, null),

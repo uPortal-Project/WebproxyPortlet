@@ -41,7 +41,7 @@ import java.util.Date;
 
 /**
  * Represents the rendered content of a page. The content type of the request
- * and a byte[] of the content are stored which allow the content to be
+ * and a String of the content are stored which allow the content to be
  * replayed to the user.
  * 
  * @author Eric Dalquist <a href="mailto:edalquist@unicon.net">edalquist@unicon.net</a>
@@ -49,14 +49,14 @@ import java.util.Date;
  */
 public class CacheEntry implements Serializable {
     private String contentType;
-    private byte[] content;
+    private String content;
     private Date expirationDate;
     
     
     /**
      * @return Returns the content.
      */
-    public byte[] getContent() {
+    public String getContent() {
         return this.content;
     }
     /**
@@ -74,7 +74,7 @@ public class CacheEntry implements Serializable {
     /**
      * @param content The content to set.
      */
-    public void setContent(byte[] content) {
+    public void setContent(String content) {
         this.content = content;
     }
     /**

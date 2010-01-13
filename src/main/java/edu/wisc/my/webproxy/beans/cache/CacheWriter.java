@@ -34,9 +34,9 @@
  */
 package edu.wisc.my.webproxy.beans.cache;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 
 
 
@@ -50,17 +50,19 @@ import java.io.OutputStream;
  * @author Eric Dalquist <a href="mailto:edalquist@unicon.net">edalquist@unicon.net</a>
  * @version $Revision$
  */
-public class CacheOutputStream extends OutputStream {
-    private final OutputStream out;
+public class CacheWriter extends Writer {
+    private Writer out;
+    private final StringWriter cacheBuffer = new StringWriter(1024);
+    
     private final CacheEntry entryBase;
     private final String key;
     private final PageCache cache;
     private final boolean persistData;
     
-    private ByteArrayOutputStream cacheBuffer = new ByteArrayOutputStream(1024);;
+    
     
     /**
-     * Creates a new CacheOutputStream with the specified delegate stream and
+     * Creates a new CacheWriter with the specified delegate stream and
      * caching configuration.
      * 
      * @param out The output stream to delegate cache calls to. If null no delegation is performed.
@@ -69,7 +71,7 @@ public class CacheOutputStream extends OutputStream {
      * @param cacheKey The key to store the data with, may not be null.
      * @param persistData If the data should be persisted by the store.
      */
-    public CacheOutputStream(OutputStream out, CacheEntry entryBase, PageCache cache, String cacheKey, boolean persistData) {
+    public CacheWriter(Writer out, CacheEntry entryBase, PageCache cache, String cacheKey, boolean persistData) {
         if (cache == null)
             throw new IllegalArgumentException("cache cannot be null");
         if (cacheKey == null)
@@ -88,67 +90,126 @@ public class CacheOutputStream extends OutputStream {
      * 
      * @see java.io.OutputStream#close()
      */
+    @Override
     public void close() throws IOException {
-        if (this.cacheBuffer == null)
+        if (this.out == null) {
             throw new IllegalStateException("close() has already been called.");
+        }
         
-        this.entryBase.setContent(this.cacheBuffer.toByteArray());
+        this.entryBase.setContent(this.cacheBuffer.toString());
         
         this.cache.cachePage(this.key, this.entryBase, this.persistData);
         
-        this.cacheBuffer = null;
-        
-        if (this.out != null)
+        if (this.out != null) {
             this.out.close();
+        }
+        
+        this.out = null;
     }
     
     /**
      * @see java.io.OutputStream#flush()
      */
+    @Override
     public void flush() throws IOException {
-        if (this.cacheBuffer == null)
+        if (this.out == null) {
             throw new IllegalStateException("close() has already been called.");
+        }
 
-        if (this.out != null)
-            this.out.flush();
+        this.out.flush();
     }
-    
-    /**
-     * @see java.io.OutputStream#write(byte[], int, int)
-     */
-    public void write(byte[] b, int off, int len) throws IOException {
-        if (this.cacheBuffer == null)
-            throw new IllegalStateException("close() has already been called.");
 
-        this.cacheBuffer.write(b, off, len);
-        
-        if (this.out != null)
-            this.out.write(b, off, len);
+
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.write(cbuf, off, len);
+        this.out.write(cbuf, off, len);
     }
-    
-    /**
-     * @see java.io.OutputStream#write(byte[])
-     */
-    public void write(byte[] b) throws IOException {
-        if (this.cacheBuffer == null)
-            throw new IllegalStateException("close() has already been called.");
 
-        this.cacheBuffer.write(b);
+
+    @Override
+    public Writer append(char c) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.append(c);
+        this.out.append(c);
         
-        if (this.out != null)
-            this.out.write(b);
+        return this;
     }
-    
-    /**
-     * @see java.io.OutputStream#write(int)
-     */
-    public void write(int b) throws IOException {
-        if (this.cacheBuffer == null)
-            throw new IllegalStateException("close() has already been called.");
 
-        this.cacheBuffer.write(b);
+
+    @Override
+    public Writer append(CharSequence csq, int start, int end) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.append(csq, start, end);
+        this.out.append(csq, start, end);
         
-        if (this.out != null)
-            this.out.write(b);
+        return this;
+    }
+
+
+    @Override
+    public Writer append(CharSequence csq) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.append(csq);
+        this.out.append(csq);
+        
+        return this;
+    }
+
+
+    @Override
+    public void write(char[] cbuf) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.write(cbuf);
+        this.out.write(cbuf);
+    }
+
+
+    @Override
+    public void write(int c) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.write(c);
+        this.out.write(c);
+    }
+
+
+    @Override
+    public void write(String str, int off, int len) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.write(str, off, len);
+        this.out.write(str, off, len);
+    }
+
+
+    @Override
+    public void write(String str) throws IOException {
+        if (this.out == null) {
+            throw new IllegalStateException("close() has already been called.");
+        }
+    
+        this.cacheBuffer.write(str);
+        this.out.write(str);
     }
 }

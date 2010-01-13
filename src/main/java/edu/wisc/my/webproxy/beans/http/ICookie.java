@@ -138,16 +138,6 @@ public interface ICookie extends Serializable {
     void setComment(String purpose);
     
     /**
-     * Sets the domain attribute.
-     * 
-     * @param domain The value of the domain attribute
-     *
-     * @see #getDomain
-     */
-    
-    void setDomain(String pattern);
-    
-    /**
      * Sets expiration date.
      * @param expiryDate the {@link Date} after which this cookie is no longer valid.
      *
@@ -201,6 +191,16 @@ public interface ICookie extends Serializable {
      */
     
     void setVersion(int v);
+
+    /**
+     * @return When this cookie was originally created
+     */
+    public Date getCreated();
+
+    /**
+     * @return The last time this cookie was updated
+     */
+    public Date getUpdated();
     
 }
 

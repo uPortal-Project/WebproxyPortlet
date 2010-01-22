@@ -39,8 +39,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletPreferences;
 import javax.servlet.ServletException;
@@ -84,6 +88,16 @@ public class ProxyServlet extends HttpServlet {
     public static final String POST_PARAMETERS = "POST_PARAMETERS";
     public static final String HTTP_MANAGER = "HTTP_MANAGER";
     public static final String SESSION_KEY = "SESSION_KEY";
+
+    //All values must be lower case
+    private static final Set<String> ALLOWED_HEADERS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            "Cache-control".toLowerCase(), 
+            "Content-Disposition".toLowerCase(), 
+            "Content-Length".toLowerCase(),
+            "Date".toLowerCase(), 
+            "Expires".toLowerCase(),
+            "Last-Modified".toLowerCase() 
+            )));
     
 
     private final ModelPasser modelPasser = new LRUTrackingModelPasser();
@@ -275,22 +289,19 @@ public class ProxyServlet extends HttpServlet {
                 final String name = header.getName();
                 final String value = header.getValue();
 
+                if (!ALLOWED_HEADERS.contains(name.toLowerCase())) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Ignoring response header: " + name + "=" + value);
+                    }
+                    
+                    continue;
+                }
+
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Copying header from request to response: " + name + "=" + value);
                 }
-                
-                if ("Content-Length".equals(name)) {
-                    try {
-                        final int length = Integer.parseInt(value);
-                        response.setContentLength(length);
-                    }
-                    catch (NumberFormatException nfe) {
-                        LOG.warn("'" + url + "' returned an invalid Content-Length='" + value + "'");
-                    }
-                }
-                else {
-                    response.addHeader(name, value);
-                }
+            
+                response.addHeader(name, value);
             }
             
             response.setContentType(httpResponse.getContentType());

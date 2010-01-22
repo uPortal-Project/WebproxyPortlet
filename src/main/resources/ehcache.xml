@@ -23,4 +23,56 @@
     <cache name="PageCache"
         eternal="false" maxElementsInMemory="10000" overflowToDisk="false" diskPersistent="false" 
         timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" />
+    
+    <!-- 
+     | Caches WebProxyStateImpl objects
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+    <!-- 
+     | Caches queries for WebProxyStateImpl objects by state key
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.query.FIND_STATE_BY_KEY"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+        
+    <!-- 
+     | Caches WebProxyStateImpl cookies objects
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.cookies"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+    <!-- 
+     | Caches PersistedCookieImpl objects
+     | - 1 x user per portlet per cookie from a remote site
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.PersistedCookieImpl"
+        eternal="false" maxElementsInMemory="5000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+    
+    <!-- 
+     | Caches last updated timestamp for each hibernate managed table
+     | - 1 x hibernate managed table
+     | - not replicated - used to track local modifications to tables
+     +-->
+    <cache name="org.hibernate.cache.UpdateTimestampsCache"
+        eternal="false" maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 
+     | Caches SQL query level results for entity queries that don't specify an explicit cache region
+     | - 1 x managed query result
+     | - not replicated - used to track local query results
+     +-->
+    <cache name="org.hibernate.cache.StandardQueryCache"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
 </ehcache>

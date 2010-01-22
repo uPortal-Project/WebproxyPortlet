@@ -4,8 +4,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+
+import org.apache.commons.lang.Validate;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * PersistedCookieImpl is an embeddable, JPA-persistable implementation of
@@ -15,26 +23,36 @@ import javax.persistence.Table;
  * 
  * @author Jen Bourey, jbourey@unicon.net
  */
-@Embeddable
-@Table(name = "WEB_PROXY_STATE_COOKIE")
+@Entity
+@Table(name = "WP_COOKIE")
+@GenericGenerator(name = "WP_COOKIE_ID_GEN", strategy = "native", parameters = {
+        @Parameter(name = "sequence", value = "WP_COOKIE_ID_SEQ"),
+        @Parameter(name = "table", value = "WP_JPA_UNIQUE_KEY"),
+        @Parameter(name = "column", value = "NEXT_WP_COOKIE_ID_HI") })
 public class PersistedCookieImpl implements ICookie, Serializable {
-	
-	@Column( name = "NAME" )
-	private String name;
+    private static final long serialVersionUID = 1L;
+    
+    @Id
+    @GeneratedValue(generator = "WP_COOKIE_ID_GEN")
+    @Column(name = "COOKIE_ID")
+    private final long cookieId;
 
-	@Column( name = "VALUE", length = 2048 )
+    @Column( name = "COOKIE_NAME", length = 4000, nullable = false )
+	private final String name;
+    
+    @Column( name = "DOMAIN", length = 1000 )
+    private final String domain;
+
+	@Column( name = "COOKIE_VALUE", length = 4000 )
 	private String value;
 	
-	@Column( name = "PATH" )
+	@Column( name = "PATH", length = 1000 )
 	private String path;
-	
-	@Column( name = "DOMAIN" )
-	private String domain;
 	
 	@Column( name = "EXPIRY_DATE" )
 	private Date expiryDate;
 	
-	@Column( name = "COMMENT" )
+	@Column( name = "COOKIE_COMMENT", length = 4000 )
 	private String comment;
 	
 	@Column( name = "SECURE" )
@@ -43,18 +61,50 @@ public class PersistedCookieImpl implements ICookie, Serializable {
 	@Column( name = "VERSION" )
 	private int version;
 	
-	public PersistedCookieImpl() { }
+	@Column( name = "CREATE_DATETIME" )
+	private Date created;
 	
-	public boolean isExpired() {
+	@Column( name = "UPDATE_DATETIME" )
+    private Date updated;
+    
+    @PrePersist
+    protected void onCreate() {
+        created = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updated = new Date();
+    }
+	
+	
+
+	/*
+	 * Only used by JPA
+	 */
+	@SuppressWarnings("unused")
+    private PersistedCookieImpl() { 
+	    this.cookieId = -1;
+        this.name = null;
+        this.domain = null;
+	}
+	
+    public PersistedCookieImpl(String name, String domain) {
+        Validate.notNull(name, "name cannot be null");
+        
+        this.cookieId = -1;
+        this.name = name;
+        this.domain = domain;
+    }
+
+
+
+    public boolean isExpired() {
 		return expiryDate != null && expiryDate.before(new Date());
 	}
 	
 	public String getName() {
 		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	public String getValue() {
@@ -75,10 +125,6 @@ public class PersistedCookieImpl implements ICookie, Serializable {
 	
 	public String getDomain() {
 		return this.domain;
-	}
-	
-	public void setDomain(String domain) {
-		this.domain = domain;
 	}
 	
 	public Date getExpiryDate() {
@@ -112,5 +158,88 @@ public class PersistedCookieImpl implements ICookie, Serializable {
 	public void setVersion(int version) {
 		this.version = version;
 	}
+	
+    public Date getCreated() {
+        return created;
+    }
+    public Date getUpdated() {
+        return updated;
+    }
 
+    @Override
+    public String toString() {
+        return "PersistedCookieImpl " +
+        		"[cookieId=" + cookieId + ", domain=" + domain + ", path=" + path + ", expiryDate=" + expiryDate + ", " +
+    				"secure=" + secure + ", version=" + version + ", name=" + name + ", " +
+					"value=" + value + ", comment=" + comment + ", created=" + created + ", updated=" + updated + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+        result = prime * result + ((domain == null) ? 0 : domain.hashCode());
+        result = prime * result + ((expiryDate == null) ? 0 : expiryDate.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        result = prime * result + (secure ? 1231 : 1237);
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        result = prime * result + version;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PersistedCookieImpl other = (PersistedCookieImpl) obj;
+        if (comment == null) {
+            if (other.comment != null)
+                return false;
+        }
+        else if (!comment.equals(other.comment))
+            return false;
+        if (domain == null) {
+            if (other.domain != null)
+                return false;
+        }
+        else if (!domain.equals(other.domain))
+            return false;
+        if (expiryDate == null) {
+            if (other.expiryDate != null)
+                return false;
+        }
+        else if (!expiryDate.equals(other.expiryDate))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        if (path == null) {
+            if (other.path != null)
+                return false;
+        }
+        else if (!path.equals(other.path))
+            return false;
+        if (secure != other.secure)
+            return false;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        }
+        else if (!value.equals(other.value))
+            return false;
+        if (version != other.version)
+            return false;
+        return true;
+    }
+
+	
 }

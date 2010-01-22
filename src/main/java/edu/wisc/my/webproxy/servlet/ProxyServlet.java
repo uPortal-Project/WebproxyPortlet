@@ -39,33 +39,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletPreferences;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jasig.web.util.LRUTrackingModelPasser;
+import org.jasig.web.util.ModelPasser;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import edu.wisc.my.webproxy.beans.cache.CacheEntry;
-import edu.wisc.my.webproxy.beans.cache.PageCache;
-import edu.wisc.my.webproxy.beans.config.CacheConfigImpl;
 import edu.wisc.my.webproxy.beans.config.ConfigUtils;
 import edu.wisc.my.webproxy.beans.config.GeneralConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
-import edu.wisc.my.webproxy.beans.http.HttpManagerService;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
 import edu.wisc.my.webproxy.beans.http.IHeader;
+import edu.wisc.my.webproxy.beans.http.ParameterPair;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
@@ -82,10 +80,13 @@ public class ProxyServlet extends HttpServlet {
     private Log LOG = LogFactory.getLog(ProxyServlet.class);
     
     public static final String SESSION_ID_PARAM = "sid";
-    public static final String NAMESPACE_PREFIX_PARAM = "ns_prefix";
-    public static final String NAMESPACE_SUFIX_PARAM = "ns_sufix";
     public static final String URL_PARAM = "url";
+    public static final String POST_PARAMETERS = "POST_PARAMETERS";
+    public static final String HTTP_MANAGER = "HTTP_MANAGER";
+    public static final String SESSION_KEY = "SESSION_KEY";
     
+
+    private final ModelPasser modelPasser = new LRUTrackingModelPasser();
     
 
     /**
@@ -107,70 +108,25 @@ public class ProxyServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        StringBuffer log = new StringBuffer();
-//        log.append("doGet - ");
-//        log.append(request.getRequestURL());
-//        log.append(" - {");
-//        for (Enumeration nameEnum = request.getParameterNames(); nameEnum.hasMoreElements();) {
-//            String name = (String)nameEnum.nextElement();
-//            log.append(name).append("=[");
-//            String[] values = request.getParameterValues(name);
-//            for (int index = 0; index < values.length; index++) {
-//                log.append(values[index]);
-//                if (index < (values.length - 1))
-//                    log.append(", ");
-//            }
-//            log.append("], ");
-//        }
-//        log.delete(log.length() - 2, log.length());
-//        log.append("}");
-//        System.out.println(log);
+        final String sessionKey = request.getParameter(SESSION_KEY);
         
-        final String sid = request.getParameter(SESSION_ID_PARAM);
-        final String prefix = request.getParameter(NAMESPACE_PREFIX_PARAM);
-        final String sufix = request.getParameter(NAMESPACE_SUFIX_PARAM);
-        String url = request.getParameter(URL_PARAM);
-
-        final HttpSession portletSession = SessionMappingListener.getSession(sid);
-        if (portletSession == null) {
-            IllegalStateException ise = new IllegalStateException("No HttpSession found for sid=" + sid);
-            LOG.error(ise, ise);
-            throw ise;
-        }
-
-        final PortletPreferences prefs = (PortletPreferences)portletSession.getAttribute(prefix + PortletPreferences.class.getName() + sufix);
-        if (prefs == null) {
-            IllegalStateException ise = new IllegalStateException("No PortletPreferences found for sid=" + sid + ", ns_prefix=" + prefix + ". ns_sufix=" + sufix);
-            LOG.error(ise, ise);
-            throw ise;
+        final Map<Object, Object> model = this.modelPasser.getModelFromPortlet(request, response, sessionKey);
+        
+        if (model == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No model exists in the session for key '" + sessionKey + "'");
+            return;
         }
         
-        final String namespace = (String)portletSession.getAttribute(prefix + WebproxyConstants.NAMESPACE + sufix);
-
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
-        final boolean sUseCache = new Boolean(prefs.getValue(CacheConfigImpl.USE_CACHE, null)).booleanValue();
-        if (sUseCache) {
-            final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
-
-            final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
-
-            final CacheEntry cachedData = cache.getCachedPage(cacheKey);
-
-            if (cachedData != null) {
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Using cached content for key '" + cacheKey + "'");
-
-                response.setContentType(cachedData.getContentType());
-                response.getOutputStream().write(cachedData.getContent());
-                return;
-            }
-        }
-
-        HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
         
+        final String requestType = (String)model.get(WebproxyConstants.REQUEST_TYPE);
+        final Map<String, String[]> postParameters = (Map<String, String[]>)model.get(POST_PARAMETERS);
+        String url = (String)model.get(URL_PARAM);
+        
+
+        final PortletPreferences prefs = (PortletPreferences)model.get(PortletPreferences.class.getName());
+
         //Get Persisted HTTP State
-        HttpManager httpManager = findingService.findManager(request, prefs, portletSession);
+        HttpManager httpManager = (HttpManager)model.get(HTTP_MANAGER);
 
         Response httpResponse = null;
         try {
@@ -195,21 +151,47 @@ public class ProxyServlet extends HttpServlet {
                         headerList.add(h);
                     }
 
-                    httpRequest.setHeaders((IHeader[])headerList.toArray(new IHeader[headerList.size()]));
+                    httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
                 }
                 else {
                     LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
                 }
 
-                //set Type always GET
-                httpRequest.setType(WebproxyConstants.GET_REQUEST);
+                //set Type 
+                if (requestType != null) {
+                    httpRequest.setType(requestType);
+                }
+                else {
+                    httpRequest.setType(WebproxyConstants.GET_REQUEST);
+                }
+                
+                //Set parameters
+                if (postParameters != null) {
+                    final List<ParameterPair> postParameterPairs = new ArrayList<ParameterPair>(postParameters.size());
+                    
+                    for (final Map.Entry<String, String[]> parameterEntry : postParameters.entrySet()) {
+                        final String paramName = parameterEntry.getKey();
+
+                        if (!paramName.startsWith(WebproxyConstants.UNIQUE_CONSTANT)) {
+                            final String[] values = parameterEntry.getValue();
+                            
+                            for (int valIndex = 0; valIndex < values.length; valIndex++) {
+                                final ParameterPair param = new ParameterPair(paramName, values[valIndex]);
+                                postParameterPairs.add(param);
+                            }
+                        }
+                    }
+
+                    final ParameterPair[] params = postParameterPairs.toArray(new ParameterPair[postParameterPairs.size()]);
+                    httpRequest.setParameters(params);
+                }
                 
 
                 //Check to see if pre-interceptors are used.
                 final String sPreInterceptor = ConfigUtils.checkEmptyNullString(prefs.getValue(GeneralConfigImpl.PRE_INTERCEPTOR_CLASS, null), null);
                 if (sPreInterceptor != null) {
                     try {
-                        final Class preInterceptorClass = Class.forName(sPreInterceptor);
+                        final Class<?> preInterceptorClass = Class.forName(sPreInterceptor);
                         PreInterceptor myPreInterceptor = (PreInterceptor)preInterceptorClass.newInstance();
                         myPreInterceptor.intercept(request, response, httpRequest);
                     }
@@ -240,33 +222,6 @@ public class ProxyServlet extends HttpServlet {
                     httpResponse = httpManager.doRequest(httpRequest);
                 }
                 catch (HttpTimeoutException hte) {
-                    final boolean sUseExpired = new Boolean(prefs.getValue(CacheConfigImpl.USE_EXPIRED, null)).booleanValue();
-                    if (sUseCache && sUseExpired) {
-                        LOG.info("Request '" + url + "' timed out. Attempting to use expired cache data.");
-                        final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
-
-                        final String cacheKey = WebProxyPortlet.generateCacheKey(url, namespace);
-
-                        final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
-
-                        if (cachedData != null) {
-                            final int retryDelay = ConfigUtils.parseInt(prefs.getValue(CacheConfigImpl.RETRY_DELAY, null), -1);
-
-                            if (retryDelay > 0) {
-                                final boolean persistData = new Boolean(prefs.getValue(CacheConfigImpl.PERSIST_CACHE, null)).booleanValue();
-
-                                cachedData.setExpirationDate(new Date(System.currentTimeMillis() + (retryDelay * 1000)));
-                                cache.cachePage(cacheKey, cachedData, persistData);
-                            }
-
-                            if (LOG.isTraceEnabled())
-                                LOG.trace("Using cached content for key '" + cacheKey + "'");
-
-                            response.setContentType(cachedData.getContentType());
-                            response.getOutputStream().write(cachedData.getContent());
-                            return;
-                        }
-                    }
 
                     //If cached content was used this won't be reached, all other
                     //cases an exception needs to be thrown.
@@ -275,14 +230,12 @@ public class ProxyServlet extends HttpServlet {
                     //TODO handle timeout cleanly
                 }
 
-                portletSession.setAttribute(prefix + HttpClientConfigImpl.SESSION_TIMEOUT + sufix, new Long(System.currentTimeMillis()));
-
                 //Check to see if post-interceptors are used
                 final String sPostInterceptor = ConfigUtils.checkEmptyNullString(prefs.getValue(GeneralConfigImpl.POST_INTERCEPTOR_CLASS, null),
                                                                                  null);
                 if (sPostInterceptor != null) {
                     try {
-                        final Class postInterceptorClass = Class.forName(sPostInterceptor);
+                        final Class<?> postInterceptorClass = Class.forName(sPostInterceptor);
                         PostInterceptor myPostInterceptor = (PostInterceptor)postInterceptorClass.newInstance();
                         myPostInterceptor.intercept(request, response, httpResponse);
                     }
@@ -317,17 +270,26 @@ public class ProxyServlet extends HttpServlet {
                     url = tempUrl;
             }
 
-            //Find Content-Length header and set it on output stream if found
-            IHeader[] headers = httpResponse.getHeaders();
-            for (int index = 0; index < headers.length; index++) {
-                if ("Content-Length".equals(headers[index].getName())) {
+            //Copy headers from proxied server
+            for (final IHeader header : httpResponse.getHeaders()) {
+                final String name = header.getName();
+                final String value = header.getValue();
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Copying header from request to response: " + name + "=" + value);
+                }
+                
+                if ("Content-Length".equals(name)) {
                     try {
-                        final int length = Integer.parseInt(headers[index].getValue());
+                        final int length = Integer.parseInt(value);
                         response.setContentLength(length);
                     }
                     catch (NumberFormatException nfe) {
-                        LOG.warn("'" + url + "' returned an invalid Content-Length='" + headers[index].getValue() + "'");
+                        LOG.warn("'" + url + "' returned an invalid Content-Length='" + value + "'");
                     }
+                }
+                else {
+                    response.addHeader(name, value);
                 }
             }
             

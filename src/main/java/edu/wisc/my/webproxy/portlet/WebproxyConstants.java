@@ -35,7 +35,5 @@ public interface WebproxyConstants {
     
     public static final String BACK_BUTTON = "backButton";
     
-    public static final String NAMESPACE = UNIQUE_CONSTANT + "namespace";
-    
 
 }

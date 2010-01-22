@@ -36,7 +36,7 @@
 package edu.wisc.my.webproxy.beans.filtering;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -51,21 +51,21 @@ import org.xml.sax.SAXException;
  * @version $Id$
  */
 public final class HtmlOutputFilter extends ChainingSaxFilter {
-    private static final byte[] ENTITY_START    = "&".getBytes();
-    private static final byte[] ENTITY_END      = ";".getBytes();
-    private static final byte[] TAG_OPEN_START  = "<".getBytes();
-    private static final byte[] TAG_CLOSE_START = "</".getBytes();
-    private static final byte[] TAG_END         = ">".getBytes();
-    private static final byte[] COMMENT_START   = "<!--".getBytes();
-    private static final byte[] COMMENT_END     = "-->".getBytes();
-    private static final byte[] QUOTE           = "\"".getBytes();
-    private static final byte[] EQUAL           = "=".getBytes();
-    private static final byte[] SPACE           = " ".getBytes();
+    private static final String ENTITY_START    = "&";
+    private static final String ENTITY_END      = ";";
+    private static final String TAG_OPEN_START  = "<";
+    private static final String TAG_CLOSE_START = "</";
+    private static final String TAG_END         = ">";
+    private static final String COMMENT_START   = "<!--";
+    private static final String COMMENT_END     = "-->";
+    private static final String QUOTE           = "\"";
+    private static final String EQUAL           = "=";
+    private static final String SPACE           = " ";
     
-    private final OutputStream out;
+    private final Writer out;
     private String currentEntity = null; //The current entity that is being rendered
     
-    public HtmlOutputFilter(OutputStream out) {
+    public HtmlOutputFilter(Writer out) {
         if (out == null)
             throw new IllegalArgumentException("OutputStream cannot be null");
         
@@ -83,7 +83,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
             out.write(COMMENT_START);
-            out.write(new String(ch, start, length).getBytes());
+            out.write(ch, start, length);
             out.write(COMMENT_END);
         }
         catch (IOException ioe) {
@@ -99,7 +99,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
         
         try {
             out.write(ENTITY_START);
-            out.write(this.currentEntity.getBytes());
+            out.write(this.currentEntity);
             out.write(ENTITY_END);
         }
         catch (IOException ioe) {
@@ -121,7 +121,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
         try {
             if (this.currentEntity == null) {
                 final String chars = new String(ch, start, length);
-                out.write(chars.getBytes());
+                out.write(chars);
             }
         }
         catch (IOException ioe) {
@@ -147,7 +147,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
             out.write(TAG_CLOSE_START);
-            out.write(qName.getBytes());
+            out.write(qName);
             out.write(TAG_END);
         }
         catch (IOException ioe) {
@@ -161,19 +161,19 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         try {
             out.write(TAG_OPEN_START);
-            out.write(qName.getBytes());
+            out.write(qName);
             
             for (int index = 0; index < atts.getLength(); index++) {
                 final String name = atts.getQName(index);
                 final String value = atts.getValue(index);
                 
                 out.write(SPACE);
-                out.write(name.getBytes());
+                out.write(name);
                 
                 if (value != null) {
                     out.write(EQUAL);
                     out.write(QUOTE);
-                    out.write(value.getBytes());
+                    out.write(value);
                     out.write(QUOTE);
                 }
             }

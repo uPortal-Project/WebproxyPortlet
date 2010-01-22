@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -57,9 +56,6 @@ import org.jasig.web.util.ModelPasser;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import edu.wisc.my.webproxy.beans.cache.CacheEntry;
-import edu.wisc.my.webproxy.beans.cache.PageCache;
-import edu.wisc.my.webproxy.beans.config.CacheConfigImpl;
 import edu.wisc.my.webproxy.beans.config.ConfigUtils;
 import edu.wisc.my.webproxy.beans.config.GeneralConfigImpl;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
@@ -67,7 +63,7 @@ import edu.wisc.my.webproxy.beans.config.HttpHeaderConfigImpl;
 import edu.wisc.my.webproxy.beans.http.HttpManager;
 import edu.wisc.my.webproxy.beans.http.HttpTimeoutException;
 import edu.wisc.my.webproxy.beans.http.IHeader;
-import edu.wisc.my.webproxy.beans.http.IKeyManager;
+import edu.wisc.my.webproxy.beans.http.ParameterPair;
 import edu.wisc.my.webproxy.beans.http.Request;
 import edu.wisc.my.webproxy.beans.http.Response;
 import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
@@ -90,7 +86,7 @@ public class ProxyServlet extends HttpServlet {
     public static final String SESSION_KEY = "SESSION_KEY";
     
 
-    private ModelPasser modelPasser = new LRUTrackingModelPasser();
+    private final ModelPasser modelPasser = new LRUTrackingModelPasser();
     
 
     /**
@@ -125,31 +121,9 @@ public class ProxyServlet extends HttpServlet {
         final String requestType = (String)model.get(WebproxyConstants.REQUEST_TYPE);
         final Map<String, String[]> postParameters = (Map<String, String[]>)model.get(POST_PARAMETERS);
         String url = (String)model.get(URL_PARAM);
-        final String instanceKey = (String)model.get(IKeyManager.PORTLET_INSTANCE_KEY);
         
 
         final PortletPreferences prefs = (PortletPreferences)model.get(PortletPreferences.class.getName());
-
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
-        final boolean sUseCache = new Boolean(prefs.getValue(CacheConfigImpl.USE_CACHE, null)).booleanValue();
-        if (sUseCache) {
-            final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
-
-            final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
-            final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
-
-            final CacheEntry cachedData = cache.getCachedPage(cacheKey);
-
-            if (cachedData != null) {
-                if (LOG.isTraceEnabled())
-                    LOG.trace("Using cached content for key '" + cacheKey + "'");
-
-                response.setContentType(cachedData.getContentType());
-                response.getWriter().write(cachedData.getContent());
-                return;
-            }
-        }
 
         //Get Persisted HTTP State
         HttpManager httpManager = (HttpManager)model.get(HTTP_MANAGER);
@@ -177,21 +151,47 @@ public class ProxyServlet extends HttpServlet {
                         headerList.add(h);
                     }
 
-                    httpRequest.setHeaders((IHeader[])headerList.toArray(new IHeader[headerList.size()]));
+                    httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
                 }
                 else {
                     LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
                 }
 
-                //set Type always GET
-                httpRequest.setType(WebproxyConstants.GET_REQUEST);
+                //set Type 
+                if (requestType != null) {
+                    httpRequest.setType(requestType);
+                }
+                else {
+                    httpRequest.setType(WebproxyConstants.GET_REQUEST);
+                }
+                
+                //Set parameters
+                if (postParameters != null) {
+                    final List<ParameterPair> postParameterPairs = new ArrayList<ParameterPair>(postParameters.size());
+                    
+                    for (final Map.Entry<String, String[]> parameterEntry : postParameters.entrySet()) {
+                        final String paramName = parameterEntry.getKey();
+
+                        if (!paramName.startsWith(WebproxyConstants.UNIQUE_CONSTANT)) {
+                            final String[] values = parameterEntry.getValue();
+                            
+                            for (int valIndex = 0; valIndex < values.length; valIndex++) {
+                                final ParameterPair param = new ParameterPair(paramName, values[valIndex]);
+                                postParameterPairs.add(param);
+                            }
+                        }
+                    }
+
+                    final ParameterPair[] params = postParameterPairs.toArray(new ParameterPair[postParameterPairs.size()]);
+                    httpRequest.setParameters(params);
+                }
                 
 
                 //Check to see if pre-interceptors are used.
                 final String sPreInterceptor = ConfigUtils.checkEmptyNullString(prefs.getValue(GeneralConfigImpl.PRE_INTERCEPTOR_CLASS, null), null);
                 if (sPreInterceptor != null) {
                     try {
-                        final Class preInterceptorClass = Class.forName(sPreInterceptor);
+                        final Class<?> preInterceptorClass = Class.forName(sPreInterceptor);
                         PreInterceptor myPreInterceptor = (PreInterceptor)preInterceptorClass.newInstance();
                         myPreInterceptor.intercept(request, response, httpRequest);
                     }
@@ -222,34 +222,6 @@ public class ProxyServlet extends HttpServlet {
                     httpResponse = httpManager.doRequest(httpRequest);
                 }
                 catch (HttpTimeoutException hte) {
-                    final boolean sUseExpired = new Boolean(prefs.getValue(CacheConfigImpl.USE_EXPIRED, null)).booleanValue();
-                    if (sUseCache && sUseExpired) {
-                        LOG.info("Request '" + url + "' timed out. Attempting to use expired cache data.");
-                        final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
-
-                        final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
-                        final String cacheKey = keyManager.generateCacheKey(url, instanceKey);
-
-                        final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
-
-                        if (cachedData != null) {
-                            final int retryDelay = ConfigUtils.parseInt(prefs.getValue(CacheConfigImpl.RETRY_DELAY, null), -1);
-
-                            if (retryDelay > 0) {
-                                final boolean persistData = new Boolean(prefs.getValue(CacheConfigImpl.PERSIST_CACHE, null)).booleanValue();
-
-                                cachedData.setExpirationDate(new Date(System.currentTimeMillis() + (retryDelay * 1000)));
-                                cache.cachePage(cacheKey, cachedData, persistData);
-                            }
-
-                            if (LOG.isTraceEnabled())
-                                LOG.trace("Using cached content for key '" + cacheKey + "'");
-
-                            response.setContentType(cachedData.getContentType());
-                            response.getWriter().write(cachedData.getContent());
-                            return;
-                        }
-                    }
 
                     //If cached content was used this won't be reached, all other
                     //cases an exception needs to be thrown.
@@ -263,7 +235,7 @@ public class ProxyServlet extends HttpServlet {
                                                                                  null);
                 if (sPostInterceptor != null) {
                     try {
-                        final Class postInterceptorClass = Class.forName(sPostInterceptor);
+                        final Class<?> postInterceptorClass = Class.forName(sPostInterceptor);
                         PostInterceptor myPostInterceptor = (PostInterceptor)postInterceptorClass.newInstance();
                         myPostInterceptor.intercept(request, response, httpResponse);
                     }
@@ -298,17 +270,26 @@ public class ProxyServlet extends HttpServlet {
                     url = tempUrl;
             }
 
-            //Find Content-Length header and set it on output stream if found
-            IHeader[] headers = httpResponse.getHeaders();
-            for (int index = 0; index < headers.length; index++) {
-                if ("Content-Length".equals(headers[index].getName())) {
+            //Copy headers from proxied server
+            for (final IHeader header : httpResponse.getHeaders()) {
+                final String name = header.getName();
+                final String value = header.getValue();
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Copying header from request to response: " + name + "=" + value);
+                }
+                
+                if ("Content-Length".equals(name)) {
                     try {
-                        final int length = Integer.parseInt(headers[index].getValue());
+                        final int length = Integer.parseInt(value);
                         response.setContentLength(length);
                     }
                     catch (NumberFormatException nfe) {
-                        LOG.warn("'" + url + "' returned an invalid Content-Length='" + headers[index].getValue() + "'");
+                        LOG.warn("'" + url + "' returned an invalid Content-Length='" + value + "'");
                     }
+                }
+                else {
+                    response.addHeader(name, value);
                 }
             }
             

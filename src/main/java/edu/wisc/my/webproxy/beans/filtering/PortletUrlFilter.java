@@ -77,7 +77,7 @@ public final class PortletUrlFilter extends InclExclUrlFilter {
         final PortletURL newUrl = this.renderResponse.createActionURL();
         newUrl.setParameter(WebproxyConstants.BASE_URL, orignialUrl);
 
-        if (matchIndex >= 0 && this.urlStateList[matchIndex] != null && this.urlStateList[matchIndex].trim().length() > 0) {
+        if (matchIndex >= 0 && this.urlStateList != null && this.urlStateList[matchIndex] != null && this.urlStateList[matchIndex].trim().length() > 0) {
             try {
                 newUrl.setWindowState(new WindowState(this.urlStateList[matchIndex]));
             }

@@ -95,8 +95,8 @@ public class AbsoluteUrlFilter extends BaseUrlFilter {
     public String rewriteUrl(String urlFragment) {
         final StringBuffer sb = new StringBuffer();
         
-        //Ignore anchor links, ignore host based absolute URLs 
-        if (urlFragment.startsWith("#") || urlFragment.startsWith("//")) {
+        //Ignore anchor links, ignore host based absolute URLs, ignore email links 
+        if (urlFragment.startsWith("#") || urlFragment.startsWith("//") || urlFragment.startsWith("mailto:")) {
             sb.append(urlFragment);
         }
         else if (urlFragment.startsWith("/")) {

@@ -16,9 +16,9 @@
         </supports>
         <supported-locale>en-US</supported-locale>
         <portlet-info>
-            <title>Authenticated Web Proxy</title>
+            <title>Web Proxy Portlet</title>
             <short-title>Web Proxy</short-title>
-            <keywords>Authenticated, Web, Proxy</keywords>
+            <keywords>Web, Proxy, Clipping, HTTP, HTTPS</keywords>
         </portlet-info>
     </portlet>
 

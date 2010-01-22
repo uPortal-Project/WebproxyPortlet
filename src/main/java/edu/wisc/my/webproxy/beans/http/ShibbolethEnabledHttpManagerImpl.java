@@ -5,8 +5,6 @@ import java.util.Map;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jasig.portal.security.provider.saml.SAMLSession;
 
@@ -21,9 +19,6 @@ import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
  * @author Jen Bourey, jbourey@unicon.net
  */
 public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
-
-	private static final Log log = LogFactory.getLog(ShibbolethEnabledHttpManagerImpl.class);
-	
 	private final static String AUTH_TYPE_SHIBBOLETH = "SHIBBOLETH";
 
 	private String spPrivateKey;
@@ -66,9 +61,8 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
 	 */
 	@Override
 	protected DefaultHttpClient createHttpClient(PortletRequest request) {
-		
 		// determine whether authentication is enabled, and if so, which type
-        final PortletPreferences myPreferences = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
+        final PortletPreferences myPreferences = new PortletPreferencesWrapper(request.getPreferences(), (Map<?, ?>)request.getAttribute(PortletRequest.USER_INFO));
         final boolean authEnabled = new Boolean(myPreferences.getValue(HttpClientConfigImpl.AUTH_ENABLE, null)).booleanValue();
         final String authType = ConfigUtils.checkEmptyNullString(myPreferences.getValue(HttpClientConfigImpl.AUTH_TYPE, ""), "");
 
@@ -90,15 +84,14 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
     			samlSession.setIdPServerPublicKeys(idpPublicKeys);
     		}
 
-    		log.debug("Returning new Shibbolized HttpClient instance");
+    		this.logger.debug("Returning new Shibbolized HttpClient instance");
     		return (DefaultHttpClient) samlSession.getHttpClient();
     		
-		// If the portlet is not using shibboleth authentication, call the 
-    	// parent method as usual.
-        } else {
-        	return super.createHttpClient(request);
         }
-
+        
+        // If the portlet is not using shibboleth authentication, call the 
+        // parent method as usual.
+    	return super.createHttpClient(request);
 	}
 
 	/**

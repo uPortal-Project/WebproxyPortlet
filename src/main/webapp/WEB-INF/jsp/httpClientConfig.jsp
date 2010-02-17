@@ -52,6 +52,8 @@
       <option value="<%=HttpClientConfigImpl.AUTH_TYPE_BASIC%>" <%=(HttpClientConfigImpl.AUTH_TYPE_BASIC.equals(authType) ? "selected=\"selected\"" : "")%>>BASIC</option>
       <option value="<%=HttpClientConfigImpl.AUTH_TYPE_NTLM%>" <%=(HttpClientConfigImpl.AUTH_TYPE_NTLM.equals(authType) ? "selected=\"selected\"" : "")%>>NTLM</option>
       <option value="<%=HttpClientConfigImpl.AUTH_TYPE_FORM%>" <%=(HttpClientConfigImpl.AUTH_TYPE_FORM.equals(authType) ? "selected=\"selected\"" : "")%>>FORM</option>
+      <option value="<%=HttpClientConfigImpl.AUTH_TYPE_SHIBBOLETH%>" <%=(HttpClientConfigImpl.AUTH_TYPE_FORM.equals(authType) ? "selected=\"selected\"" : "")%>>SHIBBOLETH</option>
+      <option value="<%=HttpClientConfigImpl.AUTH_TYPE_CAS%>" <%=(HttpClientConfigImpl.AUTH_TYPE_FORM.equals(authType) ? "selected=\"selected\"" : "")%>>CAS</option>
     </select>
 </p>
 <p>

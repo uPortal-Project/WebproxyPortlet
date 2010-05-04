@@ -45,6 +45,7 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -154,7 +155,21 @@ public class ResponseImpl implements Response{
      * @see edu.wisc.my.webproxy.beans.http.Response#close()
      */
     public void close() {
-    	// doesn't seem to be anything to do here
+        if (response == null) {
+            return;
+        }
+        
+        final HttpEntity entity = response.getEntity();
+        if (entity == null) {
+            return;
+        }
+        
+        try {
+            entity.consumeContent();
+        }
+        catch (IOException e) {
+            LOG.warn("Exception while closing connection", e);
+        }
     }
 
 }

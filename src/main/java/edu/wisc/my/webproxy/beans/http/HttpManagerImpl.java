@@ -60,6 +60,9 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRoute;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -72,6 +75,7 @@ import org.apache.http.params.HttpParams;
 import org.springframework.web.portlet.util.PortletUtils;
 
 import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
+import edu.wisc.my.webproxy.beans.config.ConfigUtils;
 import edu.wisc.my.webproxy.beans.config.HttpClientConfigImpl;
 import edu.wisc.my.webproxy.portlet.WebproxyConstants;
 
@@ -289,6 +293,16 @@ public class HttpManagerImpl extends HttpManager {
         client = new DefaultHttpClient ();
         SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
         HttpParams params = new BasicHttpParams();
+        
+        final int maxConnections = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS, "50"), 50);
+        final int maxConnectionsPerRoute = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS_PER_ROUTE, "10"), 10);
+        
+        ConnManagerParams.setMaxTotalConnections(params, maxConnections); 
+        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRoute() {
+            public int getMaxForRoute(HttpRoute route) {
+                return maxConnectionsPerRoute;
+            }
+        });
         
         if (logger.isDebugEnabled()) {
             logger.debug("Creating new DefaultHttpClient for " + request.getRemoteUser());

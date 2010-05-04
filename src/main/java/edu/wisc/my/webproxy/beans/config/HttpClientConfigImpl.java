@@ -63,6 +63,8 @@ public class HttpClientConfigImpl extends JspConfigPage {
     public static final String AUTH_TYPE        = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("sAuthType").toString();
     public static final String AUTH_URL         = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("sAuthenticationUrl").toString();
     
+    public static final String MAX_CONNECTIONS              = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("maxConnections").toString();
+    public static final String MAX_CONNECTIONS_PER_ROUTE    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("maxConnectionsPerRoute").toString();
     
     public static final String AUTH_ENABLE      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("authEnable").toString();
     

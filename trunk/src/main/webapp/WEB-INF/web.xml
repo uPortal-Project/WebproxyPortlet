@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    metadata-complete="true"
+    version="2.5">
+    
+    <display-name>Web Proxy Portlet</display-name>
+	
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>webproxy.root</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+    
+    <!--
+     | This loads the applicationContext.xml spring bean config
+	 | when the servlet context starts. The WebApplicationContext
+	 | object representing the spring bean config is avalable in the
+	 | servlet context.
+	 +-->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+    
+    <filter>
+        <filter-name>OpenEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <servlet-name>*</servlet-name>
+    </filter-mapping>
+    
+    <servlet>
+        <servlet-name>ProxyServlet</servlet-name>
+        <servlet-class>edu.wisc.my.webproxy.servlet.ProxyServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ProxyServlet</servlet-name>
+        <url-pattern>/ProxyServlet/*</url-pattern>
+    </servlet-mapping>
+
+<!-- The following section should be enabled to add support for proxy CAS authentication
+     The servlet mapping is completely fake and uses the ProxyServlet definition.  The Jasig
+     Java CAS client filter intercepts a call to this endpoint and grabs the proxy ticket
+     received from CAS.
+-->
+<!--
+    <servlet-mapping>
+        <servlet-name>ProxyServlet</servlet-name>
+        <url-pattern>/CasProxyReceptor/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>CAS Proxy Filter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>proxyFilter</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CAS Proxy Filter</filter-name>
+        <url-pattern>/CasProxyReceptor/*</url-pattern>
+    </filter-mapping>
+-->
+     
+</web-app>

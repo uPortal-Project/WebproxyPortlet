@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2000-2009, Jasig, Inc.
+    See license distributed with this file and available online at
+    https://www.ja-sig.org/svn/jasig-parent/tags/rel-10/license-header.txt
+
+-->
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false">
+
+    <!--
+     | Please see http://ehcache.sourceforge.net/documentation/configuration.html for detailed information on
+     | how to configurigure caches in this file
+     +-->
+
+    <!-- Location of persistent caches on disk -->
+    <diskStore path="java.io.tmpdir/WebProxyPortlet" />
+
+    <defaultCache eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" statistics="true" />
+
+    <cache name="PageCache"
+        eternal="false" maxElementsInMemory="10000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" statistics="true" />
+    
+    <!-- 
+     | Caches WebProxyStateImpl objects
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
+    <!-- 
+     | Caches queries for WebProxyStateImpl objects by state key
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.query.FIND_STATE_BY_KEY"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
+        
+    <!-- 
+     | Caches WebProxyStateImpl cookies objects
+     | - 1 x user per portlet instance
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.cookies"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
+    <!-- 
+     | Caches PersistedCookieImpl objects
+     | - 1 x user per portlet per cookie from a remote site
+     | - replicated by invalidation
+     +-->
+    <cache name="edu.wisc.my.webproxy.beans.http.PersistedCookieImpl"
+        eternal="false" maxElementsInMemory="5000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
+    
+    <!-- 
+     | Caches last updated timestamp for each hibernate managed table
+     | - 1 x hibernate managed table
+     | - not replicated - used to track local modifications to tables
+     +-->
+    <cache name="org.hibernate.cache.UpdateTimestampsCache"
+        eternal="false" maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" statistics="true" />
+
+    <!-- 
+     | Caches SQL query level results for entity queries that don't specify an explicit cache region
+     | - 1 x managed query result
+     | - not replicated - used to track local query results
+     +-->
+    <cache name="org.hibernate.cache.StandardQueryCache"
+        eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
+        timeToIdleSeconds="0" timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" statistics="true" />
+</ehcache>

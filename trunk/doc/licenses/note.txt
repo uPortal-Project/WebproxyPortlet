@@ -1,0 +1,7 @@
+Several of the included .jar files themselves include the appropriate
+license.
+
+The included xalan.jar, xml-apis.jar, commons-io and commons-pool .jars are 
+distributed under the apache20-license included in this directory.
+
+

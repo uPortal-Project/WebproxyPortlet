@@ -1082,7 +1082,7 @@ public class WebProxyPortlet extends GenericPortlet {
                 final int fileBaseEnd = (queryStringStart < 0 ? sUrl.length() : queryStringStart);
                 final String fileBase = sUrl.substring(fileBaseStart, fileBaseEnd);
                 
-                final Map<Object, Object> model = new LinkedHashMap<Object, Object>();
+                final Map<String, Object> model = new LinkedHashMap<String, Object>();
                 
                 model.put(WebproxyConstants.REQUEST_TYPE, sRequestType);
                 model.put(ProxyServlet.URL_PARAM, sUrl);

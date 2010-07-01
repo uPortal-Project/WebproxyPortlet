@@ -7,7 +7,7 @@
 
 -->
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://ehcache.svn.sourceforge.net/viewvc/*checkout*/ehcache/branches/ehcache-1.4.0/core/src/main/config/ehcache.xsd?revision=579">
+        xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false">
 
     <!--
      | Please see http://ehcache.sourceforge.net/documentation/configuration.html for detailed information on
@@ -18,11 +18,11 @@
     <diskStore path="java.io.tmpdir/WebProxyPortlet" />
 
     <defaultCache eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" statistics="true" />
 
     <cache name="PageCache"
         eternal="false" maxElementsInMemory="10000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" statistics="true" />
     
     <!-- 
      | Caches WebProxyStateImpl objects
@@ -31,7 +31,7 @@
      +-->
     <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl"
         eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
     <!-- 
      | Caches queries for WebProxyStateImpl objects by state key
      | - 1 x user per portlet instance
@@ -39,7 +39,7 @@
      +-->
     <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.query.FIND_STATE_BY_KEY"
         eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
         
     <!-- 
      | Caches WebProxyStateImpl cookies objects
@@ -48,7 +48,7 @@
      +-->
     <cache name="edu.wisc.my.webproxy.beans.http.WebProxyStateImpl.cookies"
         eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
     <!-- 
      | Caches PersistedCookieImpl objects
      | - 1 x user per portlet per cookie from a remote site
@@ -56,7 +56,7 @@
      +-->
     <cache name="edu.wisc.my.webproxy.beans.http.PersistedCookieImpl"
         eternal="false" maxElementsInMemory="5000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LFU" statistics="true" />
     
     <!-- 
      | Caches last updated timestamp for each hibernate managed table
@@ -65,7 +65,7 @@
      +-->
     <cache name="org.hibernate.cache.UpdateTimestampsCache"
         eternal="false" maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="0" memoryStoreEvictionPolicy="LRU" statistics="true" />
 
     <!-- 
      | Caches SQL query level results for entity queries that don't specify an explicit cache region
@@ -74,5 +74,5 @@
      +-->
     <cache name="org.hibernate.cache.StandardQueryCache"
         eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" 
-        timeToIdleSeconds="0" timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" />
+        timeToIdleSeconds="0" timeToLiveSeconds="300" memoryStoreEvictionPolicy="LRU" statistics="true" />
 </ehcache>

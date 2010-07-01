@@ -54,16 +54,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -289,10 +294,25 @@ public class HttpManagerImpl extends HttpManager {
      * @return new DefaultHttpClient instance
      */
     protected DefaultHttpClient createHttpClient(PortletRequest request) {
-        DefaultHttpClient client;
-        client = new DefaultHttpClient ();
-        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-        HttpParams params = new BasicHttpParams();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Creating new DefaultHttpClient for " + request.getRemoteUser());
+        }
+        
+        final HttpParams params = new BasicHttpParams();
+        final ClientConnectionManager clientConnectionManager = this.createClientConnectionManager(request, params);
+        client = new DefaultHttpClient (clientConnectionManager, params);
+        return client;
+    }
+    
+    /**
+     * Creates a new ClientConnectionManager to be used by the {@link HttpClient}. Configures the {@link SchemeRegistry}
+     * as well as setting up connection related {@link HttpParams}
+     */
+    protected ClientConnectionManager createClientConnectionManager(PortletRequest request, HttpParams params) {
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        
         
         final int maxConnections = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS, "50"), 50);
         final int maxConnectionsPerRoute = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS_PER_ROUTE, "10"), 10);
@@ -304,12 +324,7 @@ public class HttpManagerImpl extends HttpManager {
             }
         });
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("Creating new DefaultHttpClient for " + request.getRemoteUser());
-        }
-        
-        client = new DefaultHttpClient (new ThreadSafeClientConnManager(params, registry), params);
-        return client;
+        return new ThreadSafeClientConnManager(params, registry);
     }
 	
 }

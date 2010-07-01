@@ -5,7 +5,10 @@ import java.util.Map;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.jasig.portal.security.provider.saml.SAMLSession;
 
 import edu.wisc.my.webproxy.beans.PortletPreferencesWrapper;
@@ -24,6 +27,7 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
 	private String spPrivateKey;
 	private String spCertificate;
 	private String portalEntityID;
+	private boolean skipValidateIdp = false;
 
 	/**
    * @return the portalEntityID
@@ -46,8 +50,16 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
 	public void setSpCertificate(String spCertificate) {
 		this.spCertificate = spCertificate;
 	}
+	
+	public boolean isSkipValidateIdp() {
+        return skipValidateIdp;
+    }
 
-	/**
+    public void setSkipValidateIdp(boolean skipValidateIdp) {
+        this.skipValidateIdp = skipValidateIdp;
+    }
+
+    /**
 	 * Create a new HttpClient which may potentially be pre-configured for
 	 * Shibboleth authentication.  If the current portlet instance is configured
 	 * to perform Shibboleth-based authentication, this implementation should 
@@ -70,8 +82,13 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
         // construct a new SAMLSession and return the HttpClient instance
         // returned by the SAMLSession.  
         if (authEnabled && AUTH_TYPE_SHIBBOLETH.equals(authType)) {
-    		String samlAssertion = getAssertion(request);
-    		SAMLSession samlSession = new SAMLSession(samlAssertion);
+    		final String samlAssertion = getAssertion(request);
+    		
+    		final HttpParams params = new BasicHttpParams();
+    		final ClientConnectionManager clientConnectionManager = this.createClientConnectionManager(request, params);
+    		final SAMLSession samlSession = new SAMLSession(samlAssertion, clientConnectionManager, params);
+    		
+    		samlSession.setSkipValidateIdp(this.skipValidateIdp);
     		samlSession.setPortalEntityID(portalEntityID);
 
     		if (spPrivateKey != null && spCertificate != null) {

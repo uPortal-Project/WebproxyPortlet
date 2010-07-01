@@ -124,7 +124,7 @@ public class ProxyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final String sessionKey = request.getParameter(SESSION_KEY);
         
-        final Map<Object, Object> model = this.modelPasser.getModelFromPortlet(request, response, sessionKey);
+        final Map<String, ?> model = this.modelPasser.getModelFromPortlet(request, response, sessionKey);
         
         if (model == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "No model exists in the session for key '" + sessionKey + "'");

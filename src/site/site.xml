@@ -1,20 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Web Proxy Portlet">
-    <bannerLeft>
-        <name>Web Proxy Portlet</name>
-        <src>https://www.ja-sig.org/images/jasig-head.gif</src>
-        <href>http://developer.ja-sig.org/projects/WebproxyPortlet/</href>
-    </bannerLeft>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
+    name="${project.name} ${project.version}">
+    
+    <publishDate position="left" format="MM-dd-yy hh:mm zz"/>
+    
     <body>
-        <links>
-            <item name="JA-SIG" href="http://www.ja-sig.org/"/>
-            <item name="uPortal" href="http://www.uportal.org/"/>
-        </links>
-        <menu name="Web Proxy Portlet">
+        <menu name="${project.name}">
             <item name="Configuration" href="configuration.html"/>
         </menu> 
-        
-        ${reports}
-        
+    
+        <menu ref="modules" />
+        <menu ref="reports" />
     </body>
 </project>

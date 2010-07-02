@@ -1,0 +1,112 @@
+Copyright 2010
+JA-SIG
+Inc.
+This project includes software developed by Jasig.
+http://www.jasig.org/
+
+Licensed under the Apache License
+Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at:
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing
+software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
+either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+===========================================================================
+
+This project includes software developed under the following copyrights:
+    Copyright 2004
+The Board of Regents of the University of Wisconsin System.
+
+===========================================================================
+
+This project includes:
+
+    Under the Apache 2 License:
+        Joda time
+        OpenSAML-J
+        OpenWS
+        XMLTooling-J
+        Apache Log4j
+        Apache Velocity
+        Commons Codec
+        Commons Collections
+        Commons DBCP
+        Commons IO
+        Commons Lang
+        Commons Logging
+        Commons Pool
+        Ehcache Core
+        Json-lib4Spring
+        Neko HTML
+        Pluto Portlet Tag Library
+        Spring Framework: AOP
+        Spring Framework: Beans
+        Spring Framework: Context
+        Spring Framework: Context Support
+        Spring Framework: Core
+        Spring Framework: JDBC
+        Spring Framework: ORM
+        Spring Framework: Test
+        Spring Framework: Transaction
+        Spring Framework: Web
+        Spring Framework: Web MVC
+        Spring Framework: Web MVC Portlet
+        XML Security
+        ezmorph
+        json-lib
+        Delegated SAML Authentication
+        HttpClient
+        HttpCore
+        JA-SIG CAS Client for Java - Core
+        AJAX Portlet Support
+        org.apache.commons.ssl:not-yet-commons-ssl:jar:0.3.9
+        org.apache.xalan:xalan:jar:2.7.1
+        org.apache.xerces:resolver:jar:2.9.1
+        org.apache.xerces:serializer:jar:2.9.1
+        org.apache.xerces:xercesImpl:jar:2.9.1
+        org.apache.xerces:xml-apis:jar:2.9.1
+        commons-beanutils:commons-beanutils:jar:1.7.0
+        taglibs:standard:jar:1.1.2
+        cglib
+
+    The BSD License: 
+        HSQLDB
+        AntLR
+        asm
+        asm-attrs
+        dom4j
+
+    GNU LESSER GENERAL PUBLIC LICENSE: 
+        Hibernate
+        Hibernate Annotations
+        Hibernate Commons - Annotations
+        Hibernate Entitity Manager
+        Javassist
+
+    MIT License:
+        SLF4J API Module
+        SLF4J JCL Binding
+        Bouncy Castle Provider
+        
+    Common Public License Version 1.0:
+        JUnit
+
+    Public Domain:
+        AOP alliance
+
+    Common Development and Distribution License (CDDL) v1.0:
+        Enterprise JavaBeans (EJB) 3.0
+        Java Persistence API
+        Java Transaction API
+        Portlet API
+        javax.servlet.jsp:jsp-api:jar:2.1
+        javax.servlet:jstl:jar:1.1.2
+        javax.servlet:servlet-api:jar:2.5

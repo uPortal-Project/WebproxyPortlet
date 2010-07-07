@@ -10,7 +10,7 @@
     <groupId>org.jasig.portlet</groupId>
     <artifactId>WebProxyPortlet</artifactId>
     <packaging>war</packaging>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     
     <name>Web Proxy Portlet</name>
     <description>Provides web site content inclusion via a JSR-168 portlet.</description>
@@ -21,9 +21,9 @@
         <system>${jasig-issues-system}</system>
     </issueManagement>
     <scm>
-        <connection>scm:svn:https://source.jasig.org/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.1.1</connection>
-        <developerConnection>scm:svn:https://source.jasig.org/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.1.1</developerConnection>
-        <url>https://developer.jasig.org/source/browse/jasigsvn/portlets/WebproxyPortlet/tags/WebProxyPortlet-1.1.1</url>
+        <connection>scm:svn:https://source.jasig.org/portlets/WebproxyPortlet/trunk/</connection>
+        <developerConnection>scm:svn:https://source.jasig.org/portlets/WebproxyPortlet/trunk/</developerConnection>
+        <url>https://developer.jasig.org/source/browse/jasigsvn/portlets/WebproxyPortlet</url>
     </scm>
 
     <repositories>

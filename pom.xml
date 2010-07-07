@@ -489,9 +489,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1-beta-1</version>
                 <configuration>
-                    <properties>
-                        <attachClasses>true</attachClasses>
-                    </properties>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
         </plugins>

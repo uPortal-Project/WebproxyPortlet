@@ -3,7 +3,7 @@
 
     <parent>
         <groupId>org.jasig.parent</groupId>
-        <artifactId>jasig-parent</artifactId>        <version>20</version>
+        <artifactId>jasig-parent</artifactId>        <version>22</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>1.5.4</version>
+            <version>1.5.5</version>
         </dependency>
         <dependency>
             <groupId>hsqldb</groupId>
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
@@ -266,12 +266,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jcl</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>taglibs</groupId>

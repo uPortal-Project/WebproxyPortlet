@@ -57,9 +57,13 @@ public final class PortletUrlFilter extends InclExclUrlFilter {
         super(parent);
     }
 
-    protected String doUrlRewite(String orignialUrl, int matchIndex) {
+    @Override
+    protected String doUrlRewite(String orignialUrl, int matchIndex, boolean passThrough) {
         final PortletURL newUrl = this.renderResponse.createActionURL();
         newUrl.setParameter(WebproxyConstants.BASE_URL, orignialUrl);
+        if (passThrough) {
+            newUrl.setParameter(WebproxyConstants.PASS_THROUGH, Boolean.TRUE.toString());
+        }
 
         if (matchIndex >= 0 && this.urlStateList != null && this.urlStateList[matchIndex] != null && this.urlStateList[matchIndex].trim().length() > 0) {
             try {
@@ -79,6 +83,7 @@ public final class PortletUrlFilter extends InclExclUrlFilter {
         return portletUrl;
     }
 
+    @Override
     public void setRenderData(RenderRequest request, RenderResponse response) {
         final PortletPreferences pp = request.getPreferences();
         
@@ -94,6 +99,7 @@ public final class PortletUrlFilter extends InclExclUrlFilter {
         super.setRenderData(request, response);
     }
 
+    @Override
     public void clearData() {
         this.setListType(null);
         this.setListType(null);
@@ -108,6 +114,7 @@ public final class PortletUrlFilter extends InclExclUrlFilter {
         return "Portlet URL Filter";
     }
 
+    @Override
     public void setActionData(ActionRequest request, ActionResponse response) {
         throw new IllegalStateException("PortletUrlFilter is invalid to use during an action");
     }

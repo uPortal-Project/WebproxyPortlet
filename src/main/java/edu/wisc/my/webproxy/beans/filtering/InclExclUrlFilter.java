@@ -77,7 +77,8 @@ public abstract class InclExclUrlFilter extends BaseUrlFilter {
         super(parent);
     }
 
-    public final String rewriteUrl(String originalUrl) {
+    @Override
+    public final String rewriteUrl(String originalUrl, boolean passThrough) {
         if (this.urlRegExList == null) {
             return originalUrl;
         }
@@ -94,18 +95,16 @@ public abstract class InclExclUrlFilter extends BaseUrlFilter {
                 if (EXCLUDE.equalsIgnoreCase(this.listType)) {
                     return originalUrl;
                 }
-                else {
-                    return this.doUrlRewite(originalUrl, index);
-                }
+
+                return this.doUrlRewite(originalUrl, index, passThrough);
             }
         }
         
         if (EXCLUDE.equalsIgnoreCase(this.listType)) {
-            return this.doUrlRewite(originalUrl, -1);
+            return this.doUrlRewite(originalUrl, -1, passThrough);
         }
-        else { //Default to include
-            return originalUrl;
-        }
+
+        return originalUrl;
     }
 
     
@@ -143,5 +142,5 @@ public abstract class InclExclUrlFilter extends BaseUrlFilter {
      * @param orignialUrl The URL to re-write
      * @return The re-written URL.
      */
-    protected abstract String doUrlRewite(String orignialUrl, int matchIndex);
+    protected abstract String doUrlRewite(String orignialUrl, int matchIndex, boolean passThrough);
 }

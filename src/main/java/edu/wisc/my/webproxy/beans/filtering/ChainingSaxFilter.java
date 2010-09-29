@@ -49,6 +49,7 @@ public abstract class ChainingSaxFilter extends XMLFilterImpl implements ProxyCo
     /**
      * @see org.xml.sax.helpers.XMLFilterImpl#characters(char[], int, int)
      */
+    @Override
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
         super.characters(arg0, arg1, arg2);
     }
@@ -109,6 +110,7 @@ public abstract class ChainingSaxFilter extends XMLFilterImpl implements ProxyCo
     /**
      * @see org.xml.sax.XMLFilter#setParent(org.xml.sax.XMLReader)
      */
+    @Override
     public void setParent(XMLReader parent) {
         if (parent instanceof ChainingSaxFilter)
             this.parent = (ChainingSaxFilter)parent;
@@ -119,6 +121,7 @@ public abstract class ChainingSaxFilter extends XMLFilterImpl implements ProxyCo
     /**
      * @see org.xml.sax.XMLReader#parse(org.xml.sax.InputSource)
      */
+    @Override
     public void parse(InputSource input) throws SAXException, IOException {
         this.setupParse();
         super.parse(input);
@@ -127,6 +130,7 @@ public abstract class ChainingSaxFilter extends XMLFilterImpl implements ProxyCo
     /**
      * @see org.xml.sax.XMLReader#parse(java.lang.String)
      */
+    @Override
     public void parse(String systemId) throws SAXException, IOException {
         this.setupParse();
         super.parse(systemId);

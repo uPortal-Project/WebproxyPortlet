@@ -76,7 +76,8 @@ public class AbsoluteUrlFilter extends BaseUrlFilter {
      * @param urlFragment the relative url as String
      * @return urlFragment the absolute url as String
      */
-    public String rewriteUrl(String urlFragment) {
+    @Override
+    public String rewriteUrl(String urlFragment, boolean passThrough) {
         final StringBuffer sb = new StringBuffer();
         
         //Ignore anchor links, ignore host based absolute URLs, ignore email links 
@@ -103,6 +104,7 @@ public class AbsoluteUrlFilter extends BaseUrlFilter {
         return sb.toString();
     }
 
+    @Override
     public void characters(char[] ch, int start, int len) throws SAXException {
         super.characters(ch, start, len);
     }
@@ -111,11 +113,13 @@ public class AbsoluteUrlFilter extends BaseUrlFilter {
         return "Absolute URL Filter";
     }
 
+    @Override
     public void setRenderData(RenderRequest request, RenderResponse response) {
         this.setupFilter(request);
         super.setRenderData(request, response);
     }
 
+    @Override
     public void setActionData(ActionRequest request, ActionResponse response) {
         this.setupFilter(request);
         super.setActionData(request, response);
@@ -126,6 +130,7 @@ public class AbsoluteUrlFilter extends BaseUrlFilter {
     /**
      * @see edu.wisc.my.webproxy.beans.config.ProxyComponent#clearData()
      */
+    @Override
     public void clearData() {
         super.clearData();
         

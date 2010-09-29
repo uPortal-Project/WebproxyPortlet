@@ -19,8 +19,11 @@
 
 package edu.wisc.my.webproxy.beans.filtering;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -41,7 +44,13 @@ import edu.wisc.my.webproxy.portlet.WebproxyConstants;
  
 public abstract class BaseUrlFilter extends ChainingSaxFilter{
     
-	private Map elements = null;
+	/**
+     * 
+     */
+    private static final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
+    private Map<String, Set<String>> elements = Collections.emptyMap();
+	private Map<String, Set<String>> passThroughElements = Collections.emptyMap();
+	
     /**
 	 * Constructor that takes XMLReader object as argument
 	 * @param parent the (@link XMLReader) object
@@ -59,10 +68,29 @@ public abstract class BaseUrlFilter extends ChainingSaxFilter{
     public BaseUrlFilter() {
     }
     
-    public void setElements(Map springElements){
-        this.elements = springElements;
+    public void setElements(Map<String, Set<String>> elements) {
+        this.elements = this.makeCaseInsensitive(elements);
     }
     
+    public void setPassThroughElements(Map<String, Set<String>> passThroughElements) {
+        this.passThroughElements = this.makeCaseInsensitive(passThroughElements);
+    }
+    
+    protected Map<String, Set<String>> makeCaseInsensitive(Map<String, Set<String>> elements) {
+        final Map<String, Set<String>> ciElements = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
+        
+        for (final Map.Entry<String, Set<String>> entry : elements.entrySet()) {
+            final String element = entry.getKey();
+            final Set<String> attributes = entry.getValue();
+            
+            final Set<String> ciAttributes = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            ciAttributes.addAll(attributes);
+            
+            ciElements.put(element, ciAttributes);
+        }
+        
+        return ciElements;
+    }
 
     /**
      * Filter the Namespace URI for start-element events.
@@ -71,21 +99,22 @@ public abstract class BaseUrlFilter extends ChainingSaxFilter{
      * @param localName the local name as a String
      * @param qName the query name as a String
      */
+    @Override
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
         String sTempAtt = null;
         AttributesImpl newAtts = new AttributesImpl(atts);
         boolean getMethod = false;
-        if(qName.equalsIgnoreCase("FORM")){
+        if("FORM".equalsIgnoreCase(qName)){
             boolean foundAction = false;
             int methodIndex = -1;
             //check to see if Form has Action attribute
             int index;
             for (index = 0; index < newAtts.getLength(); index++) {
-                if (newAtts.getQName(index).toUpperCase().equals("ACTION")){
+                if ("ACTION".equalsIgnoreCase(newAtts.getQName(index))){
                     foundAction = true;
                 }
-                if (newAtts.getQName(index).toUpperCase().equals("METHOD")){
+                if ("METHOD".equalsIgnoreCase(newAtts.getQName(index))){
                     methodIndex = index;
                 }
             }
@@ -99,27 +128,36 @@ public abstract class BaseUrlFilter extends ChainingSaxFilter{
                 newAtts.addAttribute(uri, "method", "method", "CDATA", "POST");
                 getMethod=true;
             }
-            //if using exclude list decrament index to avoid arrayoutofbounds exception
-//            if (!newAtts.getType(index-1).equalsIgnoreCase("POST"))
-//                newAtts.setType(index-1, "POST");
             //if form has no action attribute create one.
             if(!foundAction){
                 newAtts.addAttribute(uri, "ACTION", "ACTION", "CDATA", "/");
             }
         }
-        for (int index = 0; index < newAtts.getLength(); index++) {
-            String newAttsQName = newAtts.getQName(index).toUpperCase();
-            //check to see if qName is in element Map
-            if(elements.containsKey(qName.toUpperCase())){
-                Set tempSet = (Set) elements.get(qName.toUpperCase());
+        
+        boolean passThrough = false;
+        Set<String> attributes = elements.get(qName);
+        if (attributes == null) {
+            attributes = passThroughElements.get(qName);
+            passThrough = true;
+        }
+        
+        if (attributes != null) {
+            for (int index = 0; index < newAtts.getLength(); index++) {
+                final String attrName = newAtts.getQName(index);
+                
                 //check to see if newAttsQName is in the Element Set
-                if(tempSet.contains(newAttsQName)){
-                    //Do not handle JavaScript
-                    String sTemp = newAtts.getValue(index);
-                    if (sTemp!=null && !sTemp.toUpperCase().startsWith("JAVASCRIPT")) {
-                        sTempAtt = rewriteUrl(sTemp);
-                        newAtts.setValue(index, sTempAtt);
+                if(attributes.contains(attrName)) {
+
+                    final String attrValue = newAtts.getValue(index);
+                    if (attrValue == null || (
+                            attrValue.length() >= JAVASCRIPT_PREFIX.length() && 
+                            JAVASCRIPT_PREFIX.equalsIgnoreCase(attrValue.substring(0, JAVASCRIPT_PREFIX.length())))) {
+                        //Skip attributes with null values or JavaScript prefixes
+                        continue;
                     }
+                    
+                    sTempAtt = this.rewriteUrl(attrValue, passThrough);
+                    newAtts.setValue(index, sTempAtt);
                 }                    
             }
         }
@@ -142,17 +180,20 @@ public abstract class BaseUrlFilter extends ChainingSaxFilter{
      * @return sTempAtt the url as a String after it is re-written to some other url
      */
     
-    public abstract String rewriteUrl(String sTempAtt);
+    public abstract String rewriteUrl(String sTempAtt, boolean passThrough);
 
+    @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         super.endElement(uri, localName, qName);
     }
 
+    @Override
     public void characters(char[] ch, int start, int len) throws SAXException {
         super.characters(ch, start, len);
     }
 
+    @Override
     public void clearData() {
         //clear data of parent
         ChainingSaxFilter parent = (ChainingSaxFilter) super.getParent();

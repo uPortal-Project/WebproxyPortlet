@@ -899,164 +899,165 @@ public class WebProxyPortlet extends GenericPortlet {
                 return;
             }
             
-            HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
-            final HttpManager httpManager = findingService.findManager(request);
-            httpManager.setActionData(request, response);
-
-
-
             if (request.getPortletMode().equals(PortletMode.EDIT)) {
-                String sUrl = request.getParameter(GeneralConfigImpl.EDIT_URL);
-                session.setAttribute(GeneralConfigImpl.EDIT_URL, sUrl);
+                String editUrl = request.getParameter(GeneralConfigImpl.EDIT_URL);
+                session.setAttribute(GeneralConfigImpl.EDIT_URL, editUrl);
                 response.setPortletMode(PortletMode.VIEW);         
                 return;
             }
-
+            
+            final HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
+            final HttpManager httpManager = findingService.findManager(request);
+            httpManager.setActionData(request, response);
+            
             //retrieve URL from request object
             String sUrl = request.getParameter(WebproxyConstants.BASE_URL);
-            
-            //TODO do cache check for content type
-
             String sRequestType = request.getProperty("REQUEST_METHOD");
-            
-            if(request.getParameter(WebproxyConstants.UNIQUE_CONSTANT + ".getMethod")!=null){
-                sRequestType=WebproxyConstants.GET_REQUEST;
-                sUrl = newGetUrl(sUrl, request);
-            }
-            
-            this.doFormAuth(httpManager, request);
-
-            String sContentType = null;
-
-            Response httpResponse = null;
-            try {
-                boolean redirect = true;
-                final int maxRedirects = ConfigUtils.parseInt(pp.getValue(HttpClientConfigImpl.MAX_REDIRECTS, null), 5);
-                
-                for (int index = 0; index < maxRedirects && redirect; index++) {
-                    this.doHttpAuth(request, httpManager);
-
-                    //create request object
-                    final Request httpRequest = httpManager.createRequest();
-
-                    //set URL in request
-                    httpRequest.setUrl(sUrl);
-
-                    //Set Type to HEAD
-                    httpRequest.setType(WebproxyConstants.HEAD_REQUEST);
- 
-                    final String[] headerNames = pp.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
-                    final String[] headerValues = pp.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
-                    if (headerNames.length == headerValues.length) {
-                        final List<IHeader> headerList = new ArrayList<IHeader>(headerNames.length);
-                        
-                        for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
-                            final IHeader h = httpRequest.createHeader(headerNames[headerIndex], headerValues[headerIndex]);
-                            headerList.add(h);
-                        }
-                        
-                        httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
-                    }
-                    else {
-                        LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
-                    }
-                
-                    //Check to see if pre-interceptors are used.
-                    final String sPreInterceptor = ConfigUtils.checkEmptyNullString(pp.getValue(GeneralConfigImpl.PRE_INTERCEPTOR_CLASS, null), null);
-                    if (sPreInterceptor != null) {
-                        try {
-                            final Class preInterceptorClass = Class.forName(sPreInterceptor);
-                            PreInterceptor myPreInterceptor = (PreInterceptor)preInterceptorClass.newInstance();
-                            myPreInterceptor.intercept(request, response, httpRequest);
-                        }
-                        catch (ClassNotFoundException cnfe) {
-                            final String msg = "Could not find specified pre-interceptor class '" + sPreInterceptor + "'";
-                            LOG.error(msg, cnfe);
-                            throw new PortletException(msg, cnfe);
-                        }
-                        catch (InstantiationException ie) {
-                            final String msg = "Could instatiate specified pre-interceptor class '" + sPreInterceptor + "'";
-                            LOG.error(msg, ie);
-                            throw new PortletException(msg, ie);
-                        }
-                        catch (IllegalAccessException iae) {
-                            final String msg = "Could instatiate specified pre-interceptor class '" + sPreInterceptor + "'";
-                            LOG.error(msg, iae);
-                            throw new PortletException(msg, iae);
-                        }
-                        catch (ClassCastException cce) {
-                            final String msg = "Could not cast '" + sPreInterceptor + "' to 'edu.wisc.my.webproxy.beans.interceptors.PreInterceptor'";
-                            LOG.error(msg, cce);
-                            throw new PortletException(msg, cce);
-                        }
-                    }
-                    
-                    //send httpRequest
-                    httpResponse = httpManager.doRequest(httpRequest);
-                    
-                    session.setAttribute(HttpClientConfigImpl.SESSION_TIMEOUT, new Long(System.currentTimeMillis()));
-                    
-                    //Check to see if post-interceptors are used
-                    final String sPostInterceptor = ConfigUtils.checkEmptyNullString(pp.getValue(GeneralConfigImpl.POST_INTERCEPTOR_CLASS, null), null);
-                    if (sPostInterceptor != null) {
-                        try {
-                            final Class postInterceptorClass = Class.forName(sPostInterceptor);
-                            PostInterceptor myPostInterceptor = (PostInterceptor)postInterceptorClass.newInstance();
-                            myPostInterceptor.intercept(request, response, httpResponse);
-                        }
-                        catch (ClassNotFoundException cnfe) {
-                            final String msg = "Could not find specified post-interceptor class '" + sPostInterceptor + "'";
-                            LOG.error(msg, cnfe);
-                            throw new PortletException(msg, cnfe);
-                        }
-                        catch (InstantiationException ie) {
-                            final String msg = "Could instatiate specified post-interceptor class '" + sPostInterceptor + "'";
-                            LOG.error(msg, ie);
-                            throw new PortletException(msg, ie);
-                        }
-                        catch (IllegalAccessException iae) {
-                            final String msg = "Could instatiate specified post-interceptor class '" + sPostInterceptor + "'";
-                            LOG.error(msg, iae);
-                            throw new PortletException(msg, iae);
-                        }
-                        catch (ClassCastException cce) {
-                            final String msg = "Could not cast '" + sPostInterceptor + "' to 'edu.wisc.my.webproxy.beans.interceptors.PostInterceptor'";
-                            LOG.error(msg, cce);
-                            throw new PortletException(msg, cce);
-                        }
-                    }
-
-                    findingService.saveHttpManager(request, httpManager);
-
-                    final String tempUrl = checkRedirect(sUrl, httpResponse);
-                    //if not redirect, set redirect to false to break from while
-                    if (tempUrl.equals(sUrl))
-                        redirect = false;
-                }
-
-                //check response object for binary content
-                if (httpResponse.getContentType() != null) {
-                    StringTokenizer st = new StringTokenizer(httpResponse.getContentType(), ";");
-                    sContentType = st.nextToken();
-                }
-            }
-            finally {
-                if (httpResponse != null)
-                    httpResponse.close();
-            }
-            
             boolean matches = false;
-            if (sContentType != null) {
-                final List acceptedContent = (List)context.getBean("ContentTypeBean", List.class);
+
+            //Check if the URL is marked for pass-through, this means it will be redirected to the proxy servlet no matter what
+            final boolean passThrough = Boolean.parseBoolean(request.getParameter(WebproxyConstants.PASS_THROUGH));
+            if (!passThrough) {
+                //TODO do cache check for content type
     
-                String sAcceptedContent = null;
-                Iterator iterateContent = acceptedContent.iterator();
-                while (iterateContent.hasNext() && !matches) {
-                    sAcceptedContent = (String)iterateContent.next();
-                    Pattern contentPattern = Pattern.compile(sAcceptedContent, Pattern.CASE_INSENSITIVE);
-                    Matcher contentMatcher = contentPattern.matcher(sContentType);
-                    if (contentMatcher.matches())
-                        matches = true;
+                if(request.getParameter(WebproxyConstants.UNIQUE_CONSTANT + ".getMethod")!=null){
+                    sRequestType=WebproxyConstants.GET_REQUEST;
+                    sUrl = newGetUrl(sUrl, request);
+                }
+                
+                this.doFormAuth(httpManager, request);
+    
+                String sContentType = null;
+    
+                Response httpResponse = null;
+                try {
+                    boolean redirect = true;
+                    final int maxRedirects = ConfigUtils.parseInt(pp.getValue(HttpClientConfigImpl.MAX_REDIRECTS, null), 5);
+                    
+                    for (int index = 0; index < maxRedirects && redirect; index++) {
+                        this.doHttpAuth(request, httpManager);
+    
+                        //create request object
+                        final Request httpRequest = httpManager.createRequest();
+    
+                        //set URL in request
+                        httpRequest.setUrl(sUrl);
+    
+                        //Set Type to HEAD
+                        httpRequest.setType(WebproxyConstants.HEAD_REQUEST);
+     
+                        final String[] headerNames = pp.getValues(HttpHeaderConfigImpl.HEADER_NAME, new String[0]);
+                        final String[] headerValues = pp.getValues(HttpHeaderConfigImpl.HEADER_VALUE, new String[0]);
+                        if (headerNames.length == headerValues.length) {
+                            final List<IHeader> headerList = new ArrayList<IHeader>(headerNames.length);
+                            
+                            for (int headerIndex = 0; headerIndex < headerNames.length; headerIndex++) {
+                                final IHeader h = httpRequest.createHeader(headerNames[headerIndex], headerValues[headerIndex]);
+                                headerList.add(h);
+                            }
+                            
+                            httpRequest.setHeaders(headerList.toArray(new IHeader[headerList.size()]));
+                        }
+                        else {
+                            LOG.error("Invalid data in preferences. Header name array length does not equal header value array length");
+                        }
+                    
+                        //Check to see if pre-interceptors are used.
+                        final String sPreInterceptor = ConfigUtils.checkEmptyNullString(pp.getValue(GeneralConfigImpl.PRE_INTERCEPTOR_CLASS, null), null);
+                        if (sPreInterceptor != null) {
+                            try {
+                                final Class preInterceptorClass = Class.forName(sPreInterceptor);
+                                PreInterceptor myPreInterceptor = (PreInterceptor)preInterceptorClass.newInstance();
+                                myPreInterceptor.intercept(request, response, httpRequest);
+                            }
+                            catch (ClassNotFoundException cnfe) {
+                                final String msg = "Could not find specified pre-interceptor class '" + sPreInterceptor + "'";
+                                LOG.error(msg, cnfe);
+                                throw new PortletException(msg, cnfe);
+                            }
+                            catch (InstantiationException ie) {
+                                final String msg = "Could instatiate specified pre-interceptor class '" + sPreInterceptor + "'";
+                                LOG.error(msg, ie);
+                                throw new PortletException(msg, ie);
+                            }
+                            catch (IllegalAccessException iae) {
+                                final String msg = "Could instatiate specified pre-interceptor class '" + sPreInterceptor + "'";
+                                LOG.error(msg, iae);
+                                throw new PortletException(msg, iae);
+                            }
+                            catch (ClassCastException cce) {
+                                final String msg = "Could not cast '" + sPreInterceptor + "' to 'edu.wisc.my.webproxy.beans.interceptors.PreInterceptor'";
+                                LOG.error(msg, cce);
+                                throw new PortletException(msg, cce);
+                            }
+                        }
+                        
+                        //send httpRequest
+                        httpResponse = httpManager.doRequest(httpRequest);
+                        
+                        session.setAttribute(HttpClientConfigImpl.SESSION_TIMEOUT, new Long(System.currentTimeMillis()));
+                        
+                        //Check to see if post-interceptors are used
+                        final String sPostInterceptor = ConfigUtils.checkEmptyNullString(pp.getValue(GeneralConfigImpl.POST_INTERCEPTOR_CLASS, null), null);
+                        if (sPostInterceptor != null) {
+                            try {
+                                final Class postInterceptorClass = Class.forName(sPostInterceptor);
+                                PostInterceptor myPostInterceptor = (PostInterceptor)postInterceptorClass.newInstance();
+                                myPostInterceptor.intercept(request, response, httpResponse);
+                            }
+                            catch (ClassNotFoundException cnfe) {
+                                final String msg = "Could not find specified post-interceptor class '" + sPostInterceptor + "'";
+                                LOG.error(msg, cnfe);
+                                throw new PortletException(msg, cnfe);
+                            }
+                            catch (InstantiationException ie) {
+                                final String msg = "Could instatiate specified post-interceptor class '" + sPostInterceptor + "'";
+                                LOG.error(msg, ie);
+                                throw new PortletException(msg, ie);
+                            }
+                            catch (IllegalAccessException iae) {
+                                final String msg = "Could instatiate specified post-interceptor class '" + sPostInterceptor + "'";
+                                LOG.error(msg, iae);
+                                throw new PortletException(msg, iae);
+                            }
+                            catch (ClassCastException cce) {
+                                final String msg = "Could not cast '" + sPostInterceptor + "' to 'edu.wisc.my.webproxy.beans.interceptors.PostInterceptor'";
+                                LOG.error(msg, cce);
+                                throw new PortletException(msg, cce);
+                            }
+                        }
+    
+                        findingService.saveHttpManager(request, httpManager);
+    
+                        final String tempUrl = checkRedirect(sUrl, httpResponse);
+                        //if not redirect, set redirect to false to break from while
+                        if (tempUrl.equals(sUrl))
+                            redirect = false;
+                    }
+    
+                    //check response object for binary content
+                    if (httpResponse.getContentType() != null) {
+                        StringTokenizer st = new StringTokenizer(httpResponse.getContentType(), ";");
+                        sContentType = st.nextToken();
+                    }
+                }
+                finally {
+                    if (httpResponse != null)
+                        httpResponse.close();
+                }
+                
+                if (sContentType != null) {
+                    final List acceptedContent = (List)context.getBean("ContentTypeBean", List.class);
+        
+                    String sAcceptedContent = null;
+                    Iterator iterateContent = acceptedContent.iterator();
+                    while (iterateContent.hasNext() && !matches) {
+                        sAcceptedContent = (String)iterateContent.next();
+                        Pattern contentPattern = Pattern.compile(sAcceptedContent, Pattern.CASE_INSENSITIVE);
+                        Matcher contentMatcher = contentPattern.matcher(sContentType);
+                        if (contentMatcher.matches())
+                            matches = true;
+                    }
                 }
             }
 

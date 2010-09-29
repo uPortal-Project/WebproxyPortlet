@@ -110,23 +110,8 @@
     </bean>
     
     <bean id="BaseUrlFilterBean" abstract="true">
-        <property name="elements">
+        <property name="passThroughElements">
             <map>
-                <entry key="A">
-                    <set>
-                        <value>HREF</value>
-                    </set>
-                </entry>
-                <entry key="AREA">
-                    <set>
-                        <value>HREF</value>
-                    </set>
-                </entry>
-                <entry key="BASE">
-                    <set>
-                        <value>HREF</value>
-                    </set>
-                </entry>
                 <entry key="LINK">
                     <set>
                         <value>HREF</value>
@@ -144,12 +129,41 @@
                         <value>SRC</value>
                     </set>
                 </entry>
-                <entry key="FRAME">
+                <entry key="SCRIPT">
                     <set>
                         <value>SRC</value>
                     </set>
                 </entry>
-                <entry key="SCRIPT">
+                <entry key="BODY">
+                    <set>
+                        <value>BACKGROUND</value>
+                    </set>
+                </entry>
+                <entry key="APPLET">
+                    <set>
+                        <value>CODEBASE</value>
+                    </set>
+                </entry>                                                        
+            </map> 
+        </property>
+        <property name="elements">
+            <map>
+                <entry key="A">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="AREA">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="BASE">
+                    <set>
+                        <value>HREF</value>
+                    </set>
+                </entry>
+                <entry key="FRAME">
                     <set>
                         <value>SRC</value>
                     </set>
@@ -179,16 +193,6 @@
                         <value>URL</value>
                     </set>
                 </entry>
-                <entry key="BODY">
-                    <set>
-                        <value>BACKGROUND</value>
-                    </set>
-                </entry>
-                <entry key="APPLET">
-                    <set>
-                        <value>CODEBASE</value>
-                    </set>
-                </entry>														
             </map> 
         </property>
     </bean>

@@ -95,7 +95,8 @@ public class FuncNameUrlFilter extends InclExclUrlFilter {
         super(parent);
     }
 
-    protected String doUrlRewite(String orignialUrl, int matchIndex) {
+    @Override
+    protected String doUrlRewite(String orignialUrl, int matchIndex, boolean passThrough) {
         if (this.encodedFuncName == null) {
             return orignialUrl;
         }
@@ -136,6 +137,7 @@ public class FuncNameUrlFilter extends InclExclUrlFilter {
         }
     }
 
+    @Override
     public void setRenderData(RenderRequest request, RenderResponse response) {
         final PortletPreferences pp = request.getPreferences();
         
@@ -154,6 +156,7 @@ public class FuncNameUrlFilter extends InclExclUrlFilter {
         super.setRenderData(request, response);
     }
 
+    @Override
     public void clearData() {
         this.urlStateList = null;
         this.encodedFuncName = null;
@@ -169,6 +172,7 @@ public class FuncNameUrlFilter extends InclExclUrlFilter {
         return "Functional Name URL Filter";
     }
 
+    @Override
     public void setActionData(ActionRequest request, ActionResponse response) {
         throw new IllegalStateException("FuncNameUrlFilter is invalid to use during an action");
     }

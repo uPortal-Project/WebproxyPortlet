@@ -40,6 +40,8 @@ public interface WebproxyConstants {
 
     public static final String REQUEST_TYPE = new StringBuffer(UNIQUE_CONSTANT).append("sRequestType").toString();
     
+    public static final String PASS_THROUGH = UNIQUE_CONSTANT + "PASS_THROUGH";
+    
     public static final String BASE_URL = new StringBuffer(UNIQUE_CONSTANT).append("URL").toString();
     
     public static final String CURRENT_STATE = "current_state";

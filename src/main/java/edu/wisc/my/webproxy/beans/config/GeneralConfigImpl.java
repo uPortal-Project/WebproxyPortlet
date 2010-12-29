@@ -75,6 +75,8 @@ public class GeneralConfigImpl extends JspConfigPage {
     private static final String GENERAL_PREF_PREFIX = "webproxy.general.config.";
     
     public static final String BASE_URL                     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sBaseUrl").toString();
+    public static final String BASE_URL_KEY                 = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sBaseUrlKey").toString();
+    public static final String POST_PARAM_KEY                 = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sPostParamKey").toString();
     public static final String EDIT_URL                     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sEditUrl").toString();
     public static final String PORTLET_URL_REWRITE_MASKS    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sPortletUrl").toString();
     public static final String PORTLET_URL_REWRITE_STATES   = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(GENERAL_PREF_PREFIX).append("sPortletState").toString();

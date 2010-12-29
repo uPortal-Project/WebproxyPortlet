@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -54,8 +55,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.jasig.web.util.LRUTrackingModelPasser;
-import org.jasig.web.util.ModelPasser;
 import org.jasig.web.util.SecureSessionKeyGenerator;
 import org.jasig.web.util.SessionKeyGenerator;
 import org.springframework.context.ApplicationContext;
@@ -93,6 +92,8 @@ import edu.wisc.my.webproxy.beans.interceptors.PostInterceptor;
 import edu.wisc.my.webproxy.beans.interceptors.PreInterceptor;
 import edu.wisc.my.webproxy.beans.security.CasAuthenticationHandler;
 import edu.wisc.my.webproxy.servlet.ProxyServlet;
+import edu.wisc.my.webproxy.util.ExtendedLRUTrackingModelPasser;
+import edu.wisc.my.webproxy.util.ExtendedModelPasser;
 
 /**
  * 
@@ -112,29 +113,23 @@ public class WebProxyPortlet extends GenericPortlet {
 
     public final static String preferenceKey = WebProxyPortlet.class.getName();
     
-    private SessionKeyGenerator sessionKeyGenerator = new SecureSessionKeyGenerator();
-    private ModelPasser modelPasser = new LRUTrackingModelPasser();
+    private final SessionKeyGenerator sessionKeyGenerator = new SecureSessionKeyGenerator();
+    private final ExtendedModelPasser modelPasser = new ExtendedLRUTrackingModelPasser() {{
+        setMaxSize(1000);
+    }};
     
     
-    private static WebProxyPortlet instance = null;
-    
-    public static WebProxyPortlet getInstances() {
-        return instance;
-    }
-
     /**
      * @see javax.portlet.Portlet#destroy()
      */
     public void destroy() {
         super.destroy();
-        instance = null;
     }
     /**
      * @see javax.portlet.GenericPortlet#init()
      */
     public void init() throws PortletException {
         super.init();
-        instance = this;
     }
     
     @Override
@@ -249,8 +244,19 @@ public class WebProxyPortlet extends GenericPortlet {
 
         //Get users session
         PortletSession session = request.getPortletSession();
-        String sUrl = (String)session.getAttribute(GeneralConfigImpl.BASE_URL);
         
+        String sUrl = null;
+        
+        //Try getting the URL specified by the url key from the model passer
+        final String urlKey = request.getParameter(GeneralConfigImpl.BASE_URL_KEY);
+        if (urlKey != null) {
+            final Map<String, ?> urlModel = this.modelPasser.getModelFromPortlet(request, response, urlKey);
+            if (urlModel != null) {
+                sUrl = (String)urlModel.get(GeneralConfigImpl.BASE_URL);
+            }
+        }
+        
+        //No URL specified in request/model, use the default from the portlet preferences
         if (sUrl == null) {
             sUrl = ConfigUtils.checkEmptyNullString(myPreferences.getValue(GeneralConfigImpl.BASE_URL, null), null);
 
@@ -270,11 +276,7 @@ public class WebProxyPortlet extends GenericPortlet {
             }
         }
         
-        String sRequestType;
-        if (request.getParameter(WebproxyConstants.REQUEST_TYPE) != null)
-            sRequestType = request.getParameter(WebproxyConstants.REQUEST_TYPE);
-        else
-            sRequestType = null;
+        String sRequestType = request.getParameter(WebproxyConstants.REQUEST_TYPE);
 
         HttpManagerService findingService = (HttpManagerService) context.getBean("HttpManagerService", HttpManagerService.class);
         final HttpManager httpManager = findingService.findManager(request);
@@ -341,11 +343,15 @@ public class WebProxyPortlet extends GenericPortlet {
                     //If post add any parameters to the method
                     if (sRequestType.equals(WebproxyConstants.POST_REQUEST)) {
                         final List<ParameterPair> postParameters = new ArrayList<ParameterPair>(request.getParameterMap().size());
-                        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-                            final String paramName = (String)e.nextElement();
+                        
+                        final String paramKey = request.getParameter(GeneralConfigImpl.POST_PARAM_KEY);
+                        final Map<String, ?> parameters = this.modelPasser.getModelFromPortlet(request, response, paramKey);
+                        
+                        for (final Map.Entry<String, ?> paramEntry : parameters.entrySet()) {
+                            final String paramName = paramEntry.getKey();
 
                             if (!paramName.startsWith(WebproxyConstants.UNIQUE_CONSTANT)) {
-                                final String[] values = request.getParameterValues(paramName);
+                                final String[] values = (String[])paramEntry.getValue();
                                 
                                 for (int valIndex = 0; valIndex < values.length; valIndex++) {
                                     final ParameterPair param = new ParameterPair(paramName, values[valIndex]);
@@ -1098,15 +1104,26 @@ public class WebProxyPortlet extends GenericPortlet {
                 response.sendRedirect(servletUrl.toString());
                 return;
             }
-            else {
-                final Map params = request.getParameterMap();
-                if (params != null){
+            
+            
+            //A proxied request, redirect to a render request with the request type and parameters
+            final Map params = request.getParameterMap();
+            if (params != null){
+                //If the request is a POST there may be too much data for the generated render URL, stick it in the session via the modelPasser and 
+                if ("POST".equals(sRequestType)) {
+                    final String paramKey = this.sessionKeyGenerator.getNextSessionKey(session);
+                    this.modelPasser.passModelToServlet(request, response, paramKey, new LinkedHashMap(params));
+                    response.setRenderParameter(GeneralConfigImpl.POST_PARAM_KEY, paramKey);
+                }
+                else {
                     response.setRenderParameters(params);
                 }
-                response.setRenderParameter(WebproxyConstants.REQUEST_TYPE, sRequestType);
-                response.setRenderParameter(GeneralConfigImpl.BASE_URL, sUrl);
-                session.setAttribute(GeneralConfigImpl.BASE_URL, sUrl);
             }
+            
+            final String urlKey = this.sessionKeyGenerator.getNextSessionKey(session);
+            response.setRenderParameter(WebproxyConstants.REQUEST_TYPE, sRequestType);
+            response.setRenderParameter(GeneralConfigImpl.BASE_URL_KEY, urlKey);
+            this.modelPasser.passModelToServlet(request, response, urlKey, Collections.singletonMap(GeneralConfigImpl.BASE_URL, sUrl));
         }
         
         try {

@@ -119,7 +119,7 @@
                 }
                 if(configIterator.hasNext()) {
 %>		
-            <td class="linebox"><img class="line"</td>
+            <td class="linebox"><img class="line"/></td>
 <%
                 }
             }

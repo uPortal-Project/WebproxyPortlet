@@ -287,9 +287,19 @@ public class WebProxyPortlet extends GenericPortlet {
         final boolean sUseCache = new Boolean(myPreferences.getValue(CacheConfigImpl.USE_CACHE, null)).booleanValue();
         if (sUseCache) {
             final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
+            final String cacheScope = myPreferences.getValue(CacheConfigImpl.CACHE_SCOPE, null);
 
             final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
-            final String cacheKey = keyManager.generateCacheKey(sUrl, request);
+            String cacheKey = null;
+            /*
+             * If scope is user get a key unique to this portlet instance.
+             * Otherwise use the url alone as the key.  This will share the response across all
+             * instances of web proxy portlet.
+             */
+            if (cacheScope == null || cacheScope.equals(CacheConfigImpl.CACHE_SCOPE_USER))
+                cacheKey = keyManager.generateCacheKey(sUrl, request);
+            else 
+                cacheKey = sUrl;
 
             final CacheEntry cachedData = cache.getCachedPage(cacheKey);
 
@@ -406,7 +416,19 @@ public class WebProxyPortlet extends GenericPortlet {
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
 
                         final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
-                        final String cacheKey = keyManager.generateCacheKey(sUrl, request);
+                        
+                        final String cacheScope = myPreferences.getValue(CacheConfigImpl.CACHE_SCOPE, null);
+                        String cacheKey = null;
+                        /*
+                         * If scope is user get a key unique to this portlet instance.
+                         * Otherwise use the url alone as the key.  This will share the response across all
+                         * instances of web proxy portlet.
+                         */
+                        if (cacheScope  == null || cacheScope.equals(CacheConfigImpl.CACHE_SCOPE_USER))
+                            cacheKey = keyManager.generateCacheKey(sUrl, request);
+                        else 
+                            cacheKey = sUrl;      
+
 
                         final CacheEntry cachedData = cache.getCachedPage(cacheKey, true);
 
@@ -535,7 +557,17 @@ public class WebProxyPortlet extends GenericPortlet {
                         final PageCache cache = (PageCache)context.getBean("PageCache", PageCache.class);
     
                         final IKeyManager keyManager = (IKeyManager)context.getBean("keyManager", IKeyManager.class);
-                        final String cacheKey = keyManager.generateCacheKey(sUrl, request);
+                        final String cacheScope = myPreferences.getValue(CacheConfigImpl.CACHE_SCOPE, null);
+                        String cacheKey = null;
+                        /*
+                         * If scope is user get a key unique to this portlet instance.
+                         * Otherwise use the url alone as the key.  This will share the response across all
+                         * instances of web proxy portlet.
+                         */
+                        if (cacheScope  == null || cacheScope.equals(CacheConfigImpl.CACHE_SCOPE_USER))
+                            cacheKey = keyManager.generateCacheKey(sUrl, request);
+                        else 
+                            cacheKey = sUrl;      
 
                         final int cacheExprTime = ConfigUtils.parseInt(myPreferences.getValue(CacheConfigImpl.CACHE_TIMEOUT, null), -1);
                         final boolean persistData = new Boolean(myPreferences.getValue(CacheConfigImpl.PERSIST_CACHE, null)).booleanValue();

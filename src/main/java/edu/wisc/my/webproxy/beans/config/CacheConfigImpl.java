@@ -80,6 +80,9 @@ public class CacheConfigImpl extends JspConfigPage {
     public static final String USE_EXPIRED      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("useExpired").toString();
     public static final String RETRY_DELAY      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("retryDelay").toString();
     public static final String PERSIST_CACHE    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("persistCache").toString();
+    public static final String CACHE_SCOPE      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("cacheScope").toString();
+    public static final String CACHE_SCOPE_USER      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("user").toString();
+    public static final String CACHE_SCOPE_APP      = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(CACHE_PREF_PREFIX).append("application").toString();
     
     
     /**
@@ -100,7 +103,15 @@ public class CacheConfigImpl extends JspConfigPage {
         final Boolean useCache = new Boolean(request.getParameter(USE_CACHE));
         prefs.setValue(USE_CACHE, useCache.toString());
         
-        
+        /*
+         * Cache Scope is either "user" or "application"
+         * user scope confines the cache to a portlet session while 
+         * application scope is global to all instances of web proxy portlet
+         */
+        String cacheScope = null;
+        cacheScope = ConfigUtils.checkEmptyNullString(request.getParameter(CACHE_SCOPE), CACHE_SCOPE_USER);
+        prefs.setValue(CACHE_SCOPE, cacheScope);
+                
         String cacheTimeoutStr = null;
         Integer cacheTimeout = null;
         try {

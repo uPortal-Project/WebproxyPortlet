@@ -294,6 +294,8 @@
                 <property name="cacheManager" ref="cacheManager" />
             </bean>
         </property>
+        <!-- default to 5 minute cache timeout in case time to live is negative -->
+        <property name="cacheSecondsToLiveDefault" value="300" />
     </bean>
     
     

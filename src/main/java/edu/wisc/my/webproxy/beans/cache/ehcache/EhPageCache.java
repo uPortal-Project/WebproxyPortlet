@@ -32,6 +32,7 @@ import edu.wisc.my.webproxy.beans.cache.PageCache;
  */
 public class EhPageCache implements PageCache {
     private Ehcache ehcache;
+    private int cacheSecondsToLiveDefault = 0;
     
     public Ehcache getEhcache() {
         return this.ehcache;
@@ -45,8 +46,13 @@ public class EhPageCache implements PageCache {
      */
     public void cachePage(String key, CacheEntry entry, boolean persistent) {
         final Element element = new Element(key, entry);
-        element.setTimeToLive((int)(Math.max(entry.getExpirationDate().getTime() - System.currentTimeMillis(), Integer.MAX_VALUE)));
         
+        // don't try to cache if the expiration is null 
+        if (entry.getExpirationDate()==null) return;
+        
+        long secondsTtl = ((entry.getExpirationDate().getTime() - System.currentTimeMillis()) > 0) ? 
+                (entry.getExpirationDate().getTime() - System.currentTimeMillis())/1000 : cacheSecondsToLiveDefault; 
+        element.setTimeToLive((int) Math.min(Integer.MAX_VALUE, secondsTtl)); // ensure that value can fit into an int.
         this.ehcache.put(element);
     }
 
@@ -81,6 +87,12 @@ public class EhPageCache implements PageCache {
         }
         
         return (CacheEntry)element.getValue();
+    }
+    /**
+     * @param cacheSecondsToLiveDefault the cacheSecondsToLiveDefault to set
+     */
+    public void setCacheSecondsToLiveDefault(int cacheSecondsToLiveDefault) {
+        this.cacheSecondsToLiveDefault = cacheSecondsToLiveDefault;
     }
 
 }

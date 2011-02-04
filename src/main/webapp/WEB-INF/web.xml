@@ -40,6 +40,10 @@
     </context-param>
     
     <listener>
+        <listener-class>org.springframework.web.util.HttpSessionMutexListener</listener-class>
+    </listener>
+    
+    <listener>
         <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
     </listener>
     

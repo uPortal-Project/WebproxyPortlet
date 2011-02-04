@@ -21,6 +21,7 @@ package edu.wisc.my.webproxy.portlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.portlet.context.PortletApplicationContextUtils;
 import org.springframework.web.portlet.context.PortletWebRequest;
+import org.springframework.web.util.WebUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -132,8 +134,18 @@ public class WebProxyPortlet extends GenericPortlet {
         super.init();
     }
     
+    private static class Mutex implements Serializable {
+    }
+    
     @Override
     public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException {
+        //Since portlets don't have a good way to stick a mutex in the session check on every render request
+        PortletSession portletSession = request.getPortletSession(false);
+        if (portletSession == null || portletSession.isNew() || portletSession.getAttribute(WebUtils.SESSION_MUTEX_ATTRIBUTE) == null) {
+            portletSession = request.getPortletSession();
+            portletSession.setAttribute(WebUtils.SESSION_MUTEX_ATTRIBUTE, new Mutex());
+        }
+        
         
         // We're overriding render() on GenericPortlet for the sole purpose of 
         // *not* executing the following commented below, which would typically 

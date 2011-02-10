@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -45,13 +46,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.conn.params.ConnPerRoute;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -78,13 +73,31 @@ public class HttpManagerImpl extends HttpManager {
     
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
+	private ClientConnectionManager clientConnectionManager;
 	private DefaultHttpClient client;
-    
+	private SchemeRegistry schemeRegistry;
+	
     /**
      * Default constructor
      */
     public HttpManagerImpl() {
     }
+    
+    
+    /**
+     * The {@link SchemeRegistry} to use for the connections, required
+     */
+    public void setSchemeRegistry(SchemeRegistry schemeRegistry) {
+        this.schemeRegistry = schemeRegistry;
+    }
+    
+    /**
+     * (Optional) The ClientConnectionManager to use for creating the {@link HttpClient} instance. If not specified one will be created for each {@link HttpClient} created.
+     */
+    public void setClientConnectionManager(ClientConnectionManager clientConnectionManager) {
+        this.clientConnectionManager = clientConnectionManager;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.wisc.my.webproxy.beans.http.HttpManager#doRequest(edu.wisc.my.webproxy.beans.http.Request)
@@ -292,22 +305,17 @@ public class HttpManagerImpl extends HttpManager {
      * as well as setting up connection related {@link HttpParams}
      */
     protected ClientConnectionManager createClientConnectionManager(PortletRequest request, HttpParams params) {
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-        
+        if (this.clientConnectionManager != null) {
+            return this.clientConnectionManager;
+        }
         
         final int maxConnections = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS, "50"), 50);
         final int maxConnectionsPerRoute = ConfigUtils.parseInt(request.getPreferences().getValue(HttpClientConfigImpl.MAX_CONNECTIONS_PER_ROUTE, "10"), 10);
         
-        ConnManagerParams.setMaxTotalConnections(params, maxConnections); 
-        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRoute() {
-            public int getMaxForRoute(HttpRoute route) {
-                return maxConnectionsPerRoute;
-            }
-        });
-        
-        return new ThreadSafeClientConnManager(params, registry);
+        final ThreadSafeClientConnManager threadSafeClientConnManager = new ThreadSafeClientConnManager(this.schemeRegistry, 300, TimeUnit.SECONDS);
+        threadSafeClientConnManager.setMaxTotal(maxConnections);
+        threadSafeClientConnManager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
+        return threadSafeClientConnManager;
     }
 	
 }

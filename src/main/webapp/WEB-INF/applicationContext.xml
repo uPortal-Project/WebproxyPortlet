@@ -41,6 +41,32 @@
             </list>
         </property>
     </bean>
+    
+    <!-- HTTP Client Scheme Registry, this must be shared for reasonable performance -->
+    <bean id="schemeRegistry" class="org.apache.http.conn.scheme.SchemeRegistry">
+        <property name="items">
+            <map>
+                <entry key="http">
+                    <bean class="org.apache.http.conn.scheme.Scheme">
+                        <constructor-arg value="http"/>
+                        <constructor-arg value="80" />
+                        <constructor-arg>
+                            <bean class="org.apache.http.conn.scheme.PlainSocketFactory" factory-method="getSocketFactory"/>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry key="https">
+                    <bean class="org.apache.http.conn.scheme.Scheme">
+                        <constructor-arg value="https"/>
+                        <constructor-arg value="443" />
+                        <constructor-arg>
+                            <bean class="org.apache.http.conn.ssl.SSLSocketFactory" factory-method="getSocketFactory"/>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
 <!-- The following 4 beans are needed for proxy CAS authentication.  The first 3 are from the
      Jasig Java CAS Client.
@@ -81,9 +107,12 @@
     <property name="myService" value="http://localhost:8080/WebProxyPortlet" />
   </bean>
 -->
-    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" scope="prototype" />
+    <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.HttpManagerImpl" scope="prototype">
+      <property name="schemeRegistry" ref="schemeRegistry" />
+    </bean>
 <!-- Use this bean for Shibboleth support
     <bean id="HttpManagerBean" class="edu.wisc.my.webproxy.beans.http.ShibbolethEnabledHttpManagerImpl" scope="prototype">
+      <property name="schemeRegistry" ref="schemeRegistry" /
       <property name="spPrivateKey" value="C:/JavaClasses/sp-key.pem"/>
       <property name="spCertificate" value="C:/JavaClasses/sp-cert.pem"/>
     </bean>

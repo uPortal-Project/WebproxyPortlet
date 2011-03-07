@@ -253,7 +253,7 @@
     <bean id="ContentTypeBean" class="edu.wisc.my.webproxy.beans.SpringList" scope="prototype">
         <property name="wrappedList">
             <list>
-                <value>text/html</value>
+                <value>text/.*</value>
                 <value>XHTML/1.0</value>
             </list>
         </property>

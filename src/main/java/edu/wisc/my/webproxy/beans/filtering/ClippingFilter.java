@@ -34,6 +34,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -49,6 +51,8 @@ import edu.wisc.my.webproxy.beans.config.ClippingConfigImpl;
  */
 public class ClippingFilter extends ChainingSaxFilter {
 
+    private static final Log LOG = LogFactory.getLog(ClippingFilter.class);
+    
     List<List<String>> xPath = null;
 
     List<String> currentPath = new LinkedList<String>();
@@ -157,13 +161,21 @@ public class ClippingFilter extends ChainingSaxFilter {
                         final String testPathPart = pathPartList.get(myPathIndex);
                         
                         if (myPathIndex < currentPath.size() && currentPathPart != null && currentPathPart.equalsIgnoreCase(testPathPart)) {
-                            xPathMatch = true;
-                            break;
+                            xPathMatch = true;  
+                            if (myPathIndex == pathPartList.size()-1) {
+                                break;
+                            }
                         }
                         else {
                             xPathMatch = false;
+                            break;
                         }
                     }
+                    if (xPathMatch == true && currentPath.size() >= pathPartList.size()) {
+                        break;
+                    } else {
+                            xPathMatch = false;
+                        }
                 }
             }
             
@@ -197,6 +209,45 @@ public class ClippingFilter extends ChainingSaxFilter {
      */
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (!disable) {
+            //loop thru each xPath to see if clipping is set to true.
+            if (xPath != null) {
+                for (final List<String> pathPartList : this.xPath) {
+                    //check current path to see if equals defined clipping
+                    // xPath
+                    for (int myPathIndex = 0; myPathIndex < pathPartList.size() && myPathIndex < this.currentPath.size(); myPathIndex++) {
+                        final String currentPathPart = currentPath.get(myPathIndex);
+                        final String testPathPart = pathPartList.get(myPathIndex);
+                        
+                        if (myPathIndex < currentPath.size() && currentPathPart != null && currentPathPart.equalsIgnoreCase(testPathPart)) {
+                            xPathMatch = true;  
+                            if (myPathIndex == pathPartList.size()-1) {
+                                break;
+                            }
+                        }
+                        else {
+                            xPathMatch = false;
+                            break;
+                        }
+                    }
+                    if (xPathMatch == true && currentPath.size() >= pathPartList.size()) {
+                        break;
+                    } else {
+                            xPathMatch = false;
+                        }
+                }
+            }
+            
+            if (sElement != null)
+                for (final String testElement : this.sElement) {
+                    if (currentPath.contains(testElement)) {
+                        elementMatch = true;
+                        break;
+                    }
+                    else {
+                        elementMatch = false;
+                    }
+                }
+            
             if (xPathMatch || elementMatch || commentMatch) {
                 super.endElement(uri, localName, qName);
             }
@@ -214,37 +265,7 @@ public class ClippingFilter extends ChainingSaxFilter {
                 }
                 index--;
             }
-            //loop thru each xPath to see if clipping is set to true.
-            if (xPath != null) {
-                for (final List<String> pathPartList : xPath) {
-                    //check current path to see if equals defined clipping
-                    // xPath
-                    for (int myPathIndex = 0; myPathIndex < pathPartList.size(); myPathIndex++) {
-                        final String currentPathPart = currentPath.get(myPathIndex);
-                        final String testPathPart = pathPartList.get(myPathIndex);
-                        
-                        if (myPathIndex < currentPath.size() && currentPathPart != null && currentPathPart.equalsIgnoreCase(testPathPart)) {
-                            xPathMatch = true;
-                            break;
-                        }
-                        else {
-                            xPathMatch = false;
-                        }
-                    }
-                }
-            }
-            if (sElement != null) {
-                for (final String testElement : this.sElement) {
-                    if (currentPath.contains(testElement)) {
-                        elementMatch = true;
-                        break;
-                    }
-                    else {
-                        elementMatch = false;
-                    }
-                }
-            }
-
+  
         }
         else {
             super.endElement(uri, localName, qName);
@@ -278,7 +299,7 @@ public class ClippingFilter extends ChainingSaxFilter {
      */
     public boolean notAcceptable(String qName) {
         boolean isAcceptable = false;
-        if (notAcceptable.contains(qName))
+        if (notAcceptable.contains(qName) || notAcceptable.contains(qName.toLowerCase()))
             isAcceptable = true;
         return isAcceptable;
 

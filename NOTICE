@@ -51,26 +51,22 @@ This project includes:
   HttpCore under Apache License
   JA-SIG CAS Client for Java - Core under JA-SIG License for Use
   Java Persistence API under LGPL, v2.1
+  Java Transaction API under Commons Development and Distribution License, Version 1.0
   Javassist under lgpl
   Joda time under Apache 2
   json-lib under The Apache Software License, Version 2.0
   Json-lib4Spring under The Apache Software License, Version 2.0
   jsp-api under Commons Development and Distribution License, Version 1.0
   jstl under Commons Development and Distribution License, Version 1.0
-  jta under Commons Development and Distribution License, Version 1.0
   JUnit under Common Public License Version 1.0
   Neko HTML under The Apache Software License, Version 2.0
-  org.apache.commons.ssl:not-yet-commons-ssl under Apache License, Version 2.0
-  org.apache.xalan:xalan under Apache License, Version 2.0
-  org.apache.xerces:resolver under Apache License, Version 2.0
-  org.apache.xerces:serializer under Apache License, Version 2.0
-  org.apache.xerces:xercesImpl under Apache License, Version 2.0
-  org.apache.xerces:xml-apis under Apache License, Version 2.0
-  org.opensaml:opensaml under Apache License, Version 2.0
-  org.opensaml:openws under Apache License, Version 2.0
-  org.opensaml:xmltooling under Apache License, Version 2.0
+  not-yet-commons-ssl under Apache License, Version 2.0
+  OpenSAML-J under Apache 2
+  OpenWS under Apache 2
   Pluto Portlet Tag Library under The Apache Software License, Version 2.0
   Portlet API under Commons Development and Distribution License, Version 1.0
+  resolver under Apache License, Version 2.0
+  serializer under Apache License, Version 2.0
   servlet-api under Commons Development and Distribution License, Version 1.0
   SLF4J API Module under MIT License
   SLF4J JCL Binding under MIT License
@@ -88,5 +84,9 @@ This project includes:
   Spring Framework: Web MVC Portlet under The Apache Software License, Version 2.0
   standard under Apache License, Version 2.0
   Web Proxy Portlet under Apache License Version 2.0
+  xalan under Apache License, Version 2.0
+  xercesImpl under Apache License, Version 2.0
   XML Security under The Apache Software License, Version 2.0
+  xml-apis under Apache License, Version 2.0
+  XMLTooling-J under Apache 2
 

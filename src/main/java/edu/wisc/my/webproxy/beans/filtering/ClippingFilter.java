@@ -310,9 +310,9 @@ public class ClippingFilter extends ChainingSaxFilter {
         if (comments.containsKey(currentComment)) {
             String commentStatus = (String)comments.get(currentComment);
             if (commentStatus.equals("off"))
-                comments.put(commentStatus.toString(), "on");
+                comments.put(currentComment, "on");
             else
-                comments.put(commentStatus.toString(), "off");
+                comments.put(currentComment, "off");
             if (comments.containsValue("on"))
                 commentMatch = true;
             else

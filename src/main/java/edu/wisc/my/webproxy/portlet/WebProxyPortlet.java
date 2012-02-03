@@ -268,16 +268,21 @@ public class WebProxyPortlet extends GenericPortlet {
             }
         }
         
-        //No URL specified in request/model, use the default from the portlet preferences
+        //No URL specified in request/model, use the default from the portlet preferences/session
         if (sUrl == null) {
-            sUrl = ConfigUtils.checkEmptyNullString(myPreferences.getValue(GeneralConfigImpl.BASE_URL, null), null);
-
+            if (session.getAttribute(GeneralConfigImpl.BASE_URL) != null) {
+                // The BASE_URL configured in PortletPreferences has been 
+                // overridden by another feature;  CAS proxy AuthN, at a minimum, 
+                // uses this approach to add it's proxy ticket to the request URL.
+                sUrl = (String) session.getAttribute(GeneralConfigImpl.BASE_URL);
+            } else {
+                // Use value configured in PortletPreferences
+                sUrl = ConfigUtils.checkEmptyNullString(myPreferences.getValue(GeneralConfigImpl.BASE_URL, null), null);
+            }
             if (sUrl == null) {
                 throw new PortletException("No Initial URL Configured");
             }
         }
-        
-        
 
         //use Edit Url if in Edit mode
         final PortletMode mode = request.getPortletMode();

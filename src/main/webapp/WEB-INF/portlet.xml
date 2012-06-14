@@ -30,7 +30,7 @@
         <portlet-class>edu.wisc.my.webproxy.portlet.WebProxyPortlet</portlet-class>
         <expiration-cache>-1</expiration-cache>
         <supports>
-            <mime-type>*/*</mime-type>
+            <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
             <portlet-mode>edit</portlet-mode>
             <portlet-mode>config</portlet-mode>
@@ -47,6 +47,11 @@
         <description>Allows the portlet to render a preferences edit UI during publishing</description>
         <portlet-mode>config</portlet-mode>
     </custom-portlet-mode>
+
+    <user-attribute>
+        <description>Username attribute name for uPortal user</description>
+        <name>user.login.id</name>
+    </user-attribute>
 
     <user-attribute>
         <description>givenName</description>
@@ -112,5 +117,7 @@
         <name>samlAssertion</name>
     </user-attribute>
 -->
+
+<!-- Add additional attributes to parameterize the proxy request as needed -->
  
 </portlet-app>

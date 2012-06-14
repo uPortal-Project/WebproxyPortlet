@@ -43,7 +43,9 @@
     final String postInterceptorClassName   = prefs.getValue(GeneralConfigImpl.POST_INTERCEPTOR_CLASS, "");   
 %>
 <p>
-	Base Url (including protocol): <input type="text" name="<%=GeneralConfigImpl.BASE_URL%>" value="<%=baseUrl%>">
+	Base Url (including protocol): <input type="text" name="<%=GeneralConfigImpl.BASE_URL%>" value="<%=baseUrl%>"><br/>
+	<span  style="color: #666; font-size: smaller;">Use \${attribute.name} to inject the user attributes into the URL.<br/>
+	Example:  'http://www.foo.com/\${uid}' becomes 'http://www.foo.com/admin' for the admin user. 
 </p>
 <p>
 	Edit Url (including protocol): <input type="text" name="<%=GeneralConfigImpl.EDIT_URL%>" value="<%=editUrl%>">

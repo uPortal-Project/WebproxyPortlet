@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:component-scan base-package="org.jasig.portlet.proxy.service"/>
+    <context:annotation-config/>
+
+    <bean
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:configuration.properties" />
+    </bean>
+
+    <!-- Message source for this context, loaded from localized "messages_xx" files -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>messages</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <util:map id="urlRewritingActionElements">
+        <entry key="a"><set><value>href</value></set></entry>
+        <entry key="area"><set><value>href</value></set></entry>
+        <entry key="base"><set><value>href</value></set></entry>
+        <entry key="frame"><set><value>src</value></set></entry>
+        <entry key="q"><set><value>cite</value></set></entry>
+        <entry key="ins"><set><value>cite</value></set></entry>
+        <entry key="del"><set><value>cite</value></set></entry>
+        <entry key="form"><set><value>action</value></set></entry>
+        <entry key="meta"><set><value>url</value></set></entry>
+    </util:map>
+
+    <util:map id="urlRewritingResourceElements">
+        <entry key="link"><set><value>href</value></set></entry>
+        <entry key="img">
+            <set>
+                <value>src</value>
+                <value>lowsrc</value>
+                <value>usemap</value>
+            </set>
+        </entry>
+        <entry key="embed"><set><value>src</value></set></entry>
+        <entry key="script"><set><value>src</value></set></entry>
+        <entry key="body"><set><value>background</value></set></entry>
+        <entry key="applet"><set><value>codebase</value></set>
+        </entry>
+    </util:map>
+
+    <bean id="viewSelector" class="org.jasig.portlet.proxy.mvc.ThemeNameViewSelectorImpl"/>
+
+    <!-- Default View Resolver -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="cache" value="${viewResCache}"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

@@ -472,6 +472,7 @@
                         <exclude>LICENSE</exclude>
                         <exclude>NOTICE.template</exclude>
                         <exclude>release.properties</exclude>
+                        <excluse>.gitignore</excluse>
                     </excludes>
                 </configuration>
             </plugin>

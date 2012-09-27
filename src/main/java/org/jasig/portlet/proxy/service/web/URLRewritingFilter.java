@@ -20,6 +20,7 @@ package org.jasig.portlet.proxy.service.web;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ import javax.portlet.ResourceURL;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.utils.URIBuilder;
+import org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletController;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -69,17 +72,20 @@ public class URLRewritingFilter implements IDocumentFilter {
     }
 
     @Override
-    public void filter(final Document document, final RenderRequest request,
+    public void filter(final Document document,
+            final ProxyRequest proxyRequest, final RenderRequest request,
             final RenderResponse response) {
         
-        updateUrls(document, actionElements, request, response, true);
-        updateUrls(document, resourceElements, request, response, false);
+        updateUrls(document, proxyRequest, actionElements, request, response, true);
+        updateUrls(document, proxyRequest, resourceElements, request, response, false);
 
     }
     
-    protected void updateUrls(Document document,
-            Map<String, Set<String>> elementSet, final RenderRequest request,
-            final RenderResponse response, boolean action) {
+    protected void updateUrls(final Document document,
+            final ProxyRequest proxyRequest,
+            final Map<String, Set<String>> elementSet,
+            final RenderRequest request, final RenderResponse response,
+            boolean action) {
         
         // attempt to retrieve the list of rewritten URLs from the session
         final PortletSession session = request.getPortletSession();
@@ -96,9 +102,16 @@ public class URLRewritingFilter implements IDocumentFilter {
         final PortletPreferences preferences = request.getPreferences();
         final String[] whitelistRegexes = preferences.getValues("whitelistRegexes", new String[]{});
         
-        // TODO: this base URL needs to be automatically computed for the 
-        // individual page, rather than hard-coded for the entire portlet definition
-        final String baseUrl = preferences.getValue(BASE_URL_KEY, "");
+        String baseUrl = null;
+        String relativeUrl = null;
+        if (proxyRequest instanceof HttpProxyRequest) {
+            try {
+                baseUrl = getBaseServerUrl(((HttpProxyRequest) proxyRequest).getProxiedUrl());
+                relativeUrl = getRelativePathUrl(((HttpProxyRequest) proxyRequest).getProxiedUrl());
+            } catch (URISyntaxException e) {
+                log.error(e);
+            }
+        }
         
         for (final Map.Entry<String, Set<String>> elementEntry : elementSet.entrySet()) {
             for (final String attributeName : elementEntry.getValue()) {
@@ -111,27 +124,34 @@ public class URLRewritingFilter implements IDocumentFilter {
                     String url = element.attr(attributeName);
                     if (StringUtils.isNotBlank(url)) {
                         
-                        // transform any relative URLs into absolute URLs
-                        // TODO: base URL needs to be dynamically inferred from
-                        // request rather than hardcoded per-portlet
-                        if (url.startsWith("/") && !url.startsWith("//")) {
-                            url = baseUrl.concat(url);
-                        } else if (!url.contains("://")) {
-                            final StringBuffer buf = new StringBuffer();
-                            buf.append(baseUrl);
-                            buf.append(request.getContextPath());
-                            buf.append("/");
-                            buf.append(url);
-                            url = buf.toString();
+                        if (baseUrl != null) {
+                            
+                            // transform any relative URLs into absolute URLs
+                            // TODO: base URL needs to be dynamically inferred from
+                            // request rather than hardcoded per-portlet
+                            if (url.startsWith("/") && !url.startsWith("//")) {
+                                url = baseUrl.concat(url);
+                            } else if (!url.contains("://")) {
+                                url = relativeUrl.concat(url);
+                            }
+                        
                         }
     
                         // if this URL matches our whitelist regex, rewrite it 
                         // to pass through this portlet
                         for (String regex : whitelistRegexes) {
+
                             final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
                             if (pattern.matcher(url).find()) {
                                 rewrittenUrls.add(url);
-                                if (action) {
+                                
+                                if (elementEntry.getKey().equals("form")) {
+                                    boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
+                                    if (!isPost) {
+                                        element.attr("method", "POST");
+                                    }
+                                    url = createFormUrl(response, isPost, url);
+                                } else if (action) {
                                     url = createActionUrl(response, url);
                                 } else {
                                     url = createResourceUrl(response, url);
@@ -143,9 +163,6 @@ public class URLRewritingFilter implements IDocumentFilter {
                     
                     element.attr(attributeName, url);
                     
-                    if (elementEntry.getKey().equals("form")) {
-                        element.attr("method", "POST");
-                    }
                 }
                 
             }
@@ -154,9 +171,26 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     }
 
+    protected String createFormUrl(final RenderResponse response, final boolean isPost, final String url) {
+        final PortletURL portletUrl = response.createActionURL();
+        portletUrl.setParameter(ProxyPortletController.URL_PARAM, url);
+        portletUrl.setParameter(ProxyPortletController.IS_FORM_PARAM, "true");
+        portletUrl.setParameter(ProxyPortletController.FORM_METHOD_PARAM, isPost ? "POST" : "GET");
+        final StringWriter writer = new StringWriter();
+        try {
+            portletUrl.write(writer);
+            writer.flush();
+            return writer.getBuffer().toString();
+        } catch (IOException e) {
+            log.error("Failed to write portlet URL");
+        }
+
+        return null;
+    }
+
     protected String createActionUrl(final RenderResponse response, final String url) {
         final PortletURL portletUrl = response.createActionURL();
-        portletUrl.setParameter("url", url);
+        portletUrl.setParameter(ProxyPortletController.URL_PARAM, url);
         final StringWriter writer = new StringWriter();
         try {
             portletUrl.write(writer);
@@ -171,7 +205,7 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     protected String createResourceUrl(final RenderResponse response, final String url) {
         final ResourceURL resourceUrl = response.createResourceURL();
-        resourceUrl.setParameter("url", url);
+        resourceUrl.setParameter(ProxyPortletController.URL_PARAM, url);
         final StringWriter writer = new StringWriter();
         try {
             resourceUrl.write(writer);
@@ -182,6 +216,26 @@ public class URLRewritingFilter implements IDocumentFilter {
         }
 
         return null;
+    }
+    
+    protected String getBaseServerUrl(final String fullUrl) throws URISyntaxException {
+        final URIBuilder uriBuilder = new URIBuilder(fullUrl);
+        uriBuilder.removeQuery();
+        uriBuilder.setPath("");
+        return uriBuilder.build().toString();
+    }
+
+    protected String getRelativePathUrl(final String fullUrl) throws URISyntaxException {
+        final URIBuilder uriBuilder = new URIBuilder(fullUrl);
+        uriBuilder.removeQuery();
+        final String path = uriBuilder.getPath();
+        int lastSlash = path.lastIndexOf('/');
+        if (lastSlash < 0) {
+           uriBuilder.setPath("");
+        } else {
+            uriBuilder.setPath(path.substring(0, lastSlash+1));
+        }
+        return uriBuilder.build().toString();
     }
 
 }

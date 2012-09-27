@@ -43,6 +43,7 @@ public class ContentClippingFilterTest {
     @Mock RenderRequest request;
     @Mock RenderResponse response;
     @Mock PortletPreferences preferences;
+    @Mock ProxyRequest proxyRequest;
     
     @Before
     public void setUp() {
@@ -60,7 +61,7 @@ public class ContentClippingFilterTest {
         final String expected = "<divid=\"mine\"><div>Somecontent</div></div>";
         
         final Document document = Jsoup.parse(source);
-        filter.filter(document, request, response);
+        filter.filter(document, proxyRequest, request, response);
         final String result = document.html().replace("\n", "").replace(" ", "");
         assertEquals(expected, result);
     }

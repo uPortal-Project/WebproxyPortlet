@@ -36,7 +36,8 @@ public class ContentClippingFilter implements IDocumentFilter {
     protected static final String SELECTOR_KEY = "clippingSelector";
     
     @Override
-    public void filter(final Document document, final RenderRequest request,
+    public void filter(final Document document,
+            final ProxyRequest proxyRequest, final RenderRequest request,
             final RenderResponse response) {
         
         // get the clipping selector for this portlet configuration

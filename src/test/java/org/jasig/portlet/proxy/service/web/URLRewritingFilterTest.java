@@ -25,6 +25,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.mockito.MockitoAnnotations;
 public class URLRewritingFilterTest {
     
     URLRewritingFilter filter;
+    HttpProxyRequest proxyRequest;
     @Mock RenderRequest request;
     @Mock RenderResponse response;
     @Mock PortletSession session;    
@@ -62,7 +64,6 @@ public class URLRewritingFilterTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(request.getContextPath()).thenReturn("/somewhere");
         when(request.getPortletSession()).thenReturn(session);
         when(session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY)).thenReturn(rewrittenUrls);
         when(request.getPreferences()).thenReturn(preferences);
@@ -70,6 +71,9 @@ public class URLRewritingFilterTest {
         when(preferences.getValue(URLRewritingFilter.BASE_URL_KEY, "")).thenReturn("http://external.site.com");
 
         filter = spy(new URLRewritingFilter());
+        
+        proxyRequest = new HttpProxyRequest();
+        proxyRequest.setProxiedUrl("http://external.site.com/somewhere/index.html?q=a&b=t");
         
         final Map<String, Set<String>> urlAttributes = new HashMap<String, Set<String>>();
         urlAttributes.put("a", Collections.singleton("href"));
@@ -83,7 +87,7 @@ public class URLRewritingFilterTest {
     @Test
     public void testRelativeUrls() {
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
-        filter.filter(document, request, response);
+        filter.filter(document, proxyRequest, request, response);
         final String result = "<div><ahref=\"http://external.site.com/link/with/slash.html\">Link</a><ahref=\"http://external.site.com/somewhere/link/without/slash.html\">Link</a></div>";
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);
@@ -95,10 +99,16 @@ public class URLRewritingFilterTest {
         doReturn("portletUrl").when(filter).createActionUrl(any(RenderResponse.class), any(String.class));        
         
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
-        filter.filter(document, request, response);
+        filter.filter(document, proxyRequest, request, response);
         final String result = "<div><ahref=\"portletUrl\">Link</a><ahref=\"portletUrl\">Link</a></div>";
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);
+    }
+    
+    @Test
+    public void testGetBaseUrl() throws URISyntaxException {
+        final String result = filter.getBaseServerUrl("http://somewhere.com/some/path?query=nothing");
+        assertEquals(result, "http://somewhere.com");
     }
     
 }

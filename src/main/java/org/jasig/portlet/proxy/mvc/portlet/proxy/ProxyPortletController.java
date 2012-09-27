@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -36,8 +37,12 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jasig.portlet.proxy.service.HttpContentService;
 import org.jasig.portlet.proxy.service.IContentService;
+import org.jasig.portlet.proxy.service.web.GenericProxyRequest;
+import org.jasig.portlet.proxy.service.web.HttpProxyRequest;
 import org.jasig.portlet.proxy.service.web.IDocumentFilter;
+import org.jasig.portlet.proxy.service.web.ProxyRequest;
 import org.jasig.portlet.proxy.service.web.URLRewritingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,6 +64,12 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 @RequestMapping("VIEW")
 public class ProxyPortletController {
 
+    public final static String PROXY_PORTLET_PARAM_PREFIX = "proxy.";
+    public final static String URL_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("url");
+    public final static String IS_FORM_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("isForm");
+    public final static String FORM_METHOD_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("formMethod");
+
+
     protected static final String CONTENT_LOCATION_KEY = "location";
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
@@ -73,9 +84,8 @@ public class ProxyPortletController {
     }
 
     @RenderMapping
-    public void showContent(
-            final @RequestParam(value = "url", required = false) String urlParam,
-            final RenderRequest request, final RenderResponse response) {
+    public void showContent(final RenderRequest request,
+            final RenderResponse response) {
 
         final PortletPreferences preferences = request.getPreferences();
 
@@ -84,6 +94,7 @@ public class ProxyPortletController {
         // acting as an open proxy).  If we did rewrite this URL, set the URL
         // to be proxied to the requested one
         final String url;
+        final String urlParam = request.getParameter(URL_PARAM);
         if (urlParam != null) {
             final PortletSession session = request.getPortletSession();
             @SuppressWarnings("unchecked")
@@ -99,6 +110,14 @@ public class ProxyPortletController {
             url = preferences.getValue(CONTENT_LOCATION_KEY, null);
         }
         
+        final String isForm = request.getParameter(IS_FORM_PARAM);
+        if (isForm != null && Boolean.parseBoolean(isForm)) {
+            final String method = request.getParameter(FORM_METHOD_PARAM);
+            final Map<String, String[]> params = request.getParameterMap();
+            // TODO: make form request
+        } else {
+            // regular request
+        }
 
         // locate the content service to use to retrieve our HTML content
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
@@ -118,9 +137,20 @@ public class ProxyPortletController {
         try {
             final Document document = Jsoup.parse(stream, "UTF-8", url);
             
+            final ProxyRequest proxyRequest;
+            if (contentService instanceof HttpContentService) {
+                // TODO: we really need the final URL here, not the requested one
+                // to properly handle forwarded requests
+                final HttpProxyRequest httpProxyRequest = new HttpProxyRequest();
+                httpProxyRequest.setProxiedUrl(url);
+                proxyRequest = httpProxyRequest;
+            } else {
+                proxyRequest = new GenericProxyRequest();
+            }
+            
             // apply each of the document filters in order
             for (final IDocumentFilter filter : filters) {
-                filter.filter(document, request, response);
+                filter.filter(document, proxyRequest, request, response);
             }
             
             // write out the final content
@@ -140,14 +170,15 @@ public class ProxyPortletController {
     }
 
     @ActionMapping
-    public void proxyTarget(final @RequestParam String url,
+    public void proxyTarget(final @RequestParam("proxy.url") String url,
             final ActionRequest request, final ActionResponse response) {
         // TODO: ?
-        response.setRenderParameter("url", url);
+        final Map<String, String[]> params = request.getParameterMap();
+        response.setRenderParameters(params);
     }
     
     @ResourceMapping
-    public void proxyResourceTarget(final @RequestParam String url,
+    public void proxyResourceTarget(final @RequestParam("proxy.url") String url,
             final ResourceRequest request, final ResourceResponse response) {
         
         final PortletSession session = request.getPortletSession();

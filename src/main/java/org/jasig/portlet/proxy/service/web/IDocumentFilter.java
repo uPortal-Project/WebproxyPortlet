@@ -28,7 +28,7 @@ import org.jsoup.nodes.Document;
  */
 public interface IDocumentFilter {
 
-    public void filter(Document document, RenderRequest request,
-            RenderResponse response);
+    public void filter(Document document, ProxyRequest proxyRequest, RenderRequest portletRequest,
+            RenderResponse portletResponse);
     
 }

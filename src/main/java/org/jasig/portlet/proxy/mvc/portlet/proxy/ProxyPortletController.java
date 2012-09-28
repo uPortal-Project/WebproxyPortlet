@@ -109,15 +109,6 @@ public class ProxyPortletController {
         else {
             url = preferences.getValue(CONTENT_LOCATION_KEY, null);
         }
-        
-        final String isForm = request.getParameter(IS_FORM_PARAM);
-        if (isForm != null && Boolean.parseBoolean(isForm)) {
-            final String method = request.getParameter(FORM_METHOD_PARAM);
-            final Map<String, String[]> params = request.getParameterMap();
-            // TODO: make form request
-        } else {
-            // regular request
-        }
 
         // locate the content service to use to retrieve our HTML content
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);

@@ -53,7 +53,7 @@ public class URLRewritingFilter implements IDocumentFilter {
     
     final public static String REWRITTEN_URLS_KEY = "rewrittenUrls";
     final public static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
-    final public static String BASE_URL_KEY = "baseUrl";
+    protected final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
     
     final protected Log log = LogFactory.getLog(getClass());
     
@@ -102,12 +102,19 @@ public class URLRewritingFilter implements IDocumentFilter {
         final PortletPreferences preferences = request.getPreferences();
         final String[] whitelistRegexes = preferences.getValues("whitelistRegexes", new String[]{});
         
+        // If we're proxying a remote website (as opposed to a local filesystem 
+        // resources, we'll need to transform any relative URLs.  To do this,
+        // we first compute the base and relative URLs for the page.
         String baseUrl = null;
         String relativeUrl = null;
         if (proxyRequest instanceof HttpProxyRequest) {
             try {
-                baseUrl = getBaseServerUrl(((HttpProxyRequest) proxyRequest).getProxiedUrl());
-                relativeUrl = getRelativePathUrl(((HttpProxyRequest) proxyRequest).getProxiedUrl());
+            	final HttpProxyRequest httpProxyRequest = (HttpProxyRequest) proxyRequest;
+                baseUrl = getBaseServerUrl(httpProxyRequest.getProxiedUrl());
+                relativeUrl = getRelativePathUrl(httpProxyRequest.getProxiedUrl());
+                if (log.isTraceEnabled()) {
+                	log.trace("Computed base url " + baseUrl + " and relative url " + relativeUrl + " for proxied url " + httpProxyRequest.getProxiedUrl());
+                }
             } catch (URISyntaxException e) {
                 log.error(e);
             }
@@ -116,23 +123,36 @@ public class URLRewritingFilter implements IDocumentFilter {
         for (final Map.Entry<String, Set<String>> elementEntry : elementSet.entrySet()) {
             for (final String attributeName : elementEntry.getValue()) {
 
-            // get a list of elements for this element type and iterate through
-            // them, updating the relevant URL attribute
-            final Elements elements = document.getElementsByTag(elementEntry.getKey());
+	            // get a list of elements for this element type and iterate through
+	            // them, updating the relevant URL attribute
+	            final Elements elements = document.getElementsByTag(elementEntry.getKey());
                 for (Element element : elements) {
     
-                    String url = element.attr(attributeName);
-                    if (StringUtils.isNotBlank(url)) {
+                    String attributeUrl = element.attr(attributeName);
+                    if (log.isTraceEnabled()) {
+                    	log.trace("Considering element " + element + " with URL attribute " + attributeName + " of value " + attributeUrl);
+                    }
+					if (StringUtils.isNotBlank(attributeUrl)
+							
+							// don't adjust or filter javascript url targets
+							&& !attributeUrl.startsWith(JAVASCRIPT_PREFIX)
+							&& !attributeUrl.startsWith(JAVASCRIPT_PREFIX
+									.toLowerCase())) {
                         
+                    	// if we're proxying a remote website, adjust any 
+                    	// relative URLs into absolute URLs
                         if (baseUrl != null) {
+                        	
+                            // if the URL is relative to the server base, prepend
+                        	// the base URL
+                            if (attributeUrl.startsWith("/") && !attributeUrl.startsWith("//")) {
+                                attributeUrl = baseUrl.concat(attributeUrl);
+                            } 
                             
-                            // transform any relative URLs into absolute URLs
-                            // TODO: base URL needs to be dynamically inferred from
-                            // request rather than hardcoded per-portlet
-                            if (url.startsWith("/") && !url.startsWith("//")) {
-                                url = baseUrl.concat(url);
-                            } else if (!url.contains("://")) {
-                                url = relativeUrl.concat(url);
+                            // if the URL contains no path information, use
+                            // the full relative path
+                            else if (!attributeUrl.contains("://")) {
+                                attributeUrl = relativeUrl.concat(attributeUrl);
                             }
                         
                         }
@@ -142,26 +162,34 @@ public class URLRewritingFilter implements IDocumentFilter {
                         for (String regex : whitelistRegexes) {
 
                             final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
-                            if (pattern.matcher(url).find()) {
-                                rewrittenUrls.add(url);
+                            if (pattern.matcher(attributeUrl).find()) {
+                            	
+                            	// record that we've rewritten this URL
+                                rewrittenUrls.add(attributeUrl);
                                 
                                 if (elementEntry.getKey().equals("form")) {
+                                	// the form action needs to be set to POST to
+                                	// properly pass through our portlet
                                     boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
                                     if (!isPost) {
                                         element.attr("method", "POST");
                                     }
-                                    url = createFormUrl(response, isPost, url);
-                                } else if (action) {
-                                    url = createActionUrl(response, url);
-                                } else {
-                                    url = createResourceUrl(response, url);
+                                    attributeUrl = createFormUrl(response, isPost, attributeUrl);
+                                }
+                                
+                                else if (action) {
+                                    attributeUrl = createActionUrl(response, attributeUrl);
+                                }
+                                
+                                else {
+                                    attributeUrl = createResourceUrl(response, attributeUrl);
                                 }
                             }
                         }
                         
                     }
                     
-                    element.attr(attributeName, url);
+                    element.attr(attributeName, attributeUrl.replace("&amp;", "&"));
                     
                 }
                 

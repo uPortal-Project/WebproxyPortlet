@@ -68,7 +68,6 @@ public class URLRewritingFilterTest {
         when(session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY)).thenReturn(rewrittenUrls);
         when(request.getPreferences()).thenReturn(preferences);
         when(preferences.getValues(URLRewritingFilter.WHITELIST_REGEXES_KEY, new String[]{})).thenReturn(new String[]{});
-        when(preferences.getValue(URLRewritingFilter.BASE_URL_KEY, "")).thenReturn("http://external.site.com");
 
         filter = spy(new URLRewritingFilter());
         

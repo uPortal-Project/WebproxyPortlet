@@ -18,6 +18,9 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.model.User;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,6 +45,7 @@ import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.web.GenericProxyRequest;
 import org.jasig.portlet.proxy.service.web.HttpProxyRequest;
 import org.jasig.portlet.proxy.service.web.IDocumentFilter;
+import org.jasig.portlet.proxy.service.web.IUrlPreProcessingFilter;
 import org.jasig.portlet.proxy.service.web.ProxyRequest;
 import org.jasig.portlet.proxy.service.web.URLRewritingFilter;
 import org.jsoup.Jsoup;
@@ -73,6 +77,7 @@ public class ProxyPortletController {
     protected static final String CONTENT_LOCATION_KEY = "location";
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
+    protected static final String PREPROCESSOR_LIST_KEY = "preprocessors";
 
     protected final Log log = LogFactory.getLog(getClass());
     
@@ -107,7 +112,21 @@ public class ProxyPortletController {
         
         // otherwise use the default starting URL for this proxy portlet
         else {
-            url = preferences.getValue(CONTENT_LOCATION_KEY, null);
+            // locate all pre-processing filters configured for this portlet
+            final List<IUrlPreProcessingFilter> filters = new ArrayList<IUrlPreProcessingFilter>();
+            final String[] preprocessorKeys = preferences.getValues(PREPROCESSOR_LIST_KEY, new String[]{});
+            for (final String preprocessorKey : preprocessorKeys) {
+                final IUrlPreProcessingFilter filter = applicationContext.getBean(preprocessorKey, IUrlPreProcessingFilter.class);
+                filters.add(filter);
+            }
+            
+        	String workingUrl = preferences.getValue(CONTENT_LOCATION_KEY, null);
+            // apply each of the url preprocessing filters in order
+            for (final IUrlPreProcessingFilter filter : filters) {
+                workingUrl = filter.filter(workingUrl, request, response);
+            }
+            
+            url = workingUrl;
         }
 
         // locate the content service to use to retrieve our HTML content

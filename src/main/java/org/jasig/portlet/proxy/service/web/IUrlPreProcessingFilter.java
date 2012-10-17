@@ -21,8 +21,6 @@ package org.jasig.portlet.proxy.service.web;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.jsoup.nodes.Document;
-
 /**
  * @author Bill Smith (wsmith@unicon.net)
  */

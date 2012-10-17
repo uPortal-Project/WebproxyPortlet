@@ -18,9 +18,6 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.User;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

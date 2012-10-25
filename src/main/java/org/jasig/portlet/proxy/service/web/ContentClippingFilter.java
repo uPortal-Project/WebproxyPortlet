@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service("contentClippingFilter")
 public class ContentClippingFilter implements IDocumentFilter {
 
-    protected static final String SELECTOR_KEY = "clippingSelector";
+    public static final String SELECTOR_KEY = "clippingSelector";
     
     @Override
     public void filter(final Document document,

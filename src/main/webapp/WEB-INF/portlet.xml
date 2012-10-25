@@ -38,6 +38,7 @@
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
+            <portlet-mode>config</portlet-mode>
         </supports>
         <portlet-info>
             <title>WebProxy Portlet</title>

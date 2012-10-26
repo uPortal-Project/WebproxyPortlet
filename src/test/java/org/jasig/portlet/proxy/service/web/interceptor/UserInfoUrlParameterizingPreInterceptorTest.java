@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.proxy.preprocessor;
+package org.jasig.portlet.proxy.service.web.interceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.jasig.portlet.proxy.service.web.preprocessor.UserInfoUrlParameterizingPreInterceptor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

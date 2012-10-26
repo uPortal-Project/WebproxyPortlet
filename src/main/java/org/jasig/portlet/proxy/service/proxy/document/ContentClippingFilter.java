@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.proxy.document;
 
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class ContentClippingFilter implements IDocumentFilter {
     
     @Override
     public void filter(final Document document,
-            final ProxyRequest proxyRequest, final RenderRequest request,
+            final IContentResponse proxyResponse, final RenderRequest request,
             final RenderResponse response) {
         
         // get the clipping selector for this portlet configuration

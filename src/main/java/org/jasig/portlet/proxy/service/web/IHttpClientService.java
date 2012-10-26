@@ -18,6 +18,10 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
-public class GenericProxyRequest implements ProxyRequest {
+import org.apache.http.client.HttpClient;
+
+public interface IHttpClientService {
+	
+	public HttpClient getHttpClient();
 
 }

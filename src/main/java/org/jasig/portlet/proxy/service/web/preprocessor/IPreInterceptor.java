@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service;
+package org.jasig.portlet.proxy.service.web.preprocessor;
 
 import javax.portlet.PortletRequest;
 
+import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+
 /**
- * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @author Bill Smith (wsmith@unicon.net)
  */
-public interface IContentService<T extends IContentRequest, S extends IContentResponse> {
+public interface IPreInterceptor {
 
-	public T getRequest(PortletRequest request);
-	
-    public S getContent(T proxyRequest, PortletRequest request);
-
+    public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest);
+    
 }

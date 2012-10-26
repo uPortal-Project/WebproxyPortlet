@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service;
+package org.jasig.portlet.proxy.service.web;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.logging.Log;
@@ -43,26 +43,55 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletController;
+import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
+import org.jasig.portlet.proxy.service.IContentService;
+import org.jasig.portlet.proxy.service.web.preprocessor.IPreInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 @Service("httpContentService")
-public class HttpContentService implements IContentService {
+public class HttpContentServiceImpl implements IContentService<HttpContentRequestImpl, GenericContentResponseImpl> {
 
     private final Log log = LogFactory.getLog(getClass());
-    
-    public InputStream getContent(String url, PortletRequest request) {
 
+    public final static String PROXY_PORTLET_PARAM_PREFIX = "proxy.";
+    public final static String URL_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("url");
+    public final static String IS_FORM_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("isForm");
+    public final static String FORM_METHOD_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("formMethod");
+
+    protected static final String PREINTERCEPTOR_LIST_KEY = "preInterceptors";
+
+    private ApplicationContext applicationContext;
+    
+    @Autowired(required = true)
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public HttpContentRequestImpl getRequest(PortletRequest request) {
+        return new HttpContentRequestImpl(request);
+    }
+    
+    public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
+
+        // locate all pre-processing filters configured for this portlet
+        final PortletPreferences preferences = request.getPreferences();
+        final String[] interceptorKeys = preferences.getValues(PREINTERCEPTOR_LIST_KEY, new String[]{});
+        for (final String key : interceptorKeys) {
+            final IPreInterceptor preinterceptor = applicationContext.getBean(key, IPreInterceptor.class);
+            preinterceptor.intercept(proxyRequest, request);
+        }
 
         // TODO: authentication, parameterizable URLs
 
         try {
         	
             final HttpClient httpclient = getHttpClient();
-            final HttpUriRequest httpRequest = getHttpRequest(url, request);
+            final HttpUriRequest httpRequest = getHttpRequest(proxyRequest, request);
             
         	if (log.isTraceEnabled()) {
         		log.trace("Proxying " + httpRequest.getURI() + " via " + httpRequest.getMethod());
@@ -70,7 +99,13 @@ public class HttpContentService implements IContentService {
         	
             final HttpResponse response = httpclient.execute(httpRequest);
             final HttpEntity entity = response.getEntity();
-            return entity.getContent();
+            
+            final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl();
+            proxyResponse.setContent(entity.getContent());
+            
+            // TODO: we need the final URL in case of any redirects
+            proxyResponse.setProxiedLocation(proxyRequest.getProxiedUrl());
+            return proxyResponse;
             
         } catch (ClientProtocolException e) {
             log.error("Exception retrieving remote content", e);
@@ -85,30 +120,26 @@ public class HttpContentService implements IContentService {
     	return new DefaultHttpClient();
     }
     
-    protected HttpUriRequest getHttpRequest(String url, PortletRequest request) {
+    protected HttpUriRequest getHttpRequest(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         final HttpUriRequest httpRequest;
 
         // if this is a form request, we may need to use a POST or add form parameters
-        final String isForm = request.getParameter(ProxyPortletController.IS_FORM_PARAM);
-        if (isForm != null && Boolean.parseBoolean(isForm)) {
-            final String method = request.getParameter(ProxyPortletController.FORM_METHOD_PARAM);
+        if (proxyRequest.isForm()) {
         	
             // handle POST form request
-            final Map<String, String[]> params = request.getParameterMap();            
-            if ("POST".equalsIgnoreCase(method)) {
+            final Map<String, String[]> params = proxyRequest.getParameters()   ;         
+            if ("POST".equalsIgnoreCase(proxyRequest.getMethod())) {
 
                 final List<NameValuePair> pairs = new ArrayList<NameValuePair>();
                 for (Map.Entry<String, String[]> param : params.entrySet()) {
-                	if (!param.getKey().startsWith(ProxyPortletController.PROXY_PORTLET_PARAM_PREFIX)) {
-            			for (String value : param.getValue()) {
-                    		pairs.add(new BasicNameValuePair(param.getKey(), value));
-            			}
-                	}
+        			for (String value : param.getValue()) {
+                		pairs.add(new BasicNameValuePair(param.getKey(), value));
+        			}
                 }
 
                 // construct a new POST request and set the form data
                 try {
-                    httpRequest = new HttpPost(url);
+                    httpRequest = new HttpPost(proxyRequest.getProxiedUrl());
                     if (pairs.size() > 0) {
                     	((HttpPost) httpRequest).setEntity(new UrlEncodedFormEntity(pairs));
                     }
@@ -125,13 +156,11 @@ public class HttpContentService implements IContentService {
                 try {
                 	
                 	// build a URL including any passed form parameters
-                    final URIBuilder builder = new URIBuilder(url);
+                    final URIBuilder builder = new URIBuilder(proxyRequest.getProxiedUrl());
                     for (Map.Entry<String, String[]> param : params.entrySet()) {
-                    	if (!param.getKey().startsWith(ProxyPortletController.PROXY_PORTLET_PARAM_PREFIX)) {
-                			for (String value : param.getValue()) {
-                        		builder.addParameter(param.getKey(), value);
-                			}
-                    	}
+            			for (String value : param.getValue()) {
+                    		builder.addParameter(param.getKey(), value);
+            			}
                     }
 					final URI uri = builder.build();
 	                httpRequest = new HttpGet(uri);
@@ -147,7 +176,7 @@ public class HttpContentService implements IContentService {
         
         // not a form, simply a normal get request
         else {
-            httpRequest = new HttpGet(url);
+            httpRequest = new HttpGet(proxyRequest.getProxiedUrl());
         }
         
         return httpRequest;

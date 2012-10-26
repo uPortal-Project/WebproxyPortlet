@@ -18,15 +18,12 @@
  */
 package org.jasig.portlet.proxy.service;
 
-import javax.portlet.PortletRequest;
+import java.io.InputStream;
 
-/**
- * @author Jen Bourey, jennifer.bourey@gmail.com
- */
-public interface IContentService<T extends IContentRequest, S extends IContentResponse> {
-
-	public T getRequest(PortletRequest request);
+public interface IContentResponse {
 	
-    public S getContent(T proxyRequest, PortletRequest request);
+	public String getProxiedLocation();
+	
+	public InputStream getContent();
 
 }

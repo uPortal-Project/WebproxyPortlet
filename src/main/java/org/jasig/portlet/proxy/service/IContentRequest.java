@@ -16,17 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+public interface IContentRequest {
 
-/**
- * @author Bill Smith (wsmith@unicon.net)
- */
-public interface IUrlPreProcessingFilter {
-
-    public String filter(String url, RenderRequest portletRequest,
-            RenderResponse portletResponse);
-    
 }

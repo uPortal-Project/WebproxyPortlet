@@ -19,7 +19,6 @@
 package org.jasig.portlet.proxy.mvc.portlet.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 import javax.portlet.PortletPreferences;
@@ -31,6 +30,8 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
+import org.jasig.portlet.proxy.service.IContentRequest;
+import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -75,16 +76,16 @@ public class JsonPortletController {
         // locate the content service to use to retrieve our JSON
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
         final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+        final IContentRequest proxyRequest = contentService.getRequest(request);
 
         // retrieve the JSON content
-        final String location = preferences.getValue(CONTENT_LOCATION_KEY, null);
-        final InputStream stream = contentService.getContent(location, request);
+        final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
         
         // parse our JSON into a map and add it to the model
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectReader reader = mapper.reader(Map.class);
         try {
-            final Map<String, Object> map = reader.readValue(stream);
+            final Map<String, Object> map = reader.readValue(proxyResponse.getContent());
             mv.addAllObjects(map);
         } catch (JsonProcessingException e) {
             log.error("Error parsing JSON content", e);

@@ -16,18 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.proxy.document;
 
-public class HttpProxyRequest implements ProxyRequest {
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
-    private String proxiedUrl;
+import org.jasig.portlet.proxy.service.IContentResponse;
+import org.jsoup.nodes.Document;
 
-    public String getProxiedUrl() {
-        return proxiedUrl;
-    }
+/**
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
+public interface IDocumentFilter {
 
-    public void setProxiedUrl(String proxiedUrl) {
-        this.proxiedUrl = proxiedUrl;
-    }
-
+    public void filter(Document document, IContentResponse proxyResponse, RenderRequest portletRequest,
+            RenderResponse portletResponse);
+    
 }

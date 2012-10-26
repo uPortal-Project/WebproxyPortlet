@@ -19,7 +19,6 @@
 package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +36,11 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jasig.portlet.proxy.service.HttpContentService;
+import org.jasig.portlet.proxy.service.IContentRequest;
+import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
-import org.jasig.portlet.proxy.service.web.GenericProxyRequest;
-import org.jasig.portlet.proxy.service.web.HttpProxyRequest;
-import org.jasig.portlet.proxy.service.web.IDocumentFilter;
-import org.jasig.portlet.proxy.service.web.IUrlPreProcessingFilter;
-import org.jasig.portlet.proxy.service.web.ProxyRequest;
-import org.jasig.portlet.proxy.service.web.URLRewritingFilter;
+import org.jasig.portlet.proxy.service.proxy.document.IDocumentFilter;
+import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,16 +61,9 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 @RequestMapping("VIEW")
 public class ProxyPortletController {
 
-    public final static String PROXY_PORTLET_PARAM_PREFIX = "proxy.";
-    public final static String URL_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("url");
-    public final static String IS_FORM_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("isForm");
-    public final static String FORM_METHOD_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("formMethod");
 
-
-    protected static final String CONTENT_LOCATION_KEY = "location";
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
-    protected static final String PREPROCESSOR_LIST_KEY = "preprocessors";
 
     protected final Log log = LogFactory.getLog(getClass());
     
@@ -90,46 +79,16 @@ public class ProxyPortletController {
             final RenderResponse response) {
 
         final PortletPreferences preferences = request.getPreferences();
-
-        // If a URL parameter has been specified, check to make sure that it's 
-        // one that the portlet rewrote (we want to prevent this portlet from
-        // acting as an open proxy).  If we did rewrite this URL, set the URL
-        // to be proxied to the requested one
-        final String url;
-        final String urlParam = request.getParameter(URL_PARAM);
-        if (urlParam != null) {
-            final PortletSession session = request.getPortletSession();
-            @SuppressWarnings("unchecked")
-            final List<String> rewrittenUrls = (List<String>) session.getAttribute("rewrittenUrls");
-            if (!rewrittenUrls.contains(urlParam)) {
-                return;
-            }
-            url = urlParam;
-        } 
         
-        // otherwise use the default starting URL for this proxy portlet
-        else {
-            // locate all pre-processing filters configured for this portlet
-            final List<IUrlPreProcessingFilter> filters = new ArrayList<IUrlPreProcessingFilter>();
-            final String[] preprocessorKeys = preferences.getValues(PREPROCESSOR_LIST_KEY, new String[]{});
-            for (final String preprocessorKey : preprocessorKeys) {
-                final IUrlPreProcessingFilter filter = applicationContext.getBean(preprocessorKey, IUrlPreProcessingFilter.class);
-                filters.add(filter);
-            }
-            
-        	String workingUrl = preferences.getValue(CONTENT_LOCATION_KEY, null);
-            // apply each of the url preprocessing filters in order
-            for (final IUrlPreProcessingFilter filter : filters) {
-                workingUrl = filter.filter(workingUrl, request, response);
-            }
-            
-            url = workingUrl;
-        }
-
         // locate the content service to use to retrieve our HTML content
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
         final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
 
+        final IContentRequest proxyRequest = contentService.getRequest(request);
+
+        // retrieve the HTML content
+        final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
+        
         // locate all filters configured for this portlet
         final List<IDocumentFilter> filters = new ArrayList<IDocumentFilter>();
         final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
@@ -138,26 +97,13 @@ public class ProxyPortletController {
             filters.add(filter);
         }
         
-        // retrieve the HTML content
-        final InputStream stream = contentService.getContent(url, request);
-        
         try {
-            final Document document = Jsoup.parse(stream, "UTF-8", url);
+            final Document document = Jsoup.parse(proxyResponse.getContent(), "UTF-8", proxyResponse.getProxiedLocation());
             
-            final ProxyRequest proxyRequest;
-            if (contentService instanceof HttpContentService) {
-                // TODO: we really need the final URL here, not the requested one
-                // to properly handle forwarded requests
-                final HttpProxyRequest httpProxyRequest = new HttpProxyRequest();
-                httpProxyRequest.setProxiedUrl(url);
-                proxyRequest = httpProxyRequest;
-            } else {
-                proxyRequest = new GenericProxyRequest();
-            }
             
             // apply each of the document filters in order
             for (final IDocumentFilter filter : filters) {
-                filter.filter(document, proxyRequest, request, response);
+                filter.filter(document, proxyResponse, request, response);
             }
             
             // write out the final content
@@ -201,14 +147,16 @@ public class ProxyPortletController {
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
         final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
 
+        final IContentRequest proxyRequest = contentService.getRequest(request);
+
         // retrieve the HTML content
-        final InputStream stream = contentService.getContent(url, request);
+        final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
         
         // TODO: handle headers, etc.
 
         try {
             final OutputStream out = response.getPortletOutputStream();
-            IOUtils.copyLarge(stream, out);
+            IOUtils.copyLarge(proxyResponse.getContent(), out);
             out.flush();
             out.close();
         } catch (IOException e) {

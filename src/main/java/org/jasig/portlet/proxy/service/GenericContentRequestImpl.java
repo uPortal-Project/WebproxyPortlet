@@ -16,19 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 
-import org.jsoup.nodes.Document;
+public class GenericContentRequestImpl implements IContentRequest {
 
-/**
- * @author Jen Bourey, jennifer.bourey@gmail.com
- */
-public interface IDocumentFilter {
+	private String proxiedLocation;
 
-    public void filter(Document document, ProxyRequest proxyRequest, RenderRequest portletRequest,
-            RenderResponse portletResponse);
-    
+    public static final String CONTENT_LOCATION_KEY = "location";
+
+	public GenericContentRequestImpl() { }
+	
+	public GenericContentRequestImpl(final PortletRequest portletRequest) {
+		final PortletPreferences preferences = portletRequest.getPreferences();
+		this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_KEY, null);
+	}
+	
+	public String getProxiedLocation() {
+		return proxiedLocation;
+	}
+
+	public void setProxiedLocation(String proxiedLocation) {
+		this.proxiedLocation = proxiedLocation;
+	}
+	
 }

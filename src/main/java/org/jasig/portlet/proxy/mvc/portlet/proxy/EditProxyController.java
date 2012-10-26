@@ -34,8 +34,9 @@ import javax.portlet.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jasig.portlet.proxy.service.web.ContentClippingFilter;
-import org.jasig.portlet.proxy.service.web.URLRewritingFilter;
+import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
+import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
+import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +65,7 @@ public class EditProxyController {
 
 			final PortletPreferences preferences = request.getPreferences();
 
-			preferences.setValue(ProxyPortletController.CONTENT_LOCATION_KEY, form.getLocation());
+			preferences.setValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, form.getLocation());
 			preferences.setValue(ProxyPortletController.CONTENT_SERVICE_KEY, form.getContentService());
 			preferences.setValue(URLRewritingFilter.WHITELIST_REGEXES_KEY, form.getWhitelistRegexes());
 			
@@ -106,7 +107,7 @@ public class EditProxyController {
 		final ProxyPortletForm form = new ProxyPortletForm();
 		
 		form.setContentService(preferences.getValue(ProxyPortletController.CONTENT_SERVICE_KEY, null));
-		form.setLocation(preferences.getValue(ProxyPortletController.CONTENT_LOCATION_KEY, null));
+		form.setLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, null));
 		form.setWhitelistRegexes(preferences.getValue(URLRewritingFilter.WHITELIST_REGEXES_KEY, null));
 		form.setClippingSelector(preferences.getValue(ContentClippingFilter.SELECTOR_KEY, null));
 		

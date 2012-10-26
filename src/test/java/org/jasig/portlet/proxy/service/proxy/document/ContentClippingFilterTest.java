@@ -16,16 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.proxy.document;
 
-import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.jasig.portlet.proxy.service.web.ContentClippingFilter;
+import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
+import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -43,7 +44,7 @@ public class ContentClippingFilterTest {
     @Mock RenderRequest request;
     @Mock RenderResponse response;
     @Mock PortletPreferences preferences;
-    @Mock ProxyRequest proxyRequest;
+    @Mock GenericContentResponseImpl proxyResponse;
     
     @Before
     public void setUp() {
@@ -61,7 +62,7 @@ public class ContentClippingFilterTest {
         final String expected = "<divid=\"mine\"><div>Somecontent</div></div>";
         
         final Document document = Jsoup.parse(source);
-        filter.filter(document, proxyRequest, request, response);
+        filter.filter(document, proxyResponse, request, response);
         final String result = document.html().replace("\n", "").replace(" ", "");
         assertEquals(expected, result);
     }

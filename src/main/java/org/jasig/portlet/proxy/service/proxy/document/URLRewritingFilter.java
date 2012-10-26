@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.proxy.document;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -39,7 +39,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
-import org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletController;
+import org.jasig.portlet.proxy.service.IContentResponse;
+import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -73,16 +74,16 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     @Override
     public void filter(final Document document,
-            final ProxyRequest proxyRequest, final RenderRequest request,
+            final IContentResponse proxyResponse, final RenderRequest request,
             final RenderResponse response) {
         
-        updateUrls(document, proxyRequest, actionElements, request, response, true);
-        updateUrls(document, proxyRequest, resourceElements, request, response, false);
+        updateUrls(document, proxyResponse, actionElements, request, response, true);
+        updateUrls(document, proxyResponse, resourceElements, request, response, false);
 
     }
     
     protected void updateUrls(final Document document,
-            final ProxyRequest proxyRequest,
+            final IContentResponse proxyResponse,
             final Map<String, Set<String>> elementSet,
             final RenderRequest request, final RenderResponse response,
             boolean action) {
@@ -107,17 +108,14 @@ public class URLRewritingFilter implements IDocumentFilter {
         // we first compute the base and relative URLs for the page.
         String baseUrl = null;
         String relativeUrl = null;
-        if (proxyRequest instanceof HttpProxyRequest) {
-            try {
-            	final HttpProxyRequest httpProxyRequest = (HttpProxyRequest) proxyRequest;
-                baseUrl = getBaseServerUrl(httpProxyRequest.getProxiedUrl());
-                relativeUrl = getRelativePathUrl(httpProxyRequest.getProxiedUrl());
-                if (log.isTraceEnabled()) {
-                	log.trace("Computed base url " + baseUrl + " and relative url " + relativeUrl + " for proxied url " + httpProxyRequest.getProxiedUrl());
-                }
-            } catch (URISyntaxException e) {
-                log.error(e);
+        try {
+            baseUrl = getBaseServerUrl(proxyResponse.getProxiedLocation());
+            relativeUrl = getRelativePathUrl(proxyResponse.getProxiedLocation());
+            if (log.isTraceEnabled()) {
+            	log.trace("Computed base url " + baseUrl + " and relative url " + relativeUrl + " for proxied url " + proxyResponse.getProxiedLocation());
             }
+        } catch (URISyntaxException e) {
+            log.error(e);
         }
         
         for (final Map.Entry<String, Set<String>> elementEntry : elementSet.entrySet()) {
@@ -201,9 +199,9 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     protected String createFormUrl(final RenderResponse response, final boolean isPost, final String url) {
         final PortletURL portletUrl = response.createActionURL();
-        portletUrl.setParameter(ProxyPortletController.URL_PARAM, url);
-        portletUrl.setParameter(ProxyPortletController.IS_FORM_PARAM, "true");
-        portletUrl.setParameter(ProxyPortletController.FORM_METHOD_PARAM, isPost ? "POST" : "GET");
+        portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
+        portletUrl.setParameter(HttpContentServiceImpl.IS_FORM_PARAM, "true");
+        portletUrl.setParameter(HttpContentServiceImpl.FORM_METHOD_PARAM, isPost ? "POST" : "GET");
         final StringWriter writer = new StringWriter();
         try {
             portletUrl.write(writer);
@@ -218,7 +216,7 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     protected String createActionUrl(final RenderResponse response, final String url) {
         final PortletURL portletUrl = response.createActionURL();
-        portletUrl.setParameter(ProxyPortletController.URL_PARAM, url);
+        portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         final StringWriter writer = new StringWriter();
         try {
             portletUrl.write(writer);
@@ -233,7 +231,7 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     protected String createResourceUrl(final RenderResponse response, final String url) {
         final ResourceURL resourceUrl = response.createResourceURL();
-        resourceUrl.setParameter(ProxyPortletController.URL_PARAM, url);
+        resourceUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         final StringWriter writer = new StringWriter();
         try {
             resourceUrl.write(writer);

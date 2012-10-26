@@ -18,15 +18,35 @@
  */
 package org.jasig.portlet.proxy.service;
 
-import javax.portlet.PortletRequest;
+import java.io.InputStream;
 
-/**
- * @author Jen Bourey, jennifer.bourey@gmail.com
- */
-public interface IContentService<T extends IContentRequest, S extends IContentResponse> {
 
-	public T getRequest(PortletRequest request);
+public class GenericContentResponseImpl implements IContentResponse {
+
+	private String proxiedLocation;
+	private InputStream content;
 	
-    public S getContent(T proxyRequest, PortletRequest request);
+	public GenericContentResponseImpl() { }
+	
+	public GenericContentResponseImpl(String proxiedLocation, InputStream content) {
+		this.proxiedLocation = proxiedLocation;
+		this.content = content;
+	}
+
+	public String getProxiedLocation() {
+		return proxiedLocation;
+	}
+
+	public void setProxiedLocation(String proxiedLocation) {
+		this.proxiedLocation = proxiedLocation;
+	}
+
+	public InputStream getContent() {
+		return content;
+	}
+
+	public void setContent(InputStream content) {
+		this.content = content;
+	}
 
 }

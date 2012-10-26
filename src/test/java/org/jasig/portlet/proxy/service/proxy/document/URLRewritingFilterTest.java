@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.proxy.document;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -38,6 +38,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
+import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -51,7 +53,7 @@ import org.mockito.MockitoAnnotations;
 public class URLRewritingFilterTest {
     
     URLRewritingFilter filter;
-    HttpProxyRequest proxyRequest;
+    GenericContentResponseImpl proxyResponse;
     @Mock RenderRequest request;
     @Mock RenderResponse response;
     @Mock PortletSession session;    
@@ -71,8 +73,8 @@ public class URLRewritingFilterTest {
 
         filter = spy(new URLRewritingFilter());
         
-        proxyRequest = new HttpProxyRequest();
-        proxyRequest.setProxiedUrl("http://external.site.com/somewhere/index.html?q=a&b=t");
+        proxyResponse = new GenericContentResponseImpl();
+        proxyResponse.setProxiedLocation("http://external.site.com/somewhere/index.html?q=a&b=t");
         
         final Map<String, Set<String>> urlAttributes = new HashMap<String, Set<String>>();
         urlAttributes.put("a", Collections.singleton("href"));
@@ -86,7 +88,7 @@ public class URLRewritingFilterTest {
     @Test
     public void testRelativeUrls() {
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
-        filter.filter(document, proxyRequest, request, response);
+        filter.filter(document, proxyResponse, request, response);
         final String result = "<div><ahref=\"http://external.site.com/link/with/slash.html\">Link</a><ahref=\"http://external.site.com/somewhere/link/without/slash.html\">Link</a></div>";
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);
@@ -98,7 +100,7 @@ public class URLRewritingFilterTest {
         doReturn("portletUrl").when(filter).createActionUrl(any(RenderResponse.class), any(String.class));        
         
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
-        filter.filter(document, proxyRequest, request, response);
+        filter.filter(document, proxyResponse, request, response);
         final String result = "<div><ahref=\"portletUrl\">Link</a><ahref=\"portletUrl\">Link</a></div>";
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);

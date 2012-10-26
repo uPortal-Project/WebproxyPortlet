@@ -19,7 +19,6 @@
 package org.jasig.portlet.proxy.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.portlet.PortletRequest;
 
@@ -33,19 +32,23 @@ import org.springframework.stereotype.Service;
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 @Service("classpathContentService")
-public class ClasspathResourceContentService implements IContentService {
+public class ClasspathResourceContentService implements IContentService<GenericContentRequestImpl, GenericContentResponseImpl> {
     
     protected final Log log = LogFactory.getLog(getClass());
+    
+    public GenericContentRequestImpl getRequest(final PortletRequest request) {
+    	return new GenericContentRequestImpl(request);
+    }
 
-    public InputStream getContent(final String path, final PortletRequest request) {
+    public GenericContentResponseImpl getContent(final GenericContentRequestImpl proxyRequest, final PortletRequest request) {
         
-        final Resource resource = new ClassPathResource(path);
+        final Resource resource = new ClassPathResource(proxyRequest.getProxiedLocation());
         
         try {
-            final InputStream stream = resource.getInputStream();
-            return stream;
+            final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl(proxyRequest.getProxiedLocation(), resource.getInputStream());
+            return proxyResponse;
         } catch (IOException e) {
-            log.error("IOException retrieving resource " + path);
+            log.error("IOException retrieving resource " + proxyRequest.getProxiedLocation());
         }
         
         return null;

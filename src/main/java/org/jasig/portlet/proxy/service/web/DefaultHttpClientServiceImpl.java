@@ -18,6 +18,14 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
-public interface ProxyRequest {
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+public class DefaultHttpClientServiceImpl implements IHttpClientService {
+
+	@Override
+	public HttpClient getHttpClient() {
+		return new DefaultHttpClient();
+	}
 
 }

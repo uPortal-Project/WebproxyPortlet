@@ -18,14 +18,14 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.xslt;
 
-import java.io.InputStream;
-
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
+import org.jasig.portlet.proxy.service.IContentRequest;
+import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -71,11 +71,11 @@ public class XsltPortletController {
         // locate the content service to use to retrieve our XML
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
         final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+        final IContentRequest proxyRequest = contentService.getRequest(request);
 
         // retrieve the XML content
-        final String location = preferences.getValue(CONTENT_LOCATION_KEY, null);
-        final InputStream stream = contentService.getContent(location, request);
-        mv.addObject("xml", stream);
+        final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
+        mv.addObject("xml", proxyResponse.getContent());
 
         // set the appropriate view name
         final String mainXslt = preferences.getValue(MAIN_XSLT_KEY, null);

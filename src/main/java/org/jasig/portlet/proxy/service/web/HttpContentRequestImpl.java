@@ -26,15 +26,18 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
+import org.apache.http.client.CredentialsProvider;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 
 public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
-    private String proxiedUrl;
     private Map<String, String[]> parameters;
     private Map<String, String[]> headers;
     private String method;
     private boolean isForm;
+    private CredentialsProvider credentialsProvider;
+    
+    // TODO: add support for basic auth credentials
     
     public HttpContentRequestImpl() { 
     	this.parameters = new HashMap<String, String[]>();
@@ -56,13 +59,13 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
             if (!rewrittenUrls.contains(urlParam)) {
             	throw new RuntimeException("Illegal URL " + urlParam);
             }
-            this.proxiedUrl = urlParam;
+            setProxiedLocation(urlParam);
         } 
         
         // otherwise use the default starting URL for this proxy portlet
         else {
             final PortletPreferences preferences = request.getPreferences();
-        	this.proxiedUrl = preferences.getValue(CONTENT_LOCATION_KEY, null);
+        	setProxiedLocation(preferences.getValue(CONTENT_LOCATION_KEY, null));
         }
         
         final Map<String, String[]> params = request.getParameterMap();
@@ -75,14 +78,6 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
         this.isForm = Boolean.valueOf(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM));
         this.method = request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM);
 
-    }
-
-    public String getProxiedUrl() {
-        return proxiedUrl;
-    }
-
-    public void setProxiedUrl(String proxiedUrl) {
-        this.proxiedUrl = proxiedUrl;
     }
 
 	public Map<String, String[]> getParameters() {
@@ -116,5 +111,13 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
 	public void setForm(boolean isForm) {
 		this.isForm = isForm;
 	}
-    
+
+	public CredentialsProvider getCredentialsProvider() {
+		return credentialsProvider;
+	}
+
+	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+		this.credentialsProvider = credentialsProvider;
+	}
+
 }

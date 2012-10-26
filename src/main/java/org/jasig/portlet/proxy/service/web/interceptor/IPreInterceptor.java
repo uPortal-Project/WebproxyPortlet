@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web.preprocessor;
+package org.jasig.portlet.proxy.service.web.interceptor;
 
 import javax.portlet.PortletRequest;
 

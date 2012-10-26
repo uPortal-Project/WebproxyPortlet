@@ -18,13 +18,14 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
-import org.apache.http.client.HttpClient;
+import javax.portlet.PortletRequest;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class DefaultHttpClientServiceImpl implements IHttpClientService {
 
 	@Override
-	public HttpClient getHttpClient() {
+	public DefaultHttpClient getHttpClient(PortletRequest request) {
 		return new DefaultHttpClient();
 	}
 

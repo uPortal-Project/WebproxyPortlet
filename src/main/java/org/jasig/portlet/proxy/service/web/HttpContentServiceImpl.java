@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -43,9 +43,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 import org.jasig.portlet.proxy.service.IContentService;
-import org.jasig.portlet.proxy.service.web.preprocessor.IPreInterceptor;
+import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -76,6 +78,8 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         return new HttpContentRequestImpl(request);
     }
     
+    private IHttpClientService httpClientService = new MultiRequestHttpClientServiceImpl();
+    
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
 
         // locate all pre-processing filters configured for this portlet
@@ -86,25 +90,32 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
             preinterceptor.intercept(proxyRequest, request);
         }
 
-        // TODO: authentication, parameterizable URLs
-
         try {
-        	
-            final HttpClient httpclient = getHttpClient();
+
+            final DefaultHttpClient httpclient = httpClientService.getHttpClient(request);
+            if (proxyRequest.getCredentialsProvider() != null) {
+            	httpclient.setCredentialsProvider(proxyRequest.getCredentialsProvider());
+            }
+            
             final HttpUriRequest httpRequest = getHttpRequest(proxyRequest, request);
             
         	if (log.isTraceEnabled()) {
         		log.trace("Proxying " + httpRequest.getURI() + " via " + httpRequest.getMethod());
         	}
         	
-            final HttpResponse response = httpclient.execute(httpRequest);
+        	final HttpContext context = new BasicHttpContext(); 
+            final HttpResponse response = httpclient.execute(httpRequest, context);            
             final HttpEntity entity = response.getEntity();
             
             final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl();
             proxyResponse.setContent(entity.getContent());
             
-            // TODO: we need the final URL in case of any redirects
-            proxyResponse.setProxiedLocation(proxyRequest.getProxiedUrl());
+            String finalUrl = (String) context.getAttribute(RedirectTrackingResponseInterceptor.FINAL_URL_KEY);
+            if (finalUrl == null) {
+            	finalUrl = proxyRequest.getProxiedLocation();
+            }
+            proxyResponse.setProxiedLocation(finalUrl);
+
             return proxyResponse;
             
         } catch (ClientProtocolException e) {
@@ -114,10 +125,6 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         }
 
         return null;
-    }
-    
-    protected HttpClient getHttpClient() {
-    	return new DefaultHttpClient();
     }
     
     protected HttpUriRequest getHttpRequest(HttpContentRequestImpl proxyRequest, PortletRequest request) {
@@ -133,15 +140,17 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
                 final List<NameValuePair> pairs = new ArrayList<NameValuePair>();
                 for (Map.Entry<String, String[]> param : params.entrySet()) {
         			for (String value : param.getValue()) {
-                		pairs.add(new BasicNameValuePair(param.getKey(), value));
+        				if (value != null) {
+							pairs.add(new BasicNameValuePair(param.getKey(), value));
+        				}
         			}
                 }
 
                 // construct a new POST request and set the form data
                 try {
-                    httpRequest = new HttpPost(proxyRequest.getProxiedUrl());
+                    httpRequest = new HttpPost(proxyRequest.getProxiedLocation());
                     if (pairs.size() > 0) {
-                    	((HttpPost) httpRequest).setEntity(new UrlEncodedFormEntity(pairs));
+                    	((HttpPost) httpRequest).setEntity(new UrlEncodedFormEntity(pairs, "UTF-8"));
                     }
 				} catch (UnsupportedEncodingException e) {
 					log.error("Failed to encode form parameters", e);
@@ -156,7 +165,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
                 try {
                 	
                 	// build a URL including any passed form parameters
-                    final URIBuilder builder = new URIBuilder(proxyRequest.getProxiedUrl());
+                    final URIBuilder builder = new URIBuilder(proxyRequest.getProxiedLocation());
                     for (Map.Entry<String, String[]> param : params.entrySet()) {
             			for (String value : param.getValue()) {
                     		builder.addParameter(param.getKey(), value);
@@ -176,7 +185,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         
         // not a form, simply a normal get request
         else {
-            httpRequest = new HttpGet(proxyRequest.getProxiedUrl());
+            httpRequest = new HttpGet(proxyRequest.getProxiedLocation());
         }
         
         return httpRequest;

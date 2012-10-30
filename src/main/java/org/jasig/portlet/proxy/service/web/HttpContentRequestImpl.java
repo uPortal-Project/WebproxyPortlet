@@ -19,29 +19,26 @@
 package org.jasig.portlet.proxy.service.web;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
-import org.apache.http.client.CredentialsProvider;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
+import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 
 public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
     private Map<String, String[]> parameters;
-    private Map<String, String[]> headers;
+    private Map<String, String> headers;
     private String method;
     private boolean isForm;
-    private CredentialsProvider credentialsProvider;
-    
-    // TODO: add support for basic auth credentials
     
     public HttpContentRequestImpl() { 
     	this.parameters = new HashMap<String, String[]>();
-    	this.headers = new HashMap<String, String[]>();
+    	this.headers = new HashMap<String, String>();
     }
     
     public HttpContentRequestImpl(PortletRequest request) {
@@ -55,8 +52,8 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
         if (urlParam != null) {
             final PortletSession session = request.getPortletSession();
             @SuppressWarnings("unchecked")
-            final List<String> rewrittenUrls = (List<String>) session.getAttribute("rewrittenUrls");
-            if (!rewrittenUrls.contains(urlParam)) {
+            final ConcurrentMap<String,String> rewrittenUrls = (ConcurrentMap<String,String>) session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY);
+            if (!rewrittenUrls.containsKey(urlParam)) {
             	throw new RuntimeException("Illegal URL " + urlParam);
             }
             setProxiedLocation(urlParam);
@@ -88,11 +85,11 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
 		this.parameters = parameters;
 	}
 
-	public Map<String, String[]> getHeaders() {
+	public Map<String, String> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(Map<String, String[]> headers) {
+	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
 	}
 
@@ -110,14 +107,6 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
 	public void setForm(boolean isForm) {
 		this.isForm = isForm;
-	}
-
-	public CredentialsProvider getCredentialsProvider() {
-		return credentialsProvider;
-	}
-
-	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
-		this.credentialsProvider = credentialsProvider;
 	}
 
 }

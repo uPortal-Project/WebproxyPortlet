@@ -28,9 +28,9 @@ import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
@@ -39,7 +39,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
-import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -60,7 +59,7 @@ public class URLRewritingFilterTest {
     @Mock PortletPreferences preferences;
     @Mock PortletURL portletURL;
     @Mock Writer writer;
-    @Mock List<String> rewrittenUrls;
+    @Mock ConcurrentMap<String, String> rewrittenUrls;
     
     @Before
     public void setUp() {

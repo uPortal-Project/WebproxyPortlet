@@ -16,14 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.portlet.proxy.service.web;
+package org.jasig.portlet.proxy.service.web.interceptor;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.http.impl.client.AbstractHttpClient;
+import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 
-public interface IHttpClientService {
-	
-	public AbstractHttpClient getHttpClient(PortletRequest portletRequest);
+public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
+
+	@Override
+	protected void prepareAuthentication(HttpContentRequestImpl contentRequest,
+			PortletRequest portletRequest) {
+		// TODO
+	}
 
 }

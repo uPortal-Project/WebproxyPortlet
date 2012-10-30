@@ -18,15 +18,36 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
-import javax.portlet.PortletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 
-public class DefaultHttpClientServiceImpl implements IHttpClientService {
+public class HttpContentResponseImpl extends GenericContentResponseImpl {
+
+	private Map<String, String> headers = new HashMap<String, String>();
+	
+	private HttpEntity entity;
+	
+	public HttpContentResponseImpl(HttpEntity entity) {
+		this.entity = entity;
+		this.headers = new HashMap<String, String>();
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
 
 	@Override
-	public DefaultHttpClient getHttpClient(PortletRequest request) {
-		return new DefaultHttpClient();
+	public void close() {
+		EntityUtils.consumeQuietly(entity);
 	}
+
 
 }

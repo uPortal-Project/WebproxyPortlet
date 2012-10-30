@@ -75,7 +75,11 @@ public class XsltPortletController {
 
         // retrieve the XML content
         final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
-        mv.addObject("xml", proxyResponse.getContent());
+        try {
+        	mv.addObject("xml", proxyResponse.getContent());
+        } finally {
+        	proxyResponse.close();
+        }
 
         // set the appropriate view name
         final String mainXslt = preferences.getValue(MAIN_XSLT_KEY, null);

@@ -18,13 +18,11 @@
  */
 package org.jasig.portlet.proxy.service.proxy.document;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -45,6 +43,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import org.springframework.web.portlet.util.PortletUtils;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
@@ -82,21 +81,23 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     }
     
-    protected void updateUrls(final Document document,
+	protected void updateUrls(final Document document,
             final IContentResponse proxyResponse,
             final Map<String, Set<String>> elementSet,
             final RenderRequest request, final RenderResponse response,
             boolean action) {
         
         // attempt to retrieve the list of rewritten URLs from the session
-        final PortletSession session = request.getPortletSession();
-        @SuppressWarnings("unchecked")
-        List<String> rewrittenUrls = (List<String>) session.getAttribute(REWRITTEN_URLS_KEY);
-        
-        // if the rewritten URLs list doesn't exist yet, create it
-        if (rewrittenUrls == null) {
-            rewrittenUrls = new ArrayList<String>();
-            session.setAttribute(REWRITTEN_URLS_KEY, rewrittenUrls);
+        final PortletSession session = request.getPortletSession();        
+        ConcurrentMap<String,String> rewrittenUrls;
+        synchronized (PortletUtils.getSessionMutex(session)) {
+	        rewrittenUrls = (ConcurrentMap<String,String>) session.getAttribute(REWRITTEN_URLS_KEY);
+	        
+	        // if the rewritten URLs list doesn't exist yet, create it
+	        if (rewrittenUrls == null) {
+	            rewrittenUrls = new ConcurrentHashMap<String,String>();
+	            session.setAttribute(REWRITTEN_URLS_KEY, rewrittenUrls);
+	        }
         }
         
         // get the list of configured whitelist regexes
@@ -163,7 +164,11 @@ public class URLRewritingFilter implements IDocumentFilter {
                             if (pattern.matcher(attributeUrl).find()) {
                             	
                             	// record that we've rewritten this URL
-                                rewrittenUrls.add(attributeUrl);
+                                rewrittenUrls.put(attributeUrl, attributeUrl);
+                                
+                                // TODO: the value in the rewritten URLs map needs to 
+                                // be a resource URL.  we also want to key URLs by a short
+                                // string rather than the full URL
                                 
                                 if (elementEntry.getKey().equals("form")) {
                                 	// the form action needs to be set to POST to
@@ -202,46 +207,19 @@ public class URLRewritingFilter implements IDocumentFilter {
         portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         portletUrl.setParameter(HttpContentServiceImpl.IS_FORM_PARAM, "true");
         portletUrl.setParameter(HttpContentServiceImpl.FORM_METHOD_PARAM, isPost ? "POST" : "GET");
-        final StringWriter writer = new StringWriter();
-        try {
-            portletUrl.write(writer);
-            writer.flush();
-            return writer.getBuffer().toString();
-        } catch (IOException e) {
-            log.error("Failed to write portlet URL");
-        }
-
-        return null;
+        return portletUrl.toString();
     }
 
     protected String createActionUrl(final RenderResponse response, final String url) {
         final PortletURL portletUrl = response.createActionURL();
         portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
-        final StringWriter writer = new StringWriter();
-        try {
-            portletUrl.write(writer);
-            writer.flush();
-            return writer.getBuffer().toString();
-        } catch (IOException e) {
-            log.error("Failed to write portlet URL");
-        }
-
-        return null;
+        return portletUrl.toString();
     }
 
     protected String createResourceUrl(final RenderResponse response, final String url) {
         final ResourceURL resourceUrl = response.createResourceURL();
         resourceUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
-        final StringWriter writer = new StringWriter();
-        try {
-            resourceUrl.write(writer);
-            writer.flush();
-            return writer.getBuffer().toString();
-        } catch (IOException e) {
-            log.error("Failed to write portlet URL");
-        }
-
-        return null;
+        return resourceUrl.toString();
     }
     
     protected String getBaseServerUrl(final String fullUrl) throws URISyntaxException {

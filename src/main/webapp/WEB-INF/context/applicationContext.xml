@@ -41,17 +41,29 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
         p:basenames="i18n/messages" p:useCodeAsDefaultMessage="true"/>
 
+    <bean class="org.apache.http.impl.conn.PoolingClientConnectionManager"
+        p:maxTotal="50" p:defaultMaxPerRoute="10"/>
+        
+    <util:list id="replayedRequestHeaders">
+        <value>user-agent</value>
+    </util:list>
+    
+    <util:list id="knownHtmlContentTypes">
+        <value>.*text/html.*</value>
+    </util:list>
 
     <util:map id="urlRewritingActionElements">
         <entry key="a"><set><value>href</value></set></entry>
         <entry key="area"><set><value>href</value></set></entry>
         <entry key="base"><set><value>href</value></set></entry>
         <entry key="frame"><set><value>src</value></set></entry>
+        <entry key="iframe"><set><value>src</value></set></entry>
         <entry key="q"><set><value>cite</value></set></entry>
         <entry key="ins"><set><value>cite</value></set></entry>
         <entry key="del"><set><value>cite</value></set></entry>
         <entry key="form"><set><value>action</value></set></entry>
         <entry key="meta"><set><value>url</value></set></entry>
+        <entry key="link"><set><value>href</value></set></entry>
     </util:map>
 
     <util:map id="urlRewritingResourceElements">

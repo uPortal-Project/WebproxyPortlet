@@ -33,6 +33,12 @@ public class GenericContentResponseImpl implements IContentResponse {
 		this.content = content;
 	}
 
+	@Override
+	public void close() {
+		// no-op
+	}
+
+	@Override
 	public String getProxiedLocation() {
 		return proxiedLocation;
 	}
@@ -48,5 +54,5 @@ public class GenericContentResponseImpl implements IContentResponse {
 	public void setContent(InputStream content) {
 		this.content = content;
 	}
-
+	
 }

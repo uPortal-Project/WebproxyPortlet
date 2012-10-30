@@ -22,16 +22,17 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -41,7 +42,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -49,6 +50,7 @@ import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -74,11 +76,33 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         this.applicationContext = applicationContext;
     }
 
-    public HttpContentRequestImpl getRequest(PortletRequest request) {
-        return new HttpContentRequestImpl(request);
+    private IHttpClientService httpClientService;
+    
+    @Autowired(required = true)
+    public void setHttpClientService(IHttpClientService httpClientService) {
+    	this.httpClientService = httpClientService;
     }
     
-    private IHttpClientService httpClientService = new MultiRequestHttpClientServiceImpl();
+    private List<String> replayedRequestHeaders;
+    
+    @Required
+    @Resource(name="replayedRequestHeaders")
+    public void setReplayedRequestHeaders(List<String> replayedRequestHeaders) {
+    	this.replayedRequestHeaders = replayedRequestHeaders;
+    }
+    
+    public HttpContentRequestImpl getRequest(PortletRequest request) {
+    	final HttpContentRequestImpl contentRequest = new HttpContentRequestImpl(request);
+    	
+    	for (String headerName : replayedRequestHeaders) {
+    		final String headerValue = request.getProperty(headerName);
+    		if (headerValue != null) {
+    			contentRequest.getHeaders().put(headerName, headerValue);
+    		}
+    	}
+    	
+    	return contentRequest;
+    }
     
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
 
@@ -91,25 +115,32 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         }
 
         try {
-
-            final DefaultHttpClient httpclient = httpClientService.getHttpClient(request);
-            if (proxyRequest.getCredentialsProvider() != null) {
-            	httpclient.setCredentialsProvider(proxyRequest.getCredentialsProvider());
-            }
+        	
+        	// get an HttpClient appropriate for this user and portlet instance
+        	// and set any basic auth credentials, if applicable
+            final AbstractHttpClient httpclient = httpClientService.getHttpClient(request);
             
-            final HttpUriRequest httpRequest = getHttpRequest(proxyRequest, request);
-            
+            // create the request
+            final HttpUriRequest httpRequest = getHttpRequest(proxyRequest, request);            
         	if (log.isTraceEnabled()) {
         		log.trace("Proxying " + httpRequest.getURI() + " via " + httpRequest.getMethod());
         	}
         	
+        	// execute the request
         	final HttpContext context = new BasicHttpContext(); 
             final HttpResponse response = httpclient.execute(httpRequest, context);            
             final HttpEntity entity = response.getEntity();
             
-            final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl();
+            // create the response object and set the content stream
+            final HttpContentResponseImpl proxyResponse = new HttpContentResponseImpl(entity);
             proxyResponse.setContent(entity.getContent());
             
+            // add each response header to our response object
+            for (Header header : response.getAllHeaders()) {
+            	proxyResponse.getHeaders().put(header.getName(), header.getValue());
+            }
+            
+            // set the final URL of the response in case it was redirected
             String finalUrl = (String) context.getAttribute(RedirectTrackingResponseInterceptor.FINAL_URL_KEY);
             if (finalUrl == null) {
             	finalUrl = proxyRequest.getProxiedLocation();
@@ -186,6 +217,11 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         // not a form, simply a normal get request
         else {
             httpRequest = new HttpGet(proxyRequest.getProxiedLocation());
+        }
+        
+        // set any configured request headers
+        for (Map.Entry<String, String> header : proxyRequest.getHeaders().entrySet()) {
+            httpRequest.setHeader(header.getKey(), header.getValue());
         }
         
         return httpRequest;

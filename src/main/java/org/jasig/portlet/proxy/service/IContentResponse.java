@@ -25,5 +25,7 @@ public interface IContentResponse {
 	public String getProxiedLocation();
 	
 	public InputStream getContent();
+	
+	public void close();
 
 }

@@ -91,6 +91,8 @@ public class JsonPortletController {
             log.error("Error parsing JSON content", e);
         } catch (IOException e) {
             log.error("IOException reading JSON content", e);
+        } finally {
+        	proxyResponse.close();
         }
         
         // set the appropriate view name

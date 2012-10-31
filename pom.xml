@@ -8,7 +8,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jasig.portlet.webproxy</groupId>
+    <groupId>org.jasig.portlet.proxy</groupId>
     <artifactId>WebProxyPortlet</artifactId>
     <packaging>war</packaging>
     <version>2.0-SNAPSHOT</version>
@@ -277,7 +277,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <attachClasses>true</attachClasses>
-                    <warName>NewWebProxyPortlet</warName>
+                    <warName>WebProxyPortlet</warName>
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
                 </configuration>
             </plugin>

@@ -27,15 +27,13 @@ public class GatewayPortletController {
 	@Autowired(required=false)
 	private String viewName = "gateway";
 	
-	@Resource(name="gatewayEntries")
-	private List<GatewayEntry> entries;
-	
 	@Autowired(required=true)
 	private ApplicationContext applicationContext;
 
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
 		final ModelAndView mv = new ModelAndView(viewName);
+		final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
 		mv.addObject("entries", entries);
 		return mv;
 	}
@@ -44,6 +42,7 @@ public class GatewayPortletController {
 	public ModelAndView showTarget(ResourceRequest portletRequest, @RequestParam("index") int index) throws IOException {		
 		final ModelAndView mv = new ModelAndView("json");
 		
+		final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
 		final GatewayEntry entry = entries.get(index);
 		
 		final List<HttpContentRequestImpl> contentRequests = new ArrayList<HttpContentRequestImpl>();

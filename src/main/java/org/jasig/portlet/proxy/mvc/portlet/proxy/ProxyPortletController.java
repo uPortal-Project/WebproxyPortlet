@@ -178,7 +178,7 @@ public class ProxyPortletController {
         final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
         proxyResponse.close();
 
-        // TODO: this probably can only be an HTTP contetnt type
+        // TODO: this probably can only be an HTTP content type
         if (proxyResponse instanceof HttpContentResponseImpl) {
         	
         	// Determine the content type of the proxied response.  If this is

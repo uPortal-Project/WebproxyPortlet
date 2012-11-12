@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
 
+import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +27,23 @@ public class GatewayPortletController {
 	@Autowired(required=false)
 	private String viewName = "gateway";
 	
+	@Autowired(required=false)
+	private String mobileViewName = "mobileGateway";
+	
 	@Autowired(required=true)
 	private ApplicationContext applicationContext;
+	
+	@Autowired(required=true)
+	private IViewSelector viewSelector;
 
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
-		final ModelAndView mv = new ModelAndView(viewName);
+		final ModelAndView mv = new ModelAndView();
 		final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
 		mv.addObject("entries", entries);
+		
+		final String view = viewSelector.isMobile(request) ? mobileViewName : viewName;
+		mv.setView(view);
 		return mv;
 	}
 	

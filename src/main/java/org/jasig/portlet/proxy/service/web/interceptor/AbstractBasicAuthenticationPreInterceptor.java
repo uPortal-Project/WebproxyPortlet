@@ -22,7 +22,6 @@ import javax.portlet.PortletRequest;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -30,6 +29,12 @@ import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.IHttpClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * AbstractBasicAuthenticationPreInterceptor provides common logic for any 
+ * authentication implementations using BASIC auth.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public abstract class AbstractBasicAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
 
 	private IHttpClientService httpClientService;
@@ -38,7 +43,10 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
 	public void setHttpClientService(IHttpClientService httpClientService) {
 		this.httpClientService = httpClientService;
 	}
-	
+
+	/**
+	 * Add BASIC authentication credentials to the user's HttpClientService.
+	 */
 	@Override
 	protected void prepareAuthentication(HttpContentRequestImpl contentRequest,
 			PortletRequest portletRequest) {
@@ -48,11 +56,20 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
 		final Credentials credentials = getCredentials(portletRequest);
 		credentialsProvider.setCredentials(AuthScope.ANY,credentials);
 		
-		// set the credentials provider on the http client
+		// Set the credentials provider on the HTTP client.  The HTTP client is
+		// not limited to the session of the target website, so these credentials
+		// may be applied more than once.  We expect these periodic updates to 
+		// be unnecessary but do not expect them to cause any problems.
 		final AbstractHttpClient client = httpClientService.getHttpClient(portletRequest);
 		client.setCredentialsProvider(credentialsProvider);
 	}
-	
-	protected abstract UsernamePasswordCredentials getCredentials(PortletRequest portletRequest);
+
+	/**
+	 * Provide credentials for the current user for this target service.
+	 * 
+	 * @param portletRequest
+	 * @return
+	 */
+	protected abstract Credentials getCredentials(PortletRequest portletRequest);
 
 }

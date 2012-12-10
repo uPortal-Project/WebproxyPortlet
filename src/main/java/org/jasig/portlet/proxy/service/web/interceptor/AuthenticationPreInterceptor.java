@@ -25,6 +25,14 @@ import javax.portlet.PortletSession;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.springframework.web.portlet.util.PortletUtils;
 
+/**
+ * AuthenticationPreInterceptor provides a base class for implementing authentication
+ * to remote web content.  This interceptor determines if a current session is 
+ * already available for the remote site using a configured timeout.  If one 
+ * does not exist, the interceptor performs any implemented authentication logic.
+ * 
+ * @author Jen Bourey
+ */
 public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 
 	public static final String AUTHENTICATION_TIMEOUT_KEY = "authenticationTimeout";
@@ -46,6 +54,13 @@ public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 		
 	}
 
+	/**
+	 * Use the configured timeout to determine if the user is already 
+	 * authenticated to the remote site.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	protected boolean isAlreadyAuthenticated(PortletRequest request) {
 		
 		// determine if the last session access was within the timeout window
@@ -60,6 +75,13 @@ public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 		}
 	}
 	
+	/**
+	 * Perform authentication or prepare the content request to include
+	 * authentication parameters.
+	 * 
+	 * @param contentRequest
+	 * @param portletRequest
+	 */
 	protected abstract void prepareAuthentication(HttpContentRequestImpl contentRequest, PortletRequest portletRequest);
 
 }

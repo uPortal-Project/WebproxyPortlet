@@ -21,23 +21,48 @@ package org.jasig.portlet.proxy.service;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+/**
+ * GenericContentRequestImpl represents a basic content request consisting
+ * simply of a target location.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public class GenericContentRequestImpl implements IContentRequest {
 
 	private String proxiedLocation;
 
+	/**
+	 * Standard key for storing a content location in the portlet preferences.
+	 */
     public static final String CONTENT_LOCATION_KEY = "location";
 
 	public GenericContentRequestImpl() { }
 	
+	/**
+	 * Construct a new content request, populating the location from the 
+	 * portlet preferences.
+	 * 
+	 * @param portletRequest
+	 */
 	public GenericContentRequestImpl(final PortletRequest portletRequest) {
 		final PortletPreferences preferences = portletRequest.getPreferences();
 		this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_KEY, null);
 	}
-	
+
+	/**
+	 * Get the target location.
+	 * 
+	 * @return
+	 */
 	public String getProxiedLocation() {
 		return proxiedLocation;
 	}
 
+	/**
+	 * Set the target location.
+	 * 
+	 * @param proxiedLocation
+	 */
 	public void setProxiedLocation(String proxiedLocation) {
 		this.proxiedLocation = proxiedLocation;
 	}

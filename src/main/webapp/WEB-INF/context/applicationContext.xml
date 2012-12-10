@@ -82,6 +82,35 @@
         </entry>
     </util:map>
 
+    <!-- 
+     | CAS PROXY AUTHENTICATION CONFIGURATION
+     +-->
+    
+    <!-- Ticket validation filter -->
+    <bean id="ticketValidationFilter" 
+            class="org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter"
+            p:serverName="${portal.server.base.url}" p:redirectAfterValidation="false"
+            p:proxyReceptorUrl="/proxy/receptor" p:ticketValidator-ref="ticketValidator"
+            p:proxyGrantingTicketStorage-ref="proxyGrantingTicketStorage"/>
+    
+    <!-- CAS proxy ticket validator -->
+    <bean id="ticketValidator" 
+            class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator"
+            p:proxyCallbackUrl="${portal.server.base.url}/${portlet.context}/proxy/receptor" 
+            p:proxyGrantingTicketStorage-ref="proxyGrantingTicketStorage"
+            p:acceptAnyProxy="true">
+            <constructor-arg index="0" value="${cas.server.base.url}" />
+    </bean>
+    
+    <!-- CAS Proxy service bean -->
+    <bean id="casTicketService" class="org.jasig.portlet.cas.CASProxyTicketServiceUserInfoImpl"
+            p:serviceUrl="${portal.server.base.url}/${portlet.context}" 
+            p:ticketValidator-ref="ticketValidator"/>
+    
+    <bean id="proxyGrantingTicketStorage" 
+            class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>
+
+
     <bean id="viewSelector" class="org.jasig.portlet.proxy.mvc.ThemeNameViewSelectorImpl"/>
 
     <!-- 

@@ -20,12 +20,28 @@ package org.jasig.portlet.proxy.service;
 
 import java.io.InputStream;
 
+/**
+ * IContentResponse represents the response from a content service.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public interface IContentResponse {
 	
+	/**
+	 * Get the proxied location.  This string should reflect the final location
+	 * and may differ from that originally provided to the content service.
+	 */
 	public String getProxiedLocation();
 	
+	/**
+	 * Get a stream of retrieved content.
+	 */
 	public InputStream getContent();
 	
+	/**
+	 * Close the content response.  This method *must* be called by the client
+	 * after all processing is complete.
+	 */
 	public void close();
 
 }

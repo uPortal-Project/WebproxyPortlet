@@ -30,6 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.portlet.util.PortletUtils;
 
 /**
+ * MultiRequestHttpClientServiceImpl associates a single HTTP client with each
+ * user's portlet session.  This client may optionally be shared among multiple
+ * portlets to provide cross-portlet session state sharing. 
+ * 
  * @author Jen Bourey
  */
 @Service
@@ -72,6 +76,12 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
 		return client;
 	}
 	
+	/**
+	 * Create a new HTTP Client for the provided portlet request.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	protected AbstractHttpClient createHttpClient(PortletRequest request) {
 		
 		// TODO: increase configurability

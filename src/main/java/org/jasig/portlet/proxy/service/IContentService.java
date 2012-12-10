@@ -21,12 +21,29 @@ package org.jasig.portlet.proxy.service;
 import javax.portlet.PortletRequest;
 
 /**
+ * IContentService represents a service for providing content.  Content might 
+ * be retrieved from remote locations, the filesystem, a database, etc.
+ * 
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 public interface IContentService<T extends IContentRequest, S extends IContentResponse> {
 
+	/**
+	 * Get an appropriate default content request for the current portlet 
+	 * request.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public T getRequest(PortletRequest request);
 	
-    public S getContent(T proxyRequest, PortletRequest request);
+	/**
+	 * Retrieve content for the given content request and portlet request.
+	 * 
+	 * @param proxyRequest
+	 * @param request
+	 * @return
+	 */
+    public S getContent(T contentRequest, PortletRequest request);
 
 }

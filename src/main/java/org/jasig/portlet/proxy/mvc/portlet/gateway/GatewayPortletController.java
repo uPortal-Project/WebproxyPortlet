@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
@@ -66,14 +67,20 @@ public class GatewayPortletController {
 	}
 	
 	@ResourceMapping()
-	public ModelAndView showTarget(ResourceRequest portletRequest, @RequestParam("index") int index) throws IOException {		
+	public ModelAndView showTarget(ResourceRequest portletRequest, ResourceResponse portletResponse, @RequestParam("index") int index) throws IOException {		
 		final ModelAndView mv = new ModelAndView("json");
 		
+		// get the requested gateway link entry from the list configured for
+		// this portlet
 		final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
 		final GatewayEntry entry = entries.get(index);
-		
+
+		// build a list of content requests
 		final List<HttpContentRequestImpl> contentRequests = new ArrayList<HttpContentRequestImpl>();
 		for (Map.Entry<HttpContentRequestImpl, List<String>> requestEntry : entry.getContentRequests().entrySet()){
+			
+			// run each content request through any configured preinterceptors
+			// before adding it to the list
 			final HttpContentRequestImpl contentRequest = requestEntry.getKey();
 			for (String interceptorKey : requestEntry.getValue()) {
 				final IPreInterceptor interceptor = applicationContext.getBean(interceptorKey, IPreInterceptor.class);
@@ -82,7 +89,12 @@ public class GatewayPortletController {
 			contentRequests.add(contentRequest);
 		}
 		mv.addObject("contentRequests", contentRequests);
-		
+
+		// we don't want this response to be cached by the browser since it may
+		// include one-time-only authentication tokens
+        portletResponse.getCacheControl().setExpirationTime(1);
+        portletResponse.getCacheControl().setUseCachedContent(false);
+
 		return mv;
 	}
 }

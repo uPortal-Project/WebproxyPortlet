@@ -67,7 +67,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
     public final static String IS_FORM_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("isForm");
     public final static String FORM_METHOD_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("formMethod");
 
-    protected static final String PREINTERCEPTOR_LIST_KEY = "preInterceptors";
+    public static final String PREINTERCEPTOR_LIST_KEY = "preInterceptors";
 
     private ApplicationContext applicationContext;
     
@@ -91,6 +91,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
     	this.replayedRequestHeaders = replayedRequestHeaders;
     }
     
+    @Override
     public HttpContentRequestImpl getRequest(PortletRequest request) {
     	final HttpContentRequestImpl contentRequest = new HttpContentRequestImpl(request);
     	
@@ -104,6 +105,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
     	return contentRequest;
     }
     
+    @Override
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
 
         // locate all pre-processing filters configured for this portlet
@@ -165,7 +167,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         if (proxyRequest.isForm()) {
         	
             // handle POST form request
-            final Map<String, String[]> params = proxyRequest.getParameters()   ;         
+            final Map<String, String[]> params = proxyRequest.getParameters();         
             if ("POST".equalsIgnoreCase(proxyRequest.getMethod())) {
 
                 final List<NameValuePair> pairs = new ArrayList<NameValuePair>();

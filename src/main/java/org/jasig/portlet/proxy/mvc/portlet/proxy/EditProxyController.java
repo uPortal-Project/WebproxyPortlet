@@ -36,7 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
+import org.jasig.portlet.proxy.service.proxy.document.HeaderFooterFilter;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
+import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,20 +73,39 @@ public class EditProxyController {
 			
 			final List<String> filters = new ArrayList<String>();
 			
-			// if the HTTP content service is in use, we need to rewrite the 
-			// proxied URLs
-			if ("httpContentService".equals(form.getContentService())) {
-				filters.add("urlRewritingFilter");
-			}
-			
 			// if a clipping selector has been specified, add the content clipping
 			// filter
 			if (StringUtils.isNotBlank(form.getClippingSelector())) {
 				filters.add("contentClippingFilter");
 			}
 			preferences.setValue(ContentClippingFilter.SELECTOR_KEY, form.getClippingSelector());
+			
+			if (StringUtils.isNotBlank(form.getHeader()) || StringUtils.isNotBlank(form.getFooter())) {
+				preferences.setValue(HeaderFooterFilter.HEADER_KEY, form.getHeader());
+				preferences.setValue(HeaderFooterFilter.FOOTER_KEY, form.getFooter());
+				filters.add("headerFooterFilter");
+			}
 
+			// if the HTTP content service is in use, we need to rewrite the 
+			// proxied URLs
+			if ("httpContentService".equals(form.getContentService())) {
+				filters.add("urlRewritingFilter");
+			}
+			
 			preferences.setValues(ProxyPortletController.FILTER_LIST_KEY, filters.toArray(new String[]{}));
+			
+			final List<String> preInterceptors = new ArrayList<String>();
+			preInterceptors.add("userInfoUrlParameterizingPreInterceptor");
+			
+			ProxyPortletForm.ProxyAuthType authType = form.getAuthType();
+			if (authType.equals(ProxyPortletForm.ProxyAuthType.BASIC)) {
+				preInterceptors.add("userInfoBasicAuthenticationPreInterceptor");
+			}
+			else if (authType.equals(ProxyPortletForm.ProxyAuthType.CAS)) {
+				preInterceptors.add("proxyCASAuthenticationPreInterceptor");
+			}
+			
+			preferences.setValues(HttpContentServiceImpl.PREINTERCEPTOR_LIST_KEY, preInterceptors.toArray(new String[]{}));
 
 			preferences.store();
 			

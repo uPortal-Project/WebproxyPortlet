@@ -29,6 +29,15 @@ import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.springframework.stereotype.Service;
 
+/**
+ * UserInfoUrlParameterizingPreInterceptor allows content requests to include
+ * dynamic parameters of the form {attributeName} in content requests, either
+ * in the URL string or in parameters associated with the request.  Each 
+ * dynamic string will be replaced with the value of the attribute in the UserInfo
+ * map, if one exists.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 @Service("userInfoUrlParameterizingPreInterceptor")
 public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor {
 	
@@ -41,15 +50,21 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
         try {
 			String url = proxyRequest.getProxiedLocation();
 
+			// iterate through each value in the UserInfo map
 			@SuppressWarnings("unchecked")
 			final Map<String, String> userInfo = (Map<String, String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
 			for (final String key : userInfo.keySet()) {
 				final String token = "{".concat(key).concat("}");
-				
+
+				// if the URL contains {attributeName}, replace that string
+				// with the attribute's value
 				if (url.contains(token)) {
 					url = url.replaceAll("\\{".concat(key).concat("\\}"), URLEncoder.encode(userInfo.get(key), "UTF-8"));
 				}
 				
+				// if any parameter values associated with the request contain
+				// {attributeName}, replace that string in the parameter with
+				// the attribute's value
 				for (Map.Entry<String, String[]> param : proxyRequest.getParameters().entrySet()) {
 					final int length = param.getValue().length;
 					for (int i = 0; i < length; i++) {
@@ -61,7 +76,8 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 					
 				}
 			}
-			
+
+			// update the URL in the content request
 			proxyRequest.setProxiedLocation(url);
 
 		} catch (UnsupportedEncodingException e) {

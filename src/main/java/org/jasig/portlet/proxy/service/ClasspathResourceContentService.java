@@ -29,22 +29,29 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 /**
+ * ClasspathResourceContentService retrieves content from a document in the
+ * portlet classpath.
+ * 
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 @Service("classpathContentService")
 public class ClasspathResourceContentService implements IContentService<GenericContentRequestImpl, GenericContentResponseImpl> {
     
     protected final Log log = LogFactory.getLog(getClass());
-    
+
+    @Override
     public GenericContentRequestImpl getRequest(final PortletRequest request) {
     	return new GenericContentRequestImpl(request);
     }
 
+    @Override
     public GenericContentResponseImpl getContent(final GenericContentRequestImpl proxyRequest, final PortletRequest request) {
         
+    	// get the resource corresponding to the configured location
         final Resource resource = new ClassPathResource(proxyRequest.getProxiedLocation());
         
         try {
+        	// construct a content response using this resource
             final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl(proxyRequest.getProxiedLocation(), resource.getInputStream());
             return proxyResponse;
         } catch (IOException e) {

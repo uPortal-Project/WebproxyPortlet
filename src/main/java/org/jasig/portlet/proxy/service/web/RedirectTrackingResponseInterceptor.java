@@ -26,6 +26,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * RedirectTrackingResponseInterceptor tracks any redirects that occur during
+ * retrieval of the target content.  The final URL is set as a context attribute
+ * on the HttpResponse for later retrieval.  This interceptor ensures that 
+ * any relative URL calculations performed while processing the response are made
+ * absolute using the correct final URL.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public class RedirectTrackingResponseInterceptor implements
 		HttpResponseInterceptor {
 

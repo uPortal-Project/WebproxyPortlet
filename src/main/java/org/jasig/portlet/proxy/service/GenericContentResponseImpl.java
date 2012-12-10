@@ -20,14 +20,24 @@ package org.jasig.portlet.proxy.service;
 
 import java.io.InputStream;
 
-
+/**
+ * GenericContentResponseImpl provides a basic content response.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public class GenericContentResponseImpl implements IContentResponse {
 
 	private String proxiedLocation;
 	private InputStream content;
 	
 	public GenericContentResponseImpl() { }
-	
+
+	/**
+	 * Construct a content response using the provided location and content stream
+	 * 
+	 * @param proxiedLocation
+	 * @param content
+	 */
 	public GenericContentResponseImpl(String proxiedLocation, InputStream content) {
 		this.proxiedLocation = proxiedLocation;
 		this.content = content;
@@ -43,6 +53,11 @@ public class GenericContentResponseImpl implements IContentResponse {
 		return proxiedLocation;
 	}
 
+	/**
+	 * Set the proxied location.
+	 * 
+	 * @param proxiedLocation
+	 */
 	public void setProxiedLocation(String proxiedLocation) {
 		this.proxiedLocation = proxiedLocation;
 	}
@@ -51,6 +66,11 @@ public class GenericContentResponseImpl implements IContentResponse {
 		return content;
 	}
 
+	/**
+	 * Set the stream of retrieved content.
+	 * 
+	 * @param content
+	 */
 	public void setContent(InputStream content) {
 		this.content = content;
 	}

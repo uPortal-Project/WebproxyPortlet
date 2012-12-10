@@ -21,10 +21,24 @@ package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
 public class ProxyPortletForm {
 
+	enum ProxyAuthType {
+		NONE, CAS, BASIC;
+	}
+	
 	private String contentService;
 	private String location;
+	
+	// filters
 	private String whitelistRegexes; // TODO: support multiple whitelist entries
 	private String clippingSelector;
+	private String header;
+	private String footer;
+	
+	// authentication
+	private ProxyAuthType authType = ProxyAuthType.NONE;
+	private String usernameKey = "user.login.id";
+	private String passwordKey = "password";
+	
 
 	public String getContentService() {
 		return contentService;
@@ -56,6 +70,46 @@ public class ProxyPortletForm {
 
 	public void setClippingSelector(String clippingSelector) {
 		this.clippingSelector = clippingSelector;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	public String getFooter() {
+		return footer;
+	}
+
+	public void setFooter(String footer) {
+		this.footer = footer;
+	}
+
+	public ProxyAuthType getAuthType() {
+		return authType;
+	}
+
+	public void setAuthType(ProxyAuthType authType) {
+		this.authType = authType;
+	}
+
+	public String getUsernameKey() {
+		return usernameKey;
+	}
+
+	public void setUsernameKey(String usernameKey) {
+		this.usernameKey = usernameKey;
+	}
+
+	public String getPasswordKey() {
+		return passwordKey;
+	}
+
+	public void setPasswordKey(String passwordKey) {
+		this.passwordKey = passwordKey;
 	}
 
 }

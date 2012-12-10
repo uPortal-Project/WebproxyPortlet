@@ -23,10 +23,22 @@ import javax.portlet.PortletRequest;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 
 /**
+ * IPreInterceptor provides an interface for modifying HTTP content requests before
+ * the request is actually made.  Interceptors have access to request information
+ * such as the target URL, headers, etc. and may modify these resources to perform
+ * authentication, add request headers from the original request, or perform other
+ * desired pre-processing tasks.
+ * 
  * @author Bill Smith (wsmith@unicon.net)
  */
 public interface IPreInterceptor {
 
+	/**
+	 * Intercept a content request before it is executed.
+	 * 
+	 * @param proxyRequest
+	 * @param portletRequest
+	 */
     public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest);
     
 }

@@ -23,32 +23,70 @@ import java.util.List;
 
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 
+/**
+ * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
+ * 
+ * @author Jen Bourey, jennifer.bourey@gmail.com
+ */
 public class GatewayEntry {
 
 	private String name;
 	private String iconUrl;
 	private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
 
+	/**
+	 * Get the display text for this link.
+	 * 
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Set the display text for this link.
+	 * 
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Get the icon for this link.
+	 * 
+	 * @return
+	 */
 	public String getIconUrl() {
 		return iconUrl;
 	}
 
+	/**
+	 * Set an icon for this link.
+	 * 
+	 * @param iconUrl
+	 */
 	public void setIconUrl(String iconUrl) {
 		this.iconUrl = iconUrl;
 	}
 
+	/**
+	 * Get a map of content requests to be executed for this link.
+	 * 
+	 * @return
+	 */
 	public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
 		return contentRequests;
 	}
 
+	/**
+	 * Set the map of content requests to be executed for this link.  Each
+	 * entry should have a key consisting of the desired configured content
+	 * request pointing to a list of interceptor keys.  Each request will be
+	 * executed in the given order after being processed by any interceptors.
+	 * 
+	 * @param contentRequests
+	 */
 	public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests) {
 		this.contentRequests = contentRequests;
 	}

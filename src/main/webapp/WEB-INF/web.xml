@@ -58,6 +58,21 @@
         </listener-class>
     </listener>
 
+    <!-- Validation filter delegates to spring configuration in WEB-INF/context/applicationContext.jsp -->
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>ticketValidationFilter</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/proxy/receptor</url-pattern>
+    </filter-mapping>    
+
     <servlet>
         <servlet-name>ViewRendererServlet</servlet-name>
         <servlet-class>

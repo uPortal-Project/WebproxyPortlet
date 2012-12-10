@@ -41,24 +41,39 @@
     	
     	$(document).ready(function () {
     		
-    		var finalRequest = function (contentRequest) {
-    			if (contentRequest.form) {
-    				var form = $(document.createElement("form"))
-    				    .attr("action", contentRequest.proxiedLocation)
-    				    .attr("method", contentRequest.method);
-    				
-    				$.each(contentRequest.parameters, function (key, values) {
-    					$(values).each(function (idx, value) {
-    						form.append($(document.createElement("input")).attr("name", key).attr("value", value));
-    					});
-    				});
-    				
-    				form.submit();
-    			} else {
-    				window.location = contentRequest.proxiedLocation;
-    			}
-    		};
-    		
+            var handleRequest = function (contentRequests, index) {
+            	var contentRequest = contentRequests[index];
+            	// final request
+            	if (index == contentRequests.length-1) {
+                    if (contentRequest.form) {
+                        var form = $(document.createElement("form"))
+                            .attr("action", contentRequest.proxiedLocation)
+                            .attr("method", contentRequest.method);
+                        
+                        $.each(contentRequest.parameters, function (key, values) {
+                            $(values).each(function (idx, value) {
+                                form.append($(document.createElement("input")).attr("name", key).attr("value", value));
+                            });
+                        });
+                        console.log(form);
+
+                        form.submit();
+                    } else {
+                        window.location = contentRequest.proxiedLocation;
+                    }
+            	}
+            	
+            	else if (contentRequest.form) {
+                	// TODO
+                } else {
+                    var iframe = $(document.createElement("iframe"));
+                    iframe.load(function () { 
+                        handleRequest(contentRequests, index+1);
+                    });
+                    iframe.attr("src", contentRequest.proxiedLocation);
+                }
+            };
+            
     		$("#${n} .entry a").each(function (idx, link) {
     			$(link).click(function () {
     				$.get(
@@ -66,8 +81,7 @@
 						{ index: idx }, 
 						function (data) { 
 							var contentRequests = data.contentRequests;
-							// TODO: handle multiple requests
-							finalRequest(contentRequests[0]);
+							handleRequest(contentRequests, 0);
 						}, 
 						"json"
     			    );

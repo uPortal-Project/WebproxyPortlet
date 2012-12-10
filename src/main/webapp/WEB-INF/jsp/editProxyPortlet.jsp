@@ -43,16 +43,25 @@
             <form:form modelAttribute="form" action="${formUrl}" method="POST">
             
                 <p>
-                    Content type:
+                    Content source:
                     <ul>
                         <li><form:radiobutton path="contentService" value="httpContentService"/> HTTP (Web-based document)</li>
                         <li><form:radiobutton path="contentService" value="fileContentService"/> File in the portlet's classpath</li>
                     </ul>
                 </p>
+
+                <p>
+                    Content location (fully-qualified URL or classpath location):<br/>
+                    <form:input path="location" type="text"/>
+                </p>
                 
                 <p>
-                    Content url (fully-qualified URL or classpath location):<br/>
-                    <form:input path="location" type="text"/>
+                    Authentication:
+                    <ul>
+                        <li><form:radiobutton path="authType" value="NONE"/> None</li>
+                        <li><form:radiobutton path="authType" value="CAS"/> CAS</li>
+                        <li><form:radiobutton path="authType" value="BASIC"/> Basic</li>
+                    </ul>
                 </p>
                 
                 <p>
@@ -63,6 +72,16 @@
                 <p>
                     Content clipping selector (leave blank to avoid clipping):
                     <form:input path="clippingSelector" type="text"/>
+                </p>
+
+                <p>
+                    Static header:
+                    <form:input path="header" type="text"/>
+                </p>
+
+                <p>
+                    Static footer:
+                    <form:input path="footer" type="text"/>
                 </p>
 
                 <div class="buttons">

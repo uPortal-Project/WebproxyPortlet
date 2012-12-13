@@ -18,6 +18,8 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
+import java.beans.PropertyEditorSupport;
+
 
 public class ProxyPortletForm {
 
@@ -25,7 +27,15 @@ public class ProxyPortletForm {
 		NONE, CAS, BASIC;
 	}
 	
-	private String contentService;
+    public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
+        @Override
+        public void setAsText(String text) {
+            ProxyAuthType value = ProxyAuthType.valueOf(text);
+            setValue(value);
+        }
+    }
+
+    private String contentService;
 	private String location;
 	
 	// filters

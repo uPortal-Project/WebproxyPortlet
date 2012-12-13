@@ -34,4 +34,14 @@
         <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>
     </bean>
 
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletForm$ProxyAuthType">
+                    <bean class="org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletForm$ProxyAuthTypeEditor" />
+                </entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>

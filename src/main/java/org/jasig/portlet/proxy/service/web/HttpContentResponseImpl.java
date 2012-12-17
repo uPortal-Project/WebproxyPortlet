@@ -18,6 +18,7 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +26,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 
-public class HttpContentResponseImpl extends GenericContentResponseImpl {
+public class HttpContentResponseImpl extends GenericContentResponseImpl implements Serializable {
 
 	private Map<String, String> headers = new HashMap<String, String>();
-	
-	private HttpEntity entity;
+
+	private transient HttpEntity entity;
 	
 	public HttpContentResponseImpl(HttpEntity entity) {
 		this.entity = entity;

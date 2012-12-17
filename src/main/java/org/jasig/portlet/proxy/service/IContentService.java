@@ -36,7 +36,14 @@ public interface IContentService<T extends IContentRequest, S extends IContentRe
 	 * @return
 	 */
 	public T getRequest(PortletRequest request);
-	
+
+    /**
+     * Execute any necessary logic prior to retrieving the content
+     * @param contentRequest
+     * @param request
+     */
+    public void beforeGetContent(T contentRequest, PortletRequest request);
+
 	/**
 	 * Retrieve content for the given content request and portlet request.
 	 * 
@@ -46,4 +53,10 @@ public interface IContentService<T extends IContentRequest, S extends IContentRe
 	 */
     public S getContent(T contentRequest, PortletRequest request);
 
+    /**
+     * Execute any necessary logic after retrieving the content
+     * @param contentRequest
+     * @param request
+     */
+    public void afterGetContent(T contentRequest, PortletRequest request, S proxyResponse);
 }

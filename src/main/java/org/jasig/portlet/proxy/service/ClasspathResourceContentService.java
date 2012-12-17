@@ -61,4 +61,12 @@ public class ClasspathResourceContentService implements IContentService<GenericC
         return null;
     }
 
+    @Override
+    public void beforeGetContent(GenericContentRequestImpl contentRequest, PortletRequest request) {
+    }
+
+    @Override
+    public void afterGetContent(GenericContentRequestImpl contentRequest, PortletRequest request, GenericContentResponseImpl proxyResponse) {
+    }
+
 }

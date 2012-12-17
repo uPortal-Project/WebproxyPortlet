@@ -24,9 +24,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
-import org.jasig.portlet.proxy.service.IContentResponse;
-import org.jasig.portlet.proxy.service.IContentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +56,7 @@ public class CachingHttpContentServiceImpl extends HttpContentServiceImpl {
         Element cachedElement = cache.get(cacheKey);
         if (cachedElement == null) {
             if(LOG.isDebugEnabled()) {
-                LOG.debug("Cache miss");
+                LOG.debug("Cache miss for cacheKey:  " + cacheKey);
             }
             response = super.getContent(proxyRequest, request, false);
             try {
@@ -71,7 +68,7 @@ public class CachingHttpContentServiceImpl extends HttpContentServiceImpl {
             }
         } else {
             if(LOG.isDebugEnabled()) {
-                LOG.debug("Cache hit");
+                LOG.debug("Cache hit for cacheKey:  " + cacheKey);
             }
             response = (GenericContentResponseImpl)cachedElement.getValue();
             try {

@@ -47,6 +47,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
+import org.jasig.portlet.proxy.service.IContentRequest;
+import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +59,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
-@Service("httpContentService")
+//@Service("httpContentService")
 public class HttpContentServiceImpl implements IContentService<HttpContentRequestImpl, GenericContentResponseImpl> {
 
     private final Log log = LogFactory.getLog(getClass());
@@ -104,18 +106,25 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
     	
     	return contentRequest;
     }
-    
-    @Override
-    public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
 
+    @Override
+    public void beforeGetContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         // locate all pre-processing filters configured for this portlet
+
         final PortletPreferences preferences = request.getPreferences();
         final String[] interceptorKeys = preferences.getValues(PREINTERCEPTOR_LIST_KEY, new String[]{});
         for (final String key : interceptorKeys) {
             final IPreInterceptor preinterceptor = applicationContext.getBean(key, IPreInterceptor.class);
             preinterceptor.intercept(proxyRequest, request);
         }
+    }
 
+    @Override
+    public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
+        return getContent(proxyRequest, request,true);
+    }
+
+    public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request, boolean runWrapperMethods) {
         try {
         	
         	// get an HttpClient appropriate for this user and portlet instance
@@ -141,11 +150,11 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
             for (Header header : response.getAllHeaders()) {
             	proxyResponse.getHeaders().put(header.getName(), header.getValue());
             }
-            
+
             // set the final URL of the response in case it was redirected
             String finalUrl = (String) context.getAttribute(RedirectTrackingResponseInterceptor.FINAL_URL_KEY);
             if (finalUrl == null) {
-            	finalUrl = proxyRequest.getProxiedLocation();
+                finalUrl = proxyRequest.getProxiedLocation();
             }
             proxyResponse.setProxiedLocation(finalUrl);
 
@@ -159,7 +168,11 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
 
         return null;
     }
-    
+
+    @Override
+    public void afterGetContent(HttpContentRequestImpl proxyRequest,PortletRequest request,GenericContentResponseImpl proxyResponse) {
+    }
+
     protected HttpUriRequest getHttpRequest(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         final HttpUriRequest httpRequest;
 
@@ -228,5 +241,4 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         
         return httpRequest;
     }
-
 }

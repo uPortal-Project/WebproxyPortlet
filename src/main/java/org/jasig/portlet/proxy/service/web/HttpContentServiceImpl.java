@@ -47,14 +47,11 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
-import org.jasig.portlet.proxy.service.IContentRequest;
-import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com

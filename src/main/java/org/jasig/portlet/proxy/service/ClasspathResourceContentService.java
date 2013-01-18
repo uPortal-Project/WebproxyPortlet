@@ -22,8 +22,8 @@ import java.io.IOException;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service("classpathContentService")
 public class ClasspathResourceContentService implements IContentService<GenericContentRequestImpl, GenericContentResponseImpl> {
     
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public GenericContentRequestImpl getRequest(final PortletRequest request) {
@@ -55,7 +55,7 @@ public class ClasspathResourceContentService implements IContentService<GenericC
             final GenericContentResponseImpl proxyResponse = new GenericContentResponseImpl(proxyRequest.getProxiedLocation(), resource.getInputStream());
             return proxyResponse;
         } catch (IOException e) {
-            log.error("IOException retrieving resource " + proxyRequest.getProxiedLocation());
+            log.error("IOException retrieving resource {}", proxyRequest.getProxiedLocation());
         }
         
         return null;

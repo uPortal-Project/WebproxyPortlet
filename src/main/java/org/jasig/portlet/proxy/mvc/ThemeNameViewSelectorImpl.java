@@ -21,8 +21,8 @@ package org.jasig.portlet.proxy.mvc;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ThemeNameViewSelectorImpl implements IViewSelector {
     
@@ -30,7 +30,7 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
     protected static final String MOBILE_THEMES_KEY = "mobileThemes";
     protected static final String[] MOBILE_THEMES_DEFAULT = new String[]{ "UniversalityMobile" };
 
-    protected final Log logger = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     public boolean isMobile(PortletRequest request) {
         
@@ -48,12 +48,12 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
         // mobile themes
         for (String theme : mobileThemes) {
             if (themeName.equals(theme)) {
-                logger.debug("Theme name " + themeName + " matches configured list of mobile themes");
+                logger.debug("Theme name {} matches configured list of mobile themes", themeName);
                 return true;
             }
         }
         
-        logger.debug("No match found for theme name " + themeName + ", assuming desktop environment");
+        logger.debug("No match found for theme name {}, assuming desktop environment", themeName);
         return false;
     }
 

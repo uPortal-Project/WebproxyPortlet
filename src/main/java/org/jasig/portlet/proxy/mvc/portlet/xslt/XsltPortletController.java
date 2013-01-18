@@ -21,12 +21,12 @@ package org.jasig.portlet.proxy.mvc.portlet.xslt;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -46,7 +46,7 @@ public class XsltPortletController {
     protected static final String MAIN_XSLT_KEY = "mainXslt";
     protected static final String MOBILE_XSLT_KEY = "mobileXslt";
 
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     
     private ApplicationContext applicationContext;
     

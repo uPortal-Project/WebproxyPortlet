@@ -23,19 +23,21 @@ import java.beans.PropertyEditorSupport;
 
 public class ProxyPortletForm {
 
+  public static final String AUTHENTICATION_TYPE = "authType";
+    
 	enum ProxyAuthType {
 		NONE, CAS, BASIC;
 	}
 	
-    public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
-        @Override
-        public void setAsText(String text) {
-            ProxyAuthType value = ProxyAuthType.valueOf(text);
-            setValue(value);
-        }
-    }
+  public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
+      @Override
+      public void setAsText(String text) {
+          ProxyAuthType value = ProxyAuthType.valueOf(text);
+          setValue(value);
+      }
+  }
 
-    private String contentService;
+  private String contentService;
 	private String location;
 	
 	// filters

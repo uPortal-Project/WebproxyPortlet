@@ -23,8 +23,6 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.TicketValidationException;
@@ -46,79 +44,75 @@ import org.springframework.stereotype.Service;
 @Service("proxyCASAuthenticationPreInterceptor")
 public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
 
-	protected final Log log = LogFactory.getLog(this.getClass());
+    private String      serviceUrl;
 
-	private String serviceUrl;
-	
-	/**
-	 * Set the base URL of the CAS server
-	 * 
-	 * @param serviceUrl
-	 */
-	@Value("${cas.server.base.url}")
-	public void setServiceUrl(String serviceUrl) {
-		this.serviceUrl = serviceUrl;
-	}
+    /**
+     * Set the base URL of the CAS server
+     * 
+     * @param serviceUrl
+     */
+    @Value("${portal.server.base.url}/${portlet.context}")
+    public void setServiceUrl(String serviceUrl) {
+        this.serviceUrl = serviceUrl;
+    }
 
-	private TicketValidator ticketValidator;
-	
-	/**
-	 * Set the ticket validator
-	 * 
-	 * @param ticketValidator
-	 */
-	@Autowired(required = true)
-	public void setTicketValidator(TicketValidator ticketValidator) {
-		this.ticketValidator = ticketValidator;
-	}
-	
-	@Override
-	protected void prepareAuthentication(HttpContentRequestImpl contentRequest,
-			PortletRequest portletRequest) {
+    private TicketValidator ticketValidator;
 
-		// retrieve the CAS ticket from the UserInfo map
-		@SuppressWarnings("unchecked")
-		Map<String,String> userinfo = (Map<String,String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
-		String ticket = (String) userinfo.get("casProxyTicket");
-		
-		if (ticket == null) {
-			log.warn("No CAS ticket found in the UserInfo map");
-			return;
-		}
-		
-		log.debug("serviceURL: " + this.serviceUrl + ", ticket: " + ticket);
-		
-		/* contact CAS and validate */
-		
-		try {
-			
-			// validate the ticket provided by the portal
-			final Assertion assertion = ticketValidator.validate(ticket, this.serviceUrl);
-			
-			// get a proxy ticket for the target URL
-	        final String proxyTicket = assertion.getPrincipal().getProxyTicketFor(contentRequest.getProxiedLocation());
-	        if (proxyTicket == null){
-	            log.error("Failed to retrieve proxy ticket for assertion [" + assertion.toString() + "].  Is the PGT still valid?");
-	            return;
-	        }
-	        if (log.isTraceEnabled()) {
-	            log.trace("returning from getCasServiceToken(), returning proxy ticket ["
-	                    + proxyTicket + "]");
-	        }
+    /**
+     * Set the ticket validator
+     * 
+     * @param ticketValidator
+     */
+    @Autowired(required = true)
+    public void setTicketValidator(TicketValidator ticketValidator) {
+        this.ticketValidator = ticketValidator;
+    }
 
-	        // update the URL to include the proxy ticket
-			final URIBuilder builder = new URIBuilder(contentRequest.getProxiedLocation());
-			builder.addParameter("ticket", proxyTicket);
-			contentRequest.setProxiedLocation(builder.toString());
+    @Override
+    protected void prepareAuthentication(HttpContentRequestImpl contentRequest, PortletRequest portletRequest) {
 
-		} catch (TicketValidationException e) {
-			log.warn("Failed to validate proxy ticket", e);
-			return;
-		} catch (URISyntaxException e) {
-			log.warn("Failed to parse proxy URL", e);
-			return;
-		}
+        // retrieve the CAS ticket from the UserInfo map
+        @SuppressWarnings("unchecked")
+        Map<String, String> userinfo = (Map<String, String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
+        String ticket = (String) userinfo.get("casProxyTicket");
 
-	}
+        if (ticket == null) {
+            log.warn("No CAS ticket found in the UserInfo map. Is 'casProxyTicket' user-attribute declared in the portlet configuration?");
+            return;
+        }
+
+        log.debug("serviceURL: {}, ticket: {}", this.serviceUrl, ticket);
+
+        /* contact CAS and validate */
+        try {
+
+            // validate the ticket provided by the portal
+            final Assertion assertion = this.ticketValidator.validate(ticket, this.serviceUrl);
+
+            // get a proxy ticket for the target URL
+            final String proxyTicket = assertion.getPrincipal().getProxyTicketFor(contentRequest.getProxiedLocation());
+            if (proxyTicket == null) {
+                log.error("Failed to retrieve proxy ticket for assertion [{}]. Is the PGT still valid?", assertion.toString());
+                return;
+            }
+            log.trace("returning from proxy ticket request with proxy ticket [{}]", proxyTicket);
+            
+            // update the URL to include the proxy ticket
+            final URIBuilder builder = new URIBuilder(contentRequest.getProxiedLocation());
+            builder.addParameter("ticket", proxyTicket);
+            
+            String proxiedLocation = builder.build().toString();
+            log.debug("Set final proxied location to be {}", proxiedLocation);
+            contentRequest.setProxiedLocation(proxiedLocation);
+
+        } catch (TicketValidationException e) {
+            log.warn("Failed to validate proxy ticket", e);
+            return;
+        } catch (URISyntaxException e) {
+            log.warn("Failed to parse proxy URL", e);
+            return;
+        }
+
+    }
 
 }

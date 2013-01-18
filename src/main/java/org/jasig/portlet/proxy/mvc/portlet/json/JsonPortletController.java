@@ -24,8 +24,6 @@ import java.util.Map;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
@@ -33,6 +31,8 @@ import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -51,7 +51,7 @@ public class JsonPortletController {
     protected static final String MAIN_VIEW_KEY = "mainView";
     protected static final String MOBILE_VIEW_KEY = "mobileView";
     
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     
     private ApplicationContext applicationContext;
     
@@ -92,7 +92,9 @@ public class JsonPortletController {
         } catch (IOException e) {
             log.error("IOException reading JSON content", e);
         } finally {
-        	proxyResponse.close();
+            if (proxyResponse != null) {
+                proxyResponse.close();
+            }
         }
         
         // set the appropriate view name

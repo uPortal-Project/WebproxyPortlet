@@ -101,6 +101,7 @@ public class EditProxyController {
 				preInterceptors.add("proxyCASAuthenticationPreInterceptor");
 			}
 			
+			preferences.setValue(ProxyPortletForm.AUTHENTICATION_TYPE, form.getAuthType().toString());
 			preferences.setValues(HttpContentServiceImpl.PREINTERCEPTOR_LIST_KEY, preInterceptors.toArray(new String[]{}));
 			preferences.store();
 			
@@ -120,6 +121,14 @@ public class EditProxyController {
 		form.setLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, null));
 		form.setWhitelistRegexes(preferences.getValue(URLRewritingFilter.WHITELIST_REGEXES_KEY, null));
 		form.setClippingSelector(preferences.getValue(ContentClippingFilter.SELECTOR_KEY, null));
+		
+		String authTypeForm = preferences.getValue(ProxyPortletForm.AUTHENTICATION_TYPE, null);
+		ProxyPortletForm.ProxyAuthType authType = ProxyPortletForm.ProxyAuthType.NONE;
+		if (!StringUtils.isBlank(authTypeForm)) {
+		    authType = ProxyPortletForm.ProxyAuthType.valueOf(authTypeForm);
+		}
+		        
+		form.setAuthType(authType);
 		
 		return form;
 	}

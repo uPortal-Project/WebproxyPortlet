@@ -34,7 +34,7 @@ public class GenericContentRequestImpl implements IContentRequest {
 	/**
 	 * Standard key for storing a content location in the portlet preferences.
 	 */
-    public static final String CONTENT_LOCATION_KEY = "location";
+  public static final String CONTENT_LOCATION_KEY = "location";
 
 	public GenericContentRequestImpl() { }
 	

@@ -80,5 +80,10 @@
             <title>Json Portlet</title>
         </portlet-info>
     </portlet>
-
+    
+    <user-attribute>
+        <description>CAS Proxy Ticket</description>
+        <name>casProxyTicket</name>
+    </user-attribute>
+   
 </portlet-app>

@@ -39,8 +39,7 @@ public class UserInfoBasicAuthenticationPreInterceptor extends AbstractBasicAuth
 	final public static String PASSWORD_KEY = "passwordKey";
 	
 	@Override
-	protected UsernamePasswordCredentials getCredentials(
-			PortletRequest portletRequest) {
+	protected UsernamePasswordCredentials getCredentials(PortletRequest portletRequest) {
 
 		// get the username and password attribute names configured for this
 		// portlet instance

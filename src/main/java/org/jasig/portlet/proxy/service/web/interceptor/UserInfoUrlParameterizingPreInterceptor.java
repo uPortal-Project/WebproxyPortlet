@@ -24,9 +24,10 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,9 +42,9 @@ import org.springframework.stereotype.Service;
 @Service("userInfoUrlParameterizingPreInterceptor")
 public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor {
 	
-	protected final Log log = LogFactory.getLog(getClass());
-
-	@Override
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+  @Override
 	public void intercept(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {
 

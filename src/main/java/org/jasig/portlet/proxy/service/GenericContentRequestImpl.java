@@ -50,9 +50,7 @@ public class GenericContentRequestImpl implements IContentRequest {
 	}
 
 	/**
-	 * Get the target location.
-	 * 
-	 * @return
+	 * @return Get the target location.
 	 */
 	public String getProxiedLocation() {
 		return proxiedLocation;

@@ -18,27 +18,23 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.proxy;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
-import javax.portlet.PortletModeException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
 import org.jasig.portlet.proxy.service.proxy.document.HeaderFooterFilter;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +50,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @RequestMapping("CONFIG")
 public class EditProxyController {
 	
-	final Log log = LogFactory.getLog(getClass());
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@RenderMapping
 	public String getEditView() {
@@ -106,20 +102,13 @@ public class EditProxyController {
 			}
 			
 			preferences.setValues(HttpContentServiceImpl.PREINTERCEPTOR_LIST_KEY, preInterceptors.toArray(new String[]{}));
-
 			preferences.store();
 			
 			response.setPortletMode(PortletMode.VIEW);
 			
-		} catch (ValidatorException e) {
+		} catch (Exception e) {
 			log.error("Unable to update web proxy portlet configuration", e);
-		} catch (IOException e) {
-			log.error("Unable to update web proxy portlet configuration", e);
-		} catch (ReadOnlyException e) {
-			log.error("Unable to update web proxy portlet configuration", e);
-		} catch (PortletModeException e) {
-			log.error("Unable to update web proxy portlet configuration", e);
-		}
+		} 
 	}
 
 	@ModelAttribute("form")

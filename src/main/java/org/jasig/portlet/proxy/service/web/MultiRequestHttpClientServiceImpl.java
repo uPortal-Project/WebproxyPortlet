@@ -38,57 +38,57 @@ import org.springframework.web.portlet.util.PortletUtils;
  */
 @Service
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
-	
-	protected static final String CLIENT_SESSION_KEY = "httpClient";
-	protected static final String SHARED_SESSION_KEY = "sharedSessionKey";
 
-	private PoolingClientConnectionManager connectionManager;
-	
-	@Autowired(required=true)
-	public void setPoolingClientConnectionManager(PoolingClientConnectionManager connectionManager) {
-		this.connectionManager = connectionManager;
-	}
-	
-	@Override
-	public AbstractHttpClient getHttpClient(PortletRequest request) {
-		final PortletSession session = request.getPortletSession();
-		final PortletPreferences preferences = request.getPreferences();
-		
-		// determine whether this portlet should share its HttpClient with
-		// other portlets
-		final String sharedSessionKey = preferences.getValue(SHARED_SESSION_KEY, null);
-		final int scope = sharedSessionKey != null ? PortletSession.APPLICATION_SCOPE : PortletSession.PORTLET_SCOPE;
-		final String clientSessionKey = sharedSessionKey != null ? sharedSessionKey : CLIENT_SESSION_KEY;
+    protected static final String          CLIENT_SESSION_KEY = "httpClient";
+    protected static final String          SHARED_SESSION_KEY = "sharedSessionKey";
 
-		// get the client currently in the user session, or if none exists, 
-		// create a new one
-		AbstractHttpClient client;
+    private PoolingClientConnectionManager connectionManager;
+
+    @Autowired(required = true)
+    public void setPoolingClientConnectionManager(PoolingClientConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
+
+    @Override
+    public AbstractHttpClient getHttpClient(PortletRequest request) {
+        final PortletSession session = request.getPortletSession();
+        final PortletPreferences preferences = request.getPreferences();
+
+        // determine whether this portlet should share its HttpClient with
+        // other portlets 
+        final String sharedSessionKey = preferences.getValue(SHARED_SESSION_KEY, null);
+        final int scope = sharedSessionKey != null ? PortletSession.APPLICATION_SCOPE : PortletSession.PORTLET_SCOPE;
+        final String clientSessionKey = sharedSessionKey != null ? sharedSessionKey : CLIENT_SESSION_KEY;
+
+        // get the client currently in the user session, or if none exists, 
+        // create a new one
+        AbstractHttpClient client;
         synchronized (PortletUtils.getSessionMutex(session)) {
-    		client = (AbstractHttpClient) session.getAttribute(clientSessionKey, scope);
-    		if (client == null) {
-				client = createHttpClient(request);
-				session.setAttribute(clientSessionKey, client, scope);
-    		}
+            client = (AbstractHttpClient) session.getAttribute(clientSessionKey, scope);
+            if (client == null) {
+                client = createHttpClient(request);
+                session.setAttribute(clientSessionKey, client, scope);
+            }
         }
-		
-		// TODO: allow session to be persisted to database
-		
-		return client;
-	}
-	
-	/**
-	 * Create a new HTTP Client for the provided portlet request.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	protected AbstractHttpClient createHttpClient(PortletRequest request) {
-		
-		// TODO: increase configurability
-        
-		final AbstractHttpClient client = new DefaultHttpClient(this.connectionManager);
-		client.addResponseInterceptor(new RedirectTrackingResponseInterceptor());
-		return client;
-	}
-	
+
+        // TODO: allow session to be persisted to database
+
+        return client;
+    }
+
+    /**
+     * Create a new HTTP Client for the provided portlet request.
+     * 
+     * @param request
+     * @return
+     */
+    protected AbstractHttpClient createHttpClient(PortletRequest request) {
+
+        // TODO: increase configurability
+
+        final AbstractHttpClient client = new DefaultHttpClient(this.connectionManager);
+        client.addResponseInterceptor(new RedirectTrackingResponseInterceptor());
+        return client;
+    }
+
 }

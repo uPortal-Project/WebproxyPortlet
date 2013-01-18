@@ -38,8 +38,6 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
@@ -48,6 +46,8 @@ import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.proxy.service.web.HttpContentResponseImpl;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
@@ -67,12 +67,10 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 @RequestMapping("VIEW")
 public class ProxyPortletController {
 
-
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
-
-    protected final Log log = LogFactory.getLog(getClass());
     
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private ApplicationContext applicationContext;
     
     @Autowired(required = true)
@@ -138,75 +136,83 @@ public class ProxyPortletController {
             }
             
             // write out the final content
+            OutputStream out = null;
             try {
-                final OutputStream out = response.getPortletOutputStream();
+                out = response.getPortletOutputStream();
                 IOUtils.write(document.html(), out);
                 out.flush();
-                out.close();
             } catch (IOException e) {
                 log.error("Exception writing proxied content", e);
+            } finally {
+                IOUtils.closeQuietly(out);
             }
                         
         } catch (IOException e) {
             log.error("Error parsing HTML content", e);
         } finally {
-        	proxyResponse.close();
+            if (proxyResponse != null) {
+                proxyResponse.close();
+            }
         }
         
     }
 
     @ActionMapping
-    public void proxyTarget(final @RequestParam("proxy.url") String url,
-            final ActionRequest request, final ActionResponse response) throws IOException {
+    public void proxyTarget(final @RequestParam("proxy.url") String url,  final ActionRequest request, final ActionResponse response) throws IOException {
 
         final PortletPreferences preferences = request.getPreferences();
+        IContentResponse proxyResponse = null;
         
-        // locate the content service to use to retrieve our HTML content
-        final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
-        final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
-
-        final IContentRequest proxyRequest;
         try {
-            proxyRequest = contentService.getRequest(request);
-        } catch (RuntimeException e) {
-        	log.error("URL " + url + " was not in the proxy list");
-        	// TODO: how should we handle these errors?
-        	return;
+          // locate the content service to use to retrieve our HTML content
+          final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
+          final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+  
+          final IContentRequest proxyRequest;
+          try {
+              proxyRequest = contentService.getRequest(request);
+          } catch (RuntimeException e) {
+          	log.error("URL {} was not in the proxy list", url);
+          	// TODO: how should we handle these errors?
+          	return;
+          }
+  
+          // retrieve the HTML content
+          proxyResponse = contentService.getContent(proxyRequest, request);
+         
+  
+          // TODO: this probably can only be an HTTP content type
+          if (proxyResponse instanceof HttpContentResponseImpl) {
+          	
+          	// Determine the content type of the proxied response.  If this is
+          	// not an HTML type, we need to construct a resource URL instead
+          	final HttpContentResponseImpl httpContentResponse = (HttpContentResponseImpl) proxyResponse;
+          	final String responseContentType = httpContentResponse.getHeaders().get("Content-Type");
+          	for (Pattern contentType : knownHtmlContentTypes) {
+          		if (responseContentType != null && contentType.matcher(responseContentType).matches()) {
+          	    	final Map<String, String[]> params = request.getParameterMap();
+          	        response.setRenderParameters(params);
+          	        return;
+          		}
+          	}
+          	
+          }
+  
+          // if this is not an HTML content type, use the corresponding resource
+          // URL in the session
+          final PortletSession session = request.getPortletSession();
+          @SuppressWarnings("unchecked")
+          final ConcurrentMap<String,String> rewrittenUrls = (ConcurrentMap<String,String>) session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY);
+          response.sendRedirect(rewrittenUrls.get(url));
+        } finally {
+            if (proxyResponse != null) {
+                proxyResponse.close();
+            }
         }
-
-        // retrieve the HTML content
-        final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
-        proxyResponse.close();
-
-        // TODO: this probably can only be an HTTP content type
-        if (proxyResponse instanceof HttpContentResponseImpl) {
-        	
-        	// Determine the content type of the proxied response.  If this is
-        	// not an HTML type, we need to construct a resource URL instead
-        	final HttpContentResponseImpl httpContentResponse = (HttpContentResponseImpl) proxyResponse;
-        	final String responseContentType = httpContentResponse.getHeaders().get("Content-Type");
-        	for (Pattern contentType : knownHtmlContentTypes) {
-        		if (responseContentType != null && contentType.matcher(responseContentType).matches()) {
-        	    	final Map<String, String[]> params = request.getParameterMap();
-        	        response.setRenderParameters(params);
-        	        return;
-        		}
-        	}
-        	
-        }
-
-        // if this is not an HTML content type, use the corresponding resource
-        // URL in the session
-        final PortletSession session = request.getPortletSession();
-        @SuppressWarnings("unchecked")
-        final ConcurrentMap<String,String> rewrittenUrls = (ConcurrentMap<String,String>) session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY);
-        response.sendRedirect(rewrittenUrls.get(url));
-
     }
     
     @ResourceMapping
-    public void proxyResourceTarget(final @RequestParam("proxy.url") String url,
-            final ResourceRequest request, final ResourceResponse response) {
+    public void proxyResourceTarget(final @RequestParam("proxy.url") String url, final ResourceRequest request, final ResourceResponse response) {
         
         final PortletPreferences preferences = request.getPreferences();
         
@@ -219,13 +225,14 @@ public class ProxyPortletController {
         try {
             proxyRequest = contentService.getRequest(request);
         } catch (RuntimeException e) {
-        	log.error("URL " + url + " was not in the proxy list");
+        	log.error("URL {} was not in the proxy list", url);
         	response.setProperty(ResourceResponse.HTTP_STATUS_CODE, String.valueOf(HttpServletResponse.SC_UNAUTHORIZED));
         	return;
         }
 
         // retrieve the HTML content
         final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
+        OutputStream out = null;
         
         try {
 
@@ -242,16 +249,18 @@ public class ProxyPortletController {
         	}
         	
         	// write out all proxied content
-            final OutputStream out = response.getPortletOutputStream();
+            out = response.getPortletOutputStream();
             IOUtils.copyLarge(proxyResponse.getContent(), out);
             out.flush();
-            out.close();
             
         } catch (IOException e) {
-        	response.setProperty(ResourceResponse.HTTP_STATUS_CODE, String.valueOf(HttpServletResponse.SC_UNAUTHORIZED));
-            log.error("Exception writing proxied content", e);
+      	    response.setProperty(ResourceResponse.HTTP_STATUS_CODE, String.valueOf(HttpServletResponse.SC_UNAUTHORIZED));
+      	    log.error("Exception writing proxied content", e);
         } finally {
-        	proxyResponse.close();
+            if (proxyResponse != null) {
+                proxyResponse.close();
+            }
+            IOUtils.closeQuietly(out);
         }
         
     }

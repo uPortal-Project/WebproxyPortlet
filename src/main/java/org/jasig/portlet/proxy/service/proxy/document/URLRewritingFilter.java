@@ -34,14 +34,14 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.portlet.util.PortletUtils;
 
@@ -50,61 +50,56 @@ import org.springframework.web.portlet.util.PortletUtils;
  */
 @Service("urlRewritingFilter")
 public class URLRewritingFilter implements IDocumentFilter {
-    
-    final public static String REWRITTEN_URLS_KEY = "rewrittenUrls";
-    final public static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
+
+    public final static String REWRITTEN_URLS_KEY = "rewrittenUrls";
+    public final static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
+
     protected final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
-    
-    final protected Log log = LogFactory.getLog(getClass());
-    
+    protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
+
     private Map<String, Set<String>> actionElements;
-    
-    @Resource(name="urlRewritingActionElements")
+
+    @Resource(name = "urlRewritingActionElements")
     public void setActionElements(Map<String, Set<String>> actionElements) {
         this.actionElements = actionElements;
     }
 
     private Map<String, Set<String>> resourceElements;
-    
-    @Resource(name="urlRewritingResourceElements")
+
+    @Resource(name = "urlRewritingResourceElements")
     public void setResourceElements(Map<String, Set<String>> resourceElements) {
         this.resourceElements = resourceElements;
     }
 
     @Override
-    public void filter(final Document document,
-            final IContentResponse proxyResponse, final RenderRequest request,
-            final RenderResponse response) {
-        
+    public void filter(final Document document, final IContentResponse proxyResponse, final RenderRequest request, final RenderResponse response) {
+
         updateUrls(document, proxyResponse, actionElements, request, response, true);
         updateUrls(document, proxyResponse, resourceElements, request, response, false);
 
     }
-    
-	protected void updateUrls(final Document document,
-            final IContentResponse proxyResponse,
-            final Map<String, Set<String>> elementSet,
-            final RenderRequest request, final RenderResponse response,
-            boolean action) {
-        
+
+    protected void updateUrls(final Document document, final IContentResponse proxyResponse, final Map<String, Set<String>> elementSet,
+            final RenderRequest request, final RenderResponse response, boolean action) {
+
         // attempt to retrieve the list of rewritten URLs from the session
-        final PortletSession session = request.getPortletSession();        
-        ConcurrentMap<String,String> rewrittenUrls;
+        final PortletSession session = request.getPortletSession();
+        ConcurrentMap<String, String> rewrittenUrls;
         synchronized (PortletUtils.getSessionMutex(session)) {
-	        rewrittenUrls = (ConcurrentMap<String,String>) session.getAttribute(REWRITTEN_URLS_KEY);
-	        
-	        // if the rewritten URLs list doesn't exist yet, create it
-	        if (rewrittenUrls == null) {
-	            rewrittenUrls = new ConcurrentHashMap<String,String>();
-	            session.setAttribute(REWRITTEN_URLS_KEY, rewrittenUrls);
-	        }
+            rewrittenUrls = (ConcurrentMap<String, String>) session.getAttribute(REWRITTEN_URLS_KEY);
+
+            // if the rewritten URLs list doesn't exist yet, create it
+            if (rewrittenUrls == null) {
+                rewrittenUrls = new ConcurrentHashMap<String, String>();
+                session.setAttribute(REWRITTEN_URLS_KEY, rewrittenUrls);
+            }
         }
-        
+
         // get the list of configured whitelist regexes
         final PortletPreferences preferences = request.getPreferences();
-        final String[] whitelistRegexes = preferences.getValues("whitelistRegexes", new String[]{});
-        
-        // If we're proxying a remote website (as opposed to a local filesystem 
+        final String[] whitelistRegexes = preferences.getValues("whitelistRegexes", new String[] {});
+
+        // If we're proxying a remote website (as opposed to a local file system 
         // resources, we'll need to transform any relative URLs.  To do this,
         // we first compute the base and relative URLs for the page.
         String baseUrl = null;
@@ -112,90 +107,86 @@ public class URLRewritingFilter implements IDocumentFilter {
         try {
             baseUrl = getBaseServerUrl(proxyResponse.getProxiedLocation());
             relativeUrl = getRelativePathUrl(proxyResponse.getProxiedLocation());
-            if (log.isTraceEnabled()) {
-            	log.trace("Computed base url " + baseUrl + " and relative url " + relativeUrl + " for proxied url " + proxyResponse.getProxiedLocation());
-            }
+            LOG.trace("Computed base url {} and relative url {} for proxied url {}", baseUrl, relativeUrl, proxyResponse.getProxiedLocation());
         } catch (URISyntaxException e) {
-            log.error(e);
+            LOG.error(e.getMessage(), e);
         }
-        
+
         for (final Map.Entry<String, Set<String>> elementEntry : elementSet.entrySet()) {
             for (final String attributeName : elementEntry.getValue()) {
 
-	            // get a list of elements for this element type and iterate through
-	            // them, updating the relevant URL attribute
-	            final Elements elements = document.getElementsByTag(elementEntry.getKey());
+                // get a list of elements for this element type and iterate through
+                // them, updating the relevant URL attribute
+                final Elements elements = document.getElementsByTag(elementEntry.getKey());
                 for (Element element : elements) {
-    
+
                     String attributeUrl = element.attr(attributeName);
-                    if (log.isTraceEnabled()) {
-                    	log.trace("Considering element " + element + " with URL attribute " + attributeName + " of value " + attributeUrl);
-                    }
-					if (StringUtils.isNotBlank(attributeUrl)
-							
-							// don't adjust or filter javascript url targets
-							&& !attributeUrl.startsWith(JAVASCRIPT_PREFIX)
-							&& !attributeUrl.startsWith(JAVASCRIPT_PREFIX
-									.toLowerCase())) {
-                        
-                    	// if we're proxying a remote website, adjust any 
-                    	// relative URLs into absolute URLs
+                    LOG.trace("Considering element {}  with URL attribute {} of value {}", element, attributeName, attributeUrl);
+                    
+                    // don't adjust or filter javascript url targets
+                    if (StringUtils.isNotBlank(attributeUrl) && !attributeUrl.startsWith(JAVASCRIPT_PREFIX) && 
+                        !attributeUrl.startsWith(JAVASCRIPT_PREFIX.toLowerCase())) {
+
+                        // if we're proxying a remote website, adjust any 
+                        // relative URLs into absolute URLs
                         if (baseUrl != null) {
-                        	
+
                             // if the URL is relative to the server base, prepend
-                        	// the base URL
+                            // the base URL
                             if (attributeUrl.startsWith("/") && !attributeUrl.startsWith("//")) {
                                 attributeUrl = baseUrl.concat(attributeUrl);
-                            } 
-                            
+                            }
+
                             // if the URL contains no path information, use
                             // the full relative path
                             else if (!attributeUrl.contains("://")) {
                                 attributeUrl = relativeUrl.concat(attributeUrl);
                             }
-                        
+
                         }
-    
+
                         // if this URL matches our whitelist regex, rewrite it 
                         // to pass through this portlet
                         for (String regex : whitelistRegexes) {
 
-                            final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
-                            if (pattern.matcher(attributeUrl).find()) {
-                            	
-                            	// record that we've rewritten this URL
-                                rewrittenUrls.put(attributeUrl, attributeUrl);
-                                
-                                // TODO: the value in the rewritten URLs map needs to 
-                                // be a resource URL.  we also want to key URLs by a short
-                                // string rather than the full URL
-                                
-                                if (elementEntry.getKey().equals("form")) {
-                                	// the form action needs to be set to POST to
-                                	// properly pass through our portlet
-                                    boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
-                                    if (!isPost) {
-                                        element.attr("method", "POST");
-                                    }
-                                    attributeUrl = createFormUrl(response, isPost, attributeUrl);
-                                }
-                                
-                                else if (action) {
-                                    attributeUrl = createActionUrl(response, attributeUrl);
-                                }
-                                
-                                else {
-                                    attributeUrl = createResourceUrl(response, attributeUrl);
-                                }
+                            if (StringUtils.isNotBlank(regex)) {
+                              final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
+                              if (pattern.matcher(attributeUrl).find()) {
+  
+                                  // record that we've rewritten this URL
+                                  rewrittenUrls.put(attributeUrl, attributeUrl);
+  
+                                  // TODO: the value in the rewritten URLs map needs to 
+                                  // be a resource URL.  we also want to key URLs by a short
+                                  // string rather than the full URL
+  
+                                  if (elementEntry.getKey().equals("form")) {
+                                      // the form action needs to be set to POST to
+                                      // properly pass through our portlet
+                                      boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
+                                      if (!isPost) {
+                                          element.attr("method", "POST");
+                                      }
+                                      attributeUrl = createFormUrl(response, isPost, attributeUrl);
+                                  }
+  
+                                  else if (action) {
+                                      attributeUrl = createActionUrl(response, attributeUrl);
+                                  }
+  
+                                  else {
+                                      attributeUrl = createResourceUrl(response, attributeUrl);
+                                  }
+                              }
                             }
                         }
-                        
+
                     }
-                    
+
                     element.attr(attributeName, attributeUrl.replace("&amp;", "&"));
-                    
+
                 }
-                
+
             }
 
         }
@@ -221,7 +212,7 @@ public class URLRewritingFilter implements IDocumentFilter {
         resourceUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         return resourceUrl.toString();
     }
-    
+
     protected String getBaseServerUrl(final String fullUrl) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(fullUrl);
         uriBuilder.removeQuery();
@@ -235,9 +226,9 @@ public class URLRewritingFilter implements IDocumentFilter {
         final String path = uriBuilder.getPath();
         int lastSlash = path.lastIndexOf('/');
         if (lastSlash < 0) {
-           uriBuilder.setPath("");
+            uriBuilder.setPath("");
         } else {
-            uriBuilder.setPath(path.substring(0, lastSlash+1));
+            uriBuilder.setPath(path.substring(0, lastSlash + 1));
         }
         return uriBuilder.build().toString();
     }

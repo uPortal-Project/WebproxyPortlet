@@ -32,22 +32,43 @@
         <cas.version>3.2.1</cas.version>
         <jackson.version>1.9.4</jackson.version>
         <jstl.version>1.1.2</jstl.version>
-        <log4j.version>1.2.14</log4j.version>
         <junit.version>4.10</junit.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-logging.version>1.1.1</commons-logging.version>
         <portlet-api.version>2.0</portlet-api.version>
         <resource-server.version>1.0.23</resource-server.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.version>3.1.3.RELEASE</spring.version>
+        <slf4j.version>1.7.2</slf4j.version>
+        <logback.version>1.0.9</logback.version>
+        <mockito.version>1.9.5</mockito.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons-logging.version}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version> 
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.portlet</groupId>
@@ -71,11 +92,6 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -110,7 +126,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>1.9.0</version>
+                <version>${mockito.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -133,17 +149,50 @@
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            
+            <dependency>
                 <groupId>taglibs</groupId>
                 <artifactId>standard</artifactId>
                 <version>${jstl.version}</version>
             </dependency>
+                        
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <exclusions>
+              <exclusion>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+              </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+         </dependency>
+         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.portlet</groupId>
@@ -165,12 +214,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+            <exclusions>
+              <exclusion>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -183,10 +234,22 @@
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-core</artifactId>
+            <exclusions>
+              <exclusion>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jasig.resourceserver</groupId>
             <artifactId>resource-server-utils</artifactId>
+            <exclusions>
+              <exclusion>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -241,7 +304,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.2.1</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <localCheckout>true</localCheckout>
@@ -252,6 +314,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.13</version>
                 <configuration>
                     <systemproperties>
                         <property>
@@ -275,6 +338,13 @@
                                 <requireJavaVersion>
                                     <version>1.6</version>
                                 </requireJavaVersion>
+                                <bannedDependencies>
+                                   <excludes>
+                                      <exclude>commons-logging:commons-logging</exclude>
+                                      <exclude>commons-logging:commons-logging-api</exclude>
+                                      <exclude>log4j:log4j</exclude>
+                                   </excludes>
+                              </bannedDependencies>
                             </rules>
                         </configuration>
                     </execution>
@@ -346,10 +416,10 @@
                         <artifactId>maven-uportal-plugin</artifactId>
                         <groupId>org.jasig.portal</groupId>
                         <configuration>
-                            <contextName>${pom.artifactId}</contextName>
-                            <artifactId>${pom.artifactId}</artifactId>
-                            <artifactGroupId>${pom.groupId}</artifactGroupId>
-                            <artifactVersion>${pom.version}</artifactVersion>
+                            <contextName>${project.artifactId}</contextName>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <artifactGroupId>${project.groupId}</artifactGroupId>
+                            <artifactVersion>${project.version}</artifactVersion>
                             <artifactClassifier>localdev</artifactClassifier>
                             <removeExistingDirectories>true</removeExistingDirectories>
                             <extractWars>true</extractWars>

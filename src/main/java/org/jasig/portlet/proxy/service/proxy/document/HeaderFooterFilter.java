@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  * 
  * @author Jen Bourey
  */
-@Service("contentWrappingFilter")
+@Service("headerFooterFilter")
 public class HeaderFooterFilter implements IDocumentFilter {
 
     public static final String HEADER_KEY = "headerHtml";

@@ -110,11 +110,6 @@
             <constructor-arg index="0" value="${cas.server.base.url}" />
     </bean>
     
-    <!-- CAS Proxy service bean -->
-    <bean id="casTicketService" class="org.jasig.portlet.cas.CASProxyTicketServiceUserInfoImpl"
-            p:serviceUrl="${portal.server.base.url}/${portlet.context}" 
-            p:ticketValidator-ref="ticketValidator"/>
-    
     <bean id="proxyGrantingTicketStorage" 
             class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>
 

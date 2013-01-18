@@ -21,9 +21,9 @@ package org.jasig.portlet.proxy.service.web;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ import java.io.IOException;
 
 @Service("httpContentService")
 public class CachingHttpContentServiceImpl extends HttpContentServiceImpl {
-    private static final Log LOG = LogFactory.getLog(CachingHttpContentServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CachingHttpContentServiceImpl.class);
 
     private Cache cache;
 
@@ -55,9 +55,8 @@ public class CachingHttpContentServiceImpl extends HttpContentServiceImpl {
         String cacheKey = proxyRequest.getProxiedLocation();
         Element cachedElement = cache.get(cacheKey);
         if (cachedElement == null) {
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Cache miss for cacheKey:  " + cacheKey);
-            }
+            LOG.debug("Cache miss for cacheKey: {}", cacheKey);
+            
             response = super.getContent(proxyRequest, request, false);
             try {
                 response.setContent(new ByteArrayInputStream(IOUtils.toByteArray(response.getContent())));
@@ -67,9 +66,7 @@ public class CachingHttpContentServiceImpl extends HttpContentServiceImpl {
                 LOG.error("Exception retrieving remote content", ioexception);
             }
         } else {
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Cache hit for cacheKey:  " + cacheKey);
-            }
+            LOG.debug("Cache hit for cacheKey: {}" , cacheKey);
             response = (GenericContentResponseImpl)cachedElement.getValue();
             try {
                 response.getContent().reset();

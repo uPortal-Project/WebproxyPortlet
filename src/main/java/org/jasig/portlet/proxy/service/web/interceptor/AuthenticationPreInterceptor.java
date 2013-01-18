@@ -23,6 +23,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.portlet.util.PortletUtils;
 
 /**
@@ -35,6 +37,8 @@ import org.springframework.web.portlet.util.PortletUtils;
  */
 public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    
 	public static final String AUTHENTICATION_TIMEOUT_KEY = "authenticationTimeout";
 	public static final String AUTHENTICATION_TIMESTAMP_KEY = "authenticationTimestamp";
 	

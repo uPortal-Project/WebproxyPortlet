@@ -48,7 +48,7 @@
     <appender-ref ref="FILE"/>
   </logger>
 
-  <logger name="org..hibernate.engine.loading" additivity="false" level="WARN">
+  <logger name="org.hibernate.engine.loading" additivity="false" level="WARN">
     <appender-ref ref="FILE"/>
   </logger>
 

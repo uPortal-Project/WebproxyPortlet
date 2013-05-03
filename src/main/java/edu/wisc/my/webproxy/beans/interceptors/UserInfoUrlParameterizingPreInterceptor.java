@@ -64,17 +64,17 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import edu.wisc.my.webproxy.beans.http.Request;
 
-public class UserInfoUrlParameterizingPreInterceptor implements PreInterceptor {
-
-    private final Log log = LogFactory.getLog(getClass());
+/**
+ * Performs token replacement injecting user attributes on the URL String before 
+ * the proxy request.  For example, 'http://my.university.edu/service/{username}' 
+ * becomes 'http://my.university.edu/service/jdoe' for the jdoe user.
+ * 
+ * @author awills
+ */
+public class UserInfoUrlParameterizingPreInterceptor extends UserInfoParameterizingPreInterceptor {
 
     public void intercept(RenderRequest req, RenderResponse res, Request httpReq) {
         updateUri(req, httpReq);
@@ -84,26 +84,15 @@ public class UserInfoUrlParameterizingPreInterceptor implements PreInterceptor {
         updateUri(req, httpReq);
     }
 
-    public void intercept(HttpServletRequest req, HttpServletResponse res, Request httpReq) {
-        log.warn("Invoking intercept() with HttpServletRequest/HttpServletResponse;  " +
-        		"URL parameters cannot be rewritten since there is no access to the " +
-        		"PortletRequest.USER_INFO map.");
-        /*
-         * Nothing we can do here...
-         */
-    }
-    
     /*
      * Implementation
      */
-    
-    private void updateUri(PortletRequest req, Request httpResp) {
-        @SuppressWarnings("unchecked")
-        Map<String,String> userInfo = (Map<String,String>) req.getAttribute(PortletRequest.USER_INFO);
+
+    private void updateUri(final PortletRequest req, final Request httpResp) {
         String uri = httpResp.getUrl();
         log.debug("Supplied URL:  " + uri);
         try {
-            String newUri = injectUriParameters(uri, userInfo);
+            String newUri = injectUriParameters(req, uri);
             log.debug("URL after processing parameters:  " + newUri);
             httpResp.setUrl(newUri);
         } catch (UnsupportedEncodingException e) {
@@ -111,11 +100,11 @@ public class UserInfoUrlParameterizingPreInterceptor implements PreInterceptor {
         }
     }
 
-    private String injectUriParameters(String uri, Map<String, String> params) throws UnsupportedEncodingException {
+    private String injectUriParameters(final PortletRequest req, String uri) throws UnsupportedEncodingException {
 
         String requestUri = null;
         String queryString = "";  // default
-        
+
         final int queryStringBegin = uri.indexOf("?");
         if (queryStringBegin == -1) {
             // Simple case -- no querystring
@@ -126,30 +115,11 @@ public class UserInfoUrlParameterizingPreInterceptor implements PreInterceptor {
             queryString = uri.substring(queryStringBegin);  // will already contain the '?' character
         }
 
-        // Inject requestUri params
-        for (Map.Entry<String,String> y : params.entrySet()) {
-            final String token = "{" + y.getKey() + "}";
-            final String value = y.getValue();
-            final String inject = URLEncoder.encode(value, "UTF-8");
-            while(requestUri.contains(token)) {
-                // Don't use String.replaceAll b/c token looks like an illegal regex
-                requestUri = requestUri.replace(token, inject);
-            }
-        }
-        
-        // Inject queryString params
-        for (Map.Entry<String,String> y : params.entrySet()) {
-            final String paramName = y.getKey();
-            final String token = "{" + paramName + "}";
-            if (queryString.contains(token)) {
-                final String inject = URLEncoder.encode(paramName, "UTF-8") + 
-                        "=" + URLEncoder.encode(y.getValue(), "UTF-8");
-                queryString = queryString.replace(token, inject);
-            }
-        }
-        
+        requestUri = this.resolveTokens(req, requestUri, Strategy.REPLACE);
+        queryString = this.resolveTokens(req, queryString, Strategy.EXPAND);
+
         return requestUri + queryString;
-        
+
     }
-    
+
 }

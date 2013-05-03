@@ -194,6 +194,20 @@
             <artifactId>delegated-saml-authentication</artifactId>
             <version>1.1.2</version>
             <exclusions>
+                <!-- The 3 following are broken;  bring them in as non-trasitive -->
+                <exclusion>
+                    <groupId>org.apache.xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xerces</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>xmltooling</artifactId>
+                </exclusion>
+                <!-- /End broken -->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl-over-slf4j</artifactId>
@@ -207,6 +221,29 @@
                     <artifactId>jul-to-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- Replacing 3 broken transitive dependencies above -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>xmltooling</artifactId>
+            <version>1.3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>dom3-xml-apis</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- /End replace broken transitives -->
+        <!-- Also need to override the following version -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -350,6 +387,20 @@
             <groupId>org.jasig.service</groupId>
             <artifactId>delegated-saml-authentication</artifactId>
         </dependency>
+        <!-- Replacing 3 broken transitive dependencies above -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>xmltooling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+        <!-- dependency>
+            <groupId>xerces</groupId>
+            <artifactId>dom3-xml-apis</artifactId>
+        </dependency-->
+        <!-- /End replace broken transitives -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -480,8 +531,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
             <plugin>

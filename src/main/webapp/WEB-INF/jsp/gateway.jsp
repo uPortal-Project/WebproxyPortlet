@@ -21,19 +21,35 @@
 
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <portlet:resourceURL var="requestsUrl" escapeXml="false"/>
+<portlet:resourceURL id="showTargetInNewWindow" var="newPageUrl" escapeXml="false"/>
 <c:set var="n"><portlet:namespace/></c:set>
 
 <div id="${n}">
     <c:forEach items="${ entries }" var="entry">
         <p class="entry">
-            
-            <a href="javascript:;" target="_blank">
+        <c:set var="validation" value="${validations.get(entry.name)}" />
+        <c:if test="${validation == true}">      
+            <a href="javascript:;" target="_self">
                 <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>${ entry.name }
             </a>
+        </c:if>
+        <c:if test="${validation == false}">      
+            <a href="javascript:;" target="_self"></a>
+            <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>${ entry.name }
+            <spring:message code="portlet.preferences.missing"/>
+        </c:if>
         </p>
     </c:forEach>
+    
 </div>
 
+
+<div class="edit-link">
+    <portlet:renderURL var="editUrl"  portletMode="EDIT" />
+    <a href="${editUrl}"><spring:message code="edit.proxy.show.preferences.link"/></a>
+</div>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
 <script type="text/javascript">
     up.jQuery(function () {
     	
@@ -41,51 +57,25 @@
     	
     	$(document).ready(function () {
     		
-            var handleRequest = function (contentRequests, index) {
-            	var contentRequest = contentRequests[index];
-            	// final request
-            	if (index == contentRequests.length-1) {
-                    if (contentRequest.form) {
-                        var form = $(document.createElement("form"))
-                            .attr("action", contentRequest.proxiedLocation)
-                            .attr("method", contentRequest.method);
-                        
-                        $.each(contentRequest.parameters, function (key, values) {
-                            $(values).each(function (idx, value) {
-                                form.append($(document.createElement("input")).attr("name", key).attr("value", value));
-                            });
-                        });
-                        console.log(form);
-
-                        form.submit();
-                    } else {
-                        window.location = contentRequest.proxiedLocation;
-                    }
-            	}
-            	
-            	else if (contentRequest.form) {
-                	// TODO
-                } else {
-                    var iframe = $(document.createElement("iframe"));
-                    iframe.load(function () { 
-                        handleRequest(contentRequests, index+1);
-                    });
-                    iframe.attr("src", contentRequest.proxiedLocation);
-                }
-            };
-            
-    		$("#${n} .entry a").each(function (idx, link) {
-    			$(link).click(function () {
-    				$.get(
-						"${ requestsUrl }", 
-						{ index: idx }, 
-						function (data) { 
-							var contentRequests = data.contentRequests;
-							handleRequest(contentRequests, 0);
-						}, 
-						"json"
-    			    );
-    			});
+            $("#${n} .entry a").each(function (idx, link) {
+	            $(link).click(function () {
+   	                <c:choose>
+   	                	<c:when test="${openInNewPage}">
+            	            window.open("${newPageUrl}?index="+idx);
+                	    </c:when>
+                    	<c:otherwise>
+                        	$.get(
+                            	"${ requestsUrl }",
+                            	{ index: idx },
+                            	function (data) {
+                            	    var contentRequests = data.contentRequests;
+                        	        webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
+                    	            },
+                	            "json"
+            	                );
+        	            </c:otherwise>
+    	            </c:choose>
+	            });
     		});
     	});
     });

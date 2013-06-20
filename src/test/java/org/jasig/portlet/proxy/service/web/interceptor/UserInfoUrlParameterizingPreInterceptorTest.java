@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
+import org.jasig.portlet.proxy.service.IFormField;
+import org.jasig.portlet.proxy.service.web.FormFieldImpl;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +39,7 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 	UserInfoUrlParameterizingPreInterceptor preprocessor;
 	@Mock PortletRequest portletRequest;
 	HttpContentRequestImpl proxyRequest;
-	Map<String, String[]> parameters;
+	Map<String, IFormField> parameters;
 	Map<String, String> userInfoMap;
 	
 	@Before
@@ -46,7 +48,7 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 		
 		preprocessor = new UserInfoUrlParameterizingPreInterceptor();
 		
-		parameters = new HashMap<String, String[]>();
+		parameters = new HashMap<String, IFormField>();
 		userInfoMap = new HashMap<String, String>();
 		
 		when(portletRequest.getAttribute(PortletRequest.USER_INFO)).thenReturn(userInfoMap);
@@ -60,11 +62,12 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 
 	@Test
 	public void testNoChange() {
-		parameters.put("test", new String[]{"somevalue"});
+		IFormField formField = new FormFieldImpl("test", new String[]{"somevalue"});
+		parameters.put("test", formField);
 		
 		preprocessor.intercept(proxyRequest, portletRequest);
 		assertEquals("http://somewhere.com/rest/test/id", proxyRequest.getProxiedLocation());
-		assertEquals("somevalue", proxyRequest.getParameters().get("test")[0]);
+		assertEquals("somevalue", proxyRequest.getParameters().get("test").getValues()[0]);
 	}
 
 	@Test
@@ -78,11 +81,12 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 	
 	@Test
 	public void testReplaceParamter() {
-		parameters.put("param", new String[]{"val1", "{test}"});
+		IFormField formField = new FormFieldImpl("param", new String[]{"val1", "{test}"});
+		parameters.put("param", formField);
 		preprocessor.intercept(proxyRequest, portletRequest);
 		
-		assertEquals("val1", proxyRequest.getParameters().get("param")[0]);
-		assertEquals("somevalue", proxyRequest.getParameters().get("param")[1]);
+		assertEquals("val1", proxyRequest.getParameters().get("param").getValues()[0]);
+		assertEquals("somevalue", proxyRequest.getParameters().get("param").getValues()[1]);
 	}
 
 }

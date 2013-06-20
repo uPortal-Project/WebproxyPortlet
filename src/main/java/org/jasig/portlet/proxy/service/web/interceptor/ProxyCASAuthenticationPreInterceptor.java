@@ -115,4 +115,10 @@ public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInter
 
     }
 
+	@Override
+	public boolean validate(HttpContentRequestImpl proxyRequest,
+			PortletRequest portletRequest) {
+		return true;
+	}
+
 }

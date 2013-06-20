@@ -41,4 +41,15 @@ public interface IPreInterceptor {
 	 */
     public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest);
     
+    /**
+     * Confirm that the proxyRequest has all of the information required to execute.  Refer to the
+     * specific implementation for details.
+     * 
+     * @param proxyRequest
+     * @param portletRequest
+     * @return true if the proxyRequest has all of the necessary information to be successfully run,
+     * otherwise false
+     */
+    public boolean validate(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest);
+    
 }

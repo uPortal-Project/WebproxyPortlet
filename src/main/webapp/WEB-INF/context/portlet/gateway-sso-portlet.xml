@@ -1,0 +1,116 @@
+<!--
+
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:component-scan base-package="org.jasig.portlet.proxy.mvc.portlet.gateway" />
+    <context:annotation-config />
+
+    <bean
+            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:configuration.properties" />
+    </bean>
+    <util:list id="gatewayEntries" scope="session">
+        <!--
+            Gateway SSO allows the user to sign onto remote systems through capture of credentials and
+            replay of those credentials on remote systems.  Each bean in the contentRequest list is for a 
+            different system.  The parameters property lists the fields that will be added to a form and then
+            submitted to the proxiedLocation in order to authenticate.  The formFieldImpl class contains three
+            fields: the field name, value, and whether the field is secured.  Secured is only relevant at this
+            point for the portlet preferences interceptor, since those preferences must be stored in the database
+            and are presented to the user in an HTML password input field instead of an HTML text input field.
+
+            The following bean shows two interceptors. Refer to those two classes for the format of values that
+            will be substituted.
+
+            userInfoUrlParameterizingPreInterceptor - will replace parameters with information from the portal's userInfo.
+
+            userPreferencesPreInterceptor - will replace parameters with information stored in portal preferences
+            for the current user.
+
+         -->
+        <!--
+        <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="MyZimbra"
+              p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png">
+
+            <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.ExternalLogic interface.  They
+                can add form fields based on custom logic, or modifying the url to submit to. ->
+            <property name="authenticationFormModifier">
+                <util:list>
+                    <bean id="step1" class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifierodifier"
+                          scope="session" p:fieldName="proxiedLocation"/>
+                </util:list>
+            </property>
+
+            <property name="contentRequests">
+                <util:map>
+                    <entry>
+                        <key>
+                            <bean class="org.jasig.portlet.proxy.service.web.HttpContentRequestImpl"
+                                  p:proxiedLocation="https://zimbra.unicon.net/zimbra/"
+                                  p:form="true" p:method="POST">
+                                <property name="parameters">
+                                    <util:map>
+                                        <entry>
+                                            <key><value>username</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="username" p:value="{prefs.myzimbra.uid}"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>password</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="password" p:value="{prefs.myzimbra.pwd}" p:secured="true"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>loginOp</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="loginOp" p:value="login"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>client</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="client" p:value="preferred"/>
+                                        </entry>
+                                    </util:map>
+                                </property>
+                            </bean>
+                        </key>
+                        <util:list>
+                            <value>userInfoUrlParameterizingPreInterceptor</value>
+                            <value>UserPreferencesPreInterceptor</value>
+                        </util:list>
+                    </entry>
+                </util:map>
+            </property>
+        </bean>
+        -->
+
+    </util:list>
+    <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>
+    </bean>
+
+</beans>

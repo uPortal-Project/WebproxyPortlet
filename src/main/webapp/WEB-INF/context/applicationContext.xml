@@ -29,6 +29,8 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <context:property-placeholder location="classpath:configuration.properties"/>
+
     <context:component-scan base-package="org.jasig.portlet.proxy.service"/>
     <context:annotation-config/>
 
@@ -45,9 +47,11 @@
         <property name="location" value="classpath:configuration.properties" />
     </bean>
 
+    <util:properties id="props" location="classpath:configuration.properties"/>
+
     <!-- Message source for this context, loaded from localized "messages_xx" files -->
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
-        p:basenames="i18n/messages" p:useCodeAsDefaultMessage="true"/>
+        p:basenames="messages" p:useCodeAsDefaultMessage="true"/>
 
     <bean class="org.apache.http.impl.conn.PoolingClientConnectionManager"
         p:maxTotal="50" p:defaultMaxPerRoute="10"/>
@@ -128,6 +132,16 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
+        <property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
+    </bean>
+
+    <!-- CHANGE THE VALUE OF THE PASSWORD BEFORE USING THIS SERVICE!!  -->
+    <bean id="stringEncryptionService" class="org.jasig.portlet.proxy.security.JasyptPBEStringEncryptionServiceImpl">
+        <property name="stringEncryptor">
+            <bean class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+                 <property name="password" value="${encryption.salt}"/>
+            </bean>
+        </property>
     </bean>
 
 </beans>

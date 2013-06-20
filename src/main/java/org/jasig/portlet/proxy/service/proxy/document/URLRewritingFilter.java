@@ -54,7 +54,7 @@ public class URLRewritingFilter implements IDocumentFilter {
     public final static String REWRITTEN_URLS_KEY = "rewrittenUrls";
     public final static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
 
-    protected final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
+    protected static final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
     protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> actionElements;

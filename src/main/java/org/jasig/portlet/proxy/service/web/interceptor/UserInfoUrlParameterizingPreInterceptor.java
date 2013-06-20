@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 
+import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +67,12 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 				// if any parameter values associated with the request contain
 				// {attributeName}, replace that string in the parameter with
 				// the attribute's value
-				for (Map.Entry<String, String[]> param : proxyRequest.getParameters().entrySet()) {
-					final int length = param.getValue().length;
+				for (Map.Entry<String, IFormField> param : proxyRequest.getParameters().entrySet()) {
+					final int length = param.getValue().getValues().length;
 					for (int i = 0; i < length; i++) {
-						String value = param.getValue()[i];
+						String value = param.getValue().getValues()[i];
 						if (value.contains(token)) {
-							param.getValue()[i] = value.replaceAll("\\{".concat(key).concat("\\}"), userInfo.get(key));
+							param.getValue().getValues()[i] = value.replaceAll("\\{".concat(key).concat("\\}"), userInfo.get(key));
 						}
 					}
 					
@@ -85,6 +86,12 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 			log.error("Exception while encoding URL parameters", e);
 		}
 
+	}
+
+	@Override
+	public boolean validate(HttpContentRequestImpl proxyRequest,
+			PortletRequest portletRequest) {
+		return true;
 	}
 
 }

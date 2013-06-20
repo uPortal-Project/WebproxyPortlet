@@ -38,6 +38,7 @@
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
             <portlet-mode>config</portlet-mode>
         </supports>
         <portlet-info>
@@ -80,7 +81,31 @@
             <title>Json Portlet</title>
         </portlet-info>
     </portlet>
-    
+
+    <portlet>
+        <portlet-name>GatewayPortlet</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/context/portlet/gateway-sso-portlet.xml</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>WebProxy Portlet</title>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>openInNewPage</name>
+                <value>true</value>
+            </preference>
+        </portlet-preferences>
+    </portlet>
+
     <user-attribute>
         <description>CAS Proxy Ticket</description>
         <name>casProxyTicket</name>

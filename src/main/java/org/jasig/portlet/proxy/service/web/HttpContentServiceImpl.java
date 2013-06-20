@@ -46,6 +46,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 import org.jasig.portlet.proxy.service.IContentService;
+import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,12 +178,12 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         if (proxyRequest.isForm()) {
 
             // handle POST form request
-            final Map<String, String[]> params = proxyRequest.getParameters();
+            final Map<String, IFormField> params = proxyRequest.getParameters();
             if ("POST".equalsIgnoreCase(proxyRequest.getMethod())) {
 
                 final List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-                for (Map.Entry<String, String[]> param : params.entrySet()) {
-                    for (String value : param.getValue()) {
+                for (Map.Entry<String, IFormField> param : params.entrySet()) {
+                    for (String value : param.getValue().getValues()) {
                         if (value != null) {
                             pairs.add(new BasicNameValuePair(param.getKey(), value));
                         }
@@ -209,8 +210,8 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
 
                     // build a URL including any passed form parameters
                     final URIBuilder builder = new URIBuilder(proxyRequest.getProxiedLocation());
-                    for (Map.Entry<String, String[]> param : params.entrySet()) {
-                        for (String value : param.getValue()) {
+                    for (Map.Entry<String, IFormField> param : params.entrySet()) {
+                        for (String value : param.getValue().getValues()) {
                             builder.addParameter(param.getKey(), value);
                         }
                     }

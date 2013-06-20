@@ -18,10 +18,14 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
@@ -29,13 +33,16 @@ import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 public class GatewayEntry {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private String name;
 	private String iconUrl;
 	private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
+    private List<IAuthenticationFormModifier> authenticationFormModifier = new ArrayList<IAuthenticationFormModifier>();
+    private boolean requireSecure = true;
 
 	/**
-	 * Get the display text for this link.
+	 * Get the display text for this link (user-friendly system name)
 	 * 
 	 * @return
 	 */
@@ -44,7 +51,7 @@ public class GatewayEntry {
 	}
 
 	/**
-	 * Set the display text for this link.
+	 * Set the display text (user-friendly system name) for this link.
 	 * 
 	 * @param name
 	 */
@@ -90,5 +97,21 @@ public class GatewayEntry {
 	public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests) {
 		this.contentRequests = contentRequests;
 	}
+	
+    public List getAuthenticationFormModifier() {
+    	return this.authenticationFormModifier;
+    }
+    
+    public void setAuthenticationFormModifier(List authenticationFormModifier) {
+    	this.authenticationFormModifier = authenticationFormModifier;
+    }
+
+    public boolean isRequireSecure() {
+        return requireSecure;
+    }
+
+    public void setRequireSecure(boolean requireSecure) {
+        this.requireSecure = requireSecure;
+    }
 
 }

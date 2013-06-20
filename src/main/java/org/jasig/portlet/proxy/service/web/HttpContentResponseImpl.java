@@ -28,6 +28,8 @@ import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 
 public class HttpContentResponseImpl extends GenericContentResponseImpl implements Serializable {
 
+    private static final long serialVersionUID = 1L;  // To get rid of FindBugs complaints
+
 	private Map<String, String> headers = new HashMap<String, String>();
 
 	private transient HttpEntity entity;

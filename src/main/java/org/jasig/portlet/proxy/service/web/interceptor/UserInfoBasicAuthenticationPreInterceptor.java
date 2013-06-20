@@ -24,6 +24,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -57,6 +58,12 @@ public class UserInfoBasicAuthenticationPreInterceptor extends AbstractBasicAuth
 		// construct a credentials object using hte attributes
 		final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
 		return credentials;
+	}
+
+	@Override
+	public boolean validate(HttpContentRequestImpl proxyRequest,
+			PortletRequest portletRequest) {
+		return true;
 	}
 	
 }

@@ -20,63 +20,69 @@
 --%>
 
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/webproxy-mobile.css"/>" media="screen, projection"/>
 <portlet:resourceURL var="requestsUrl" escapeXml="false"/>
+<portlet:resourceURL id="showTargetInNewWindow" var="newPageUrl" escapeXml="false"/>
 <c:set var="n"><portlet:namespace/></c:set>
 
 <div id="${n}" class="portlet">
     <div class="portlet-content" data-role="content">
         <ul data-role="listview">
             <c:forEach items="${ entries }" var="entry">
-                <li class="entry">                    
-                    <a href="javascript:;" target="_blank">
-                        <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
-                        <h3>${ entry.name }</h3>
-                    </a>
+                <li class="entry">
+                    <c:set var="validation" value="${validations.get(entry.name)}" />
+                    <c:if test="${validation == true}">
+                        <a href="javascript:;" target="_self">
+                            <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
+                            <h3>${ entry.name }</h3>
+                        </a>
+                    </c:if>
+                    <c:if test="${validation == false}">
+                        <div class="ui-helper-clearfix nonbutton">
+                            <a href="javascript:;" target="_self"></a>
+                            <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
+                            <h3>${ entry.name } <spring:message code="portlet.preferences.missing"/></h3>
+                        </div>
+                    </c:if>
                 </li>
             </c:forEach>
         </ul>
     </div>
-</div>
 
-<script type="text/javascript">
-    up.jQuery(function () {
-        
-        var $ = up.jQuery;
-        
-        $(document).ready(function () {
-            
-            var finalRequest = function (contentRequest) {
-                if (contentRequest.form) {
-                    var form = $(document.createElement("form"))
-                        .attr("action", contentRequest.proxiedLocation)
-                        .attr("method", contentRequest.method);
-                    
-                    $.each(contentRequest.parameters, function (key, values) {
-                        $(values).each(function (idx, value) {
-                            form.append($(document.createElement("input")).attr("name", key).attr("value", value));
-                        });
+
+    <div class="edit-link">
+        <portlet:renderURL var="editUrl"  portletMode="EDIT" />
+        <a href="${editUrl}"><spring:message code="edit.proxy.show.preferences.link"/></a>
+    </div>
+
+    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
+    <script type="text/javascript">
+        up.jQuery(function () {
+
+            var $ = up.jQuery;
+
+            $(document).ready(function () {
+
+                $("#${n} .entry a").each(function (idx, link) {
+                    $(link).click(function () {
+                        <c:choose>
+                        <c:when test="${openInNewPage}">
+                        window.open("${newPageUrl}?index="+idx);
+                        </c:when>
+                        <c:otherwise>
+                        $.get(
+                                "${ requestsUrl }",
+                                { index: idx },
+                                function (data) {
+                                    var contentRequests = data.contentRequests;
+                                    webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
+                                },
+                                "json"
+                        );
+                        </c:otherwise>
+                        </c:choose>
                     });
-                    
-                    form.submit();
-                } else {
-                    window.location = contentRequest.proxiedLocation;
-                }
-            };
-            
-            $("#${n} .entry a").each(function (idx, link) {
-                $(link).click(function () {
-                    $.get(
-                        "${ requestsUrl }", 
-                        { index: idx }, 
-                        function (data) { 
-                            var contentRequests = data.contentRequests;
-                            // TODO: handle multiple requests
-                            finalRequest(contentRequests[0]);
-                        }, 
-                        "json"
-                    );
                 });
             });
         });
-    });
-</script>
+    </script>

@@ -26,15 +26,15 @@ import org.slf4j.LoggerFactory;
 
 public class ThemeNameViewSelectorImpl implements IViewSelector {
     
-    protected static final String THEME_NAME_PROPERTY = "themeName";
-    protected static final String MOBILE_THEMES_KEY = "mobileThemes";
-    protected static final String[] MOBILE_THEMES_DEFAULT = new String[]{ "UniversalityMobile" };
+    private static final String THEME_NAME_PROPERTY = "themeName";
+    private static final String MOBILE_THEMES_KEY = "mobileThemes";
+    private String[] mobileThemesDefault = new String[]{ "UniversalityMobile" };
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     public boolean isMobile(PortletRequest request) {
         
-        String[] mobileThemes = request.getPreferences().getValues(MOBILE_THEMES_KEY, MOBILE_THEMES_DEFAULT);
+        String[] mobileThemes = request.getPreferences().getValues(MOBILE_THEMES_KEY, mobileThemesDefault);
         String themeName = request.getProperty(THEME_NAME_PROPERTY);
         
         // if no theme name can be found, just assume the request is for a 
@@ -57,4 +57,11 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
         return false;
     }
 
+    public String[] getMobileThemesDefault() {
+        return mobileThemesDefault;
+    }
+
+    public void setMobileThemesDefault(String[] mobileThemesDefault) {
+        this.mobileThemesDefault = mobileThemesDefault;
+    }
 }

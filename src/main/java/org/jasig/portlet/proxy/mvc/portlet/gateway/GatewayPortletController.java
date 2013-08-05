@@ -103,10 +103,21 @@ public class GatewayPortletController {
 
     @ResourceMapping(value = "showTargetInNewWindow")
     public String showTargetInNewWindow(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model,
-                                              @RequestParam("index") int index) throws IOException {
-        prepareGatewayResponse(portletRequest, portletResponse, index, model);
+                                        @RequestParam("index") int index) throws IOException {
+        model.addAttribute("index", index);
         return "gatewayNewPage";
     }
+
+    // Removed because there were concerns that browsers might be more likely to cache html pages vs. Ajax requests
+    // even though response requested no caching of pages.
+    // For optimal mobile performance, can switch mobileGateway.jsp and possibly gateway.jsp to use this page instead
+    // of ajax-requesting page.
+//    @ResourceMapping(value = "showTargetInNewWindowNoAjax")
+//    public String showTargetInNewWindowNoAjax(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model,
+//                                              @RequestParam("index") int index) throws IOException {
+//        prepareGatewayResponse(portletRequest, portletResponse, index, model);
+//        return "gatewayNewPageNoAjax";
+//    }
 
     private void prepareGatewayResponse(ResourceRequest portletRequest, ResourceResponse portletResponse, int index, Model model) throws IOException {
         // get the requested gateway link entry from the list configured for

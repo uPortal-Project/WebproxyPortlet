@@ -22,29 +22,29 @@
 <portlet:resourceURL var="requestsUrl" escapeXml="false"/>
 <c:set var="n"><portlet:namespace/></c:set>
 
+<!-- Not used.  See comments in GatewayPortletController.java -->
+
+<!-- Do not use an ajax request like gateway.jsp because we don't want to download jquery or perform the extra
+     request, especially on a mobile device.  This page could be rewritten to use javascript without jquery and
+     thus not incur as large a burden in a mobile environment. -->
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gateway</title>
-
-    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-1.8.3.min.js" ></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $.get(
-                    "${ requestsUrl }",
-                    { index: ${index} },
-                    function (data) {
-                        var contentRequests = data.contentRequests;
-                        webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
-                    },
-                    "json"
-            );
-        });
-    </script>
+    <title>Gateway Launch page</title>
 </head>
 
 <body>
+    <form id="gatewayForm" action="${contentRequests[0].proxiedLocation}" method="${contentRequests[0].method}">
+        <c:forEach items="${contentRequests[0].parameters}" var="formField">
+            <input name="${formField.value.name}" value="${formField.value.value}" type="hidden"/>
+        </c:forEach>
+    </form>
+
+<script type="text/javascript">
+    var form = document.getElementById("gatewayForm");
+    form.submit();
+</script>
+
 </body>
 </html>

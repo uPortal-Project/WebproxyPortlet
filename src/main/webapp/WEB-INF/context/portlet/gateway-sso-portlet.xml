@@ -57,13 +57,16 @@
               p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png">
 
             <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.ExternalLogic interface.  They
-                can add form fields based on custom logic, or modifying the url to submit to. ->
-            <property name="authenticationFormModifier">
+                can add form fields based on custom logic, or modifying the url to submit to.
+                This form modifier is not to be uncommented for Zimbra example
+             ->
+            <!- <property name="authenticationFormModifier">
                 <util:list>
-                    <bean id="step1" class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifierodifier"
+                    <bean id="step1" class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifier"
                           scope="session" p:fieldName="proxiedLocation"/>
                 </util:list>
             </property>
+             ->
 
             <property name="contentRequests">
                 <util:map>

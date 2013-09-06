@@ -25,26 +25,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gateway</title>
+  <title>Gateway</title>
 
-    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-1.8.3.min.js" ></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
+  <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-1.8.3.min.js" ></script>
+  <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
 
-            $.get(
-                    "${ requestsUrl }",
-                    { index: ${index} },
-                    function (data) {
-                        var contentRequests = data.contentRequests;
-                        webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
-                    },
-                    "json"
-            );
-        });
-    </script>
+      $( document ).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+        $(".documentBody").html("<p>An Error occurred.  See stack trace in log file for more information</p>" + jqXHR.responseText);
+      });
+
+      $.get(
+          "${ requestsUrl }",
+          { index: ${index} },
+          function (data) {
+            var contentRequests = data.contentRequests;
+            webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
+          },
+          "json"
+      );
+    });
+  </script>
 </head>
 
-<body>
+<body class="documentBody">
 </body>
 </html>

@@ -34,26 +34,7 @@
     <context:component-scan base-package="org.jasig.portlet.proxy.service"/>
     <context:annotation-config/>
 
-    <bean id="exceptionResolver" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver">
-        <!-- 
-         | Always declare an 'exceptionResolver' bean with a 'defaultErrorView' 
-         | because, in addition to other uses, it protects the portlet from 
-         | failing when a bad request (due to a bug or malicious user) doesn't 
-         | match any declared @RequestMapping.  When this happens, the portlet 
-         | throws an Exception and takes itself out of service until a portal 
-         | restart.  THIS CONDITION AFFECTS ALL USERS!
-         +-->
-         <property name="exceptionMappings">
-            <props>
-              <!-- Exception thrown when an error is raised during initialization, such as when 
-                   the encryption password is not set for password based encryptor  -->
-              <prop key="org.jasig.portlet.proxy.security.StringEncryptionException">pswEncError</prop>
-            </props>
-        </property>
-        <property name="defaultErrorView" value="error"/>
-    </bean>
-
-    <!-- EHCache Configuration -->
+  <!-- EHCache Configuration -->
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
           p:configLocation="classpath:ehcache.xml"/>
 
@@ -67,10 +48,6 @@
     </bean>
 
     <util:properties id="props" location="classpath:configuration.properties"/>
-
-    <!-- Message source for this context, loaded from localized "messages_xx" files -->
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
-        p:basenames="messages" p:useCodeAsDefaultMessage="true"/>
 
     <bean class="org.apache.http.impl.conn.PoolingClientConnectionManager"
         p:maxTotal="50" p:defaultMaxPerRoute="10"/>
@@ -113,9 +90,63 @@
         </entry>
     </util:map>
 
-    <!-- 
-     | CAS PROXY AUTHENTICATION CONFIGURATION
+  <!-- CHANGE THE VALUE OF THE PASSWORD IN configuration.properties BEFORE USING THIS SERVICE!!  -->
+  <bean id="stringEncryptionService" class="org.jasig.portlet.proxy.security.JasyptPBEStringEncryptionServiceImpl">
+    <property name="stringEncryptor">
+      <bean class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+        <property name="password" value="${encryption.salt}"/>
+      </bean>
+    </property>
+  </bean>
+
+  <!--
+   | Common web config normally specified in *-portlet.xml rather than root ApplicationContext.
+     Specified here to avoid duplication in each *-portlet.xml file and multiple instantiations.
+   +-->
+
+  <!-- Message source for this context, loaded from localized "messages_xx" files -->
+  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"
+        p:basenames="messages" p:useCodeAsDefaultMessage="true"/>
+
+  <bean id="viewSelector" class="org.jasig.portlet.proxy.mvc.ThemeNameViewSelectorImpl"/>
+
+  <!--
+   | View resolvers, look for a named view bean before going to JSP resolution
+   +-->
+  <bean class="org.springframework.web.servlet.view.XmlViewResolver"
+        p:order="0" p:location="/WEB-INF/context/views.xml"/>
+
+  <!-- Default View Resolver -->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="cache" value="${viewResCache}"/>
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+    <property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
+  </bean>
+
+  <bean id="exceptionResolver" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver">
+    <!--
+     | Always declare an 'exceptionResolver' bean with a 'defaultErrorView'
+     | because, in addition to other uses, it protects the portlet from
+     | failing when a bad request (due to a bug or malicious user) doesn't
+     | match any declared @RequestMapping.  When this happens, the portlet
+     | throws an Exception and takes itself out of service until a portal
+     | restart.  THIS CONDITION AFFECTS ALL USERS!
      +-->
+    <property name="exceptionMappings">
+      <props>
+        <!-- Exception thrown when an error is raised during initialization, such as when
+             the encryption password is not set for password based encryptor  -->
+        <prop key="org.jasig.portlet.proxy.security.StringEncryptionException">pswEncError</prop>
+      </props>
+    </property>
+    <property name="defaultErrorView" value="error"/>
+  </bean>
+
+  <!--
+   | CAS PROXY AUTHENTICATION CONFIGURATION
+   +-->
     
     <!-- Ticket validation filter -->
     <bean id="ticketValidationFilter" 
@@ -136,31 +167,6 @@
     <bean id="proxyGrantingTicketStorage" 
             class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>
 
-
-    <bean id="viewSelector" class="org.jasig.portlet.proxy.mvc.ThemeNameViewSelectorImpl"/>
-
-    <!-- 
-     | View resolvers, look for a named view bean before going to JSP resolution
-     +-->
-    <bean class="org.springframework.web.servlet.view.XmlViewResolver"
-            p:order="0" p:location="/WEB-INF/context/views.xml"/>
-
-    <!-- Default View Resolver -->
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="cache" value="${viewResCache}"/>
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/jsp/"/>
-        <property name="suffix" value=".jsp"/>
-        <property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
-    </bean>
-
-    <!-- CHANGE THE VALUE OF THE PASSWORD BEFORE USING THIS SERVICE!!  -->
-    <bean id="stringEncryptionService" class="org.jasig.portlet.proxy.security.JasyptPBEStringEncryptionServiceImpl">
-        <property name="stringEncryptor">
-            <bean class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
-                 <property name="password" value="${encryption.salt}"/>
-            </bean>
-        </property>
-    </bean>
+  <!-- End of common config -->
 
 </beans>

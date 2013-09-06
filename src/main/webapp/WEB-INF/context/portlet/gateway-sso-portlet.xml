@@ -56,9 +56,11 @@
         <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="MyZimbra"
               p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png">
 
-            <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.ExternalLogic interface.  They
+            <!- Beans in list must implement org.jasig.portlet.proxy.mvc.service.web.ExternalLogic interface.  They
                 can add form fields based on custom logic, or modifying the url to submit to.
-                This form modifier is not to be uncommented for Zimbra example
+                This form modifier serves as an example of what can be done and should not to be uncommented for
+                Zimbra because it is not applicable to Zimbra integration. Fieldname of 'proxiedLocation' allows
+                changing the url.  Other field names would be added to the form to submit.
              ->
             <!- <property name="authenticationFormModifier">
                 <util:list>

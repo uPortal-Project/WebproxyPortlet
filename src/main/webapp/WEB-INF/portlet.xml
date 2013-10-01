@@ -44,6 +44,26 @@
         <portlet-info>
             <title>WebProxy Portlet</title>
         </portlet-info>
+        <portlet-preferences>
+            <!-- The connection is attempted 5 times prior to stopping
+                 so the actual time before failure will be 5 times this setting.
+                 Suggested way of testing Connection Timeout is by hitting a
+                 domain with a port that is firewalled:
+                 ie. http://www.google.com:81 -->
+            <preference>
+                <name>httpClientConnectionTimeout</name>
+                <value>10000</value>
+            </preference>
+            <!-- Suggested way of testing Socket Timeout is by using a tool locally to connect
+                 but not respond.  Example tool: bane
+                 http://blog.danielwellman.com/2010/09/introducing-bane-a-test-harness-for-server-connections.html
+                 usage: $bane 10010 NeverRespond
+                 ie http://localhost:10010 -->
+            <preference>
+                <name>httpClientSocketTimeout</name>
+                <value>10000</value>
+            </preference>
+        </portlet-preferences>
     </portlet>
 
     <portlet>

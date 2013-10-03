@@ -28,7 +28,8 @@
 <%
     final PortletPreferences prefs = renderRequest.getPreferences(); 
 
-	final String httpTimeout         		= prefs.getValue(HttpClientConfigImpl.HTTP_TIMEOUT, "");
+	final String httpConnectionTimeout         		= prefs.getValue(HttpClientConfigImpl.HTTP_CONNECTION_TIMEOUT, "");
+    final String httpSocketTimeout              = prefs.getValue(HttpClientConfigImpl.HTTP_SOCKET_TIMEOUT, "");
     final boolean authEnable         		= new Boolean(prefs.getValue(HttpClientConfigImpl.AUTH_ENABLE, null)).booleanValue();
     final boolean sessionPersistenceEnable	= new Boolean(prefs.getValue(HttpClientConfigImpl.SESSION_PERSISTENCE_ENABLE, null)).booleanValue();
 	final String maxRedirects        		= prefs.getValue(HttpClientConfigImpl.MAX_REDIRECTS, "");
@@ -54,8 +55,11 @@
     final String[] staticParamNames  = prefs.getValues(HttpClientConfigImpl.STATIC_PARAM_NAMES, new String[] {});
 	final String[] staticParamValues = prefs.getValues(HttpClientConfigImpl.STATIC_PARAM_VALUES, new String[] {});
 %>
-<p>
-	HTTP Timeout (sec): <input type="text" name="<%=HttpClientConfigImpl.HTTP_TIMEOUT%>" value="<%=httpTimeout%>">
+<p title="Time To Wait For A Connection To Be Initiated Before Giving Up">
+	HTTP Connection Timeout (sec): <input type="text" name="<%=HttpClientConfigImpl.HTTP_CONNECTION_TIMEOUT%>" value="<%=httpConnectionTimeout%>" />
+</p>
+<p title="Time To Wait Between Socket Reads Before Giving Up(Already Connected)">
+    HTTP Socket Timeout (sec): <input type="text" name="<%=HttpClientConfigImpl.HTTP_SOCKET_TIMEOUT%>" value="<%=httpSocketTimeout%>" />
 </p>
 <p>
 	Maximum Redirects: <input type="text" name="<%=HttpClientConfigImpl.MAX_REDIRECTS%>" value="<%=maxRedirects%>">

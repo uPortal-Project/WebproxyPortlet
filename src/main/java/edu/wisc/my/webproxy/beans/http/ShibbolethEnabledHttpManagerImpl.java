@@ -128,13 +128,16 @@ public class ShibbolethEnabledHttpManagerImpl extends HttpManagerImpl {
     		}
 
     		this.logger.debug("Returning new Shibbolized HttpClient instance");
-    		return (DefaultHttpClient) samlSession.getHttpClient();
-    		
+    		DefaultHttpClient client = (DefaultHttpClient) samlSession.getHttpClient();
+    		client = setHttpClientTimeouts(request, client);
+    		return client;
         }
         
         // If the portlet is not using shibboleth authentication, call the 
         // parent method as usual.
-    	return super.createHttpClient(request);
+		DefaultHttpClient client = super.createHttpClient(request);
+		client = setHttpClientTimeouts(request, client);
+		return client;
 	}
 
 	/**

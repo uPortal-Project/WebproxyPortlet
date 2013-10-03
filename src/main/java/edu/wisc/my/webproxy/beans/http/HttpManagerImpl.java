@@ -72,7 +72,6 @@ public class HttpManagerImpl extends HttpManager {
     private static final String HTTP_CLIENT_ATTR = HttpManagerImpl.class.getName() + ".HTTP_CLIENT";
     
 	protected final Log logger = LogFactory.getLog(this.getClass());
-
 	private ClientConnectionManager clientConnectionManager;
 	private DefaultHttpClient client;
 	private SchemeRegistry schemeRegistry;
@@ -180,17 +179,7 @@ public class HttpManagerImpl extends HttpManager {
     	client = getHttpClient(request);
     	
     	PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
-
-        //Configure connection timeout
-    	HttpParams params = client.getParams();
-        final String httpTimeoutStr = prefs.getValue(HttpClientConfigImpl.HTTP_TIMEOUT, "");
-        try {
-            final int httpTimeout = Integer.parseInt(httpTimeoutStr);
-            HttpConnectionParams.setConnectionTimeout(params, httpTimeout * 1000);
-        }
-        catch (NumberFormatException nfe) {
-            
-        }
+        HttpParams params = client.getParams();
         
         // configure circular redirects
         final String circularRedirectsStr = prefs.getValue(HttpClientConfigImpl.CIRCULAR_REDIRECTS, null);
@@ -198,6 +187,41 @@ public class HttpManagerImpl extends HttpManager {
         	params.setBooleanParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, Boolean.valueOf(circularRedirectsStr));
         }
     }
+
+
+	protected DefaultHttpClient setHttpClientTimeouts(PortletRequest request, DefaultHttpClient client) {
+		PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
+		HttpParams params = client.getParams();
+        final String httpConnectionTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_CONNECTION_TIMEOUT, "");
+        final String httpSocketTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_SOCKET_TIMEOUT, "");
+        try {
+            /*
+             * The connection is attempted 5 times prior to stopping
+             * so the actual time before failure will be 5 times this setting.
+             * Suggested way of testing Connection Timeout is by hitting a
+             * domain with a port that is firewalled:
+             * ie. http://www.google.com:81
+             */
+            final int httpTimeout = Integer.parseInt(httpConnectionTimeout);
+            HttpConnectionParams.setConnectionTimeout(params, httpTimeout * 1000);
+            
+            /*
+             * Suggested way of testing Socket Timeout is by using a tool locally to connect
+             * but not respond.  Example tool: bane
+             * http://blog.danielwellman.com/2010/09/introducing-bane-a-test-harness-for-server-connections.html
+             * usage: $bane 10010 NeverRespond
+             * ie. http://localhost:10010
+             */
+            final int httpClientSocketTimeout = Integer.parseInt(httpSocketTimeout);
+            HttpConnectionParams.setSoTimeout(params, httpClientSocketTimeout * 1000);
+            logger.error("Connection Timeout:" + httpTimeout);
+            logger.error("Socket Timeout:" + httpClientSocketTimeout);
+        }
+        catch (NumberFormatException nfe) {
+            
+        }
+		return client;
+	}
 
     /*
      * (non-Javadoc)
@@ -275,7 +299,7 @@ public class HttpManagerImpl extends HttpManager {
 	            
 	            portletSession.setAttribute(HTTP_CLIENT_ATTR, client);
 	        }
-	        
+	        client = setHttpClientTimeouts(request, client);
 	        return client;
         }
 	}

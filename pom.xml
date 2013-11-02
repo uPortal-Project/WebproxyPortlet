@@ -298,6 +298,7 @@
                         <exclude>.gitignore</exclude>
                         <exclude>src/test/resources/test.json</exclude>
                         <exclude>src/main/resources/test-content/sample.json</exclude>
+                        <exclude>src/main/webapp/scripts/jquery-1.8.3.min.js</exclude>
                         <exclude>target/**</exclude>
                         <exclude>pom.xml.*</exclude>
                         <exclude>release.properties</exclude>

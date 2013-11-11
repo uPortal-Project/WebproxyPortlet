@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 public class GatewayEntry {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private String name;
     private String iconUrl;
@@ -99,11 +96,11 @@ public class GatewayEntry {
         this.contentRequests = contentRequests;
     }
 
-    public List getAuthenticationFormModifier() {
+    public List<IAuthenticationFormModifier> getAuthenticationFormModifier() {
         return this.authenticationFormModifier;
     }
 
-    public void setAuthenticationFormModifier(List authenticationFormModifier) {
+    public void setAuthenticationFormModifier(List<IAuthenticationFormModifier> authenticationFormModifier) {
         this.authenticationFormModifier = authenticationFormModifier;
     }
 

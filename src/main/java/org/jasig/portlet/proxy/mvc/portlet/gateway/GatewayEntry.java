@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
 import java.util.ArrayList;
@@ -35,75 +36,75 @@ import org.slf4j.LoggerFactory;
 public class GatewayEntry {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private String name;
-	private String iconUrl;
-	private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
+    private String name;
+    private String iconUrl;
+    private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
     private List<IAuthenticationFormModifier> authenticationFormModifier = new ArrayList<IAuthenticationFormModifier>();
     private boolean requireSecure = true;
 
-	/**
-	 * Get the display text for this link (user-friendly system name)
-	 * 
-	 * @return
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Set the display text (user-friendly system name) for this link.
-	 * 
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Get the icon for this link.
-	 * 
-	 * @return
-	 */
-	public String getIconUrl() {
-		return iconUrl;
-	}
-
-	/**
-	 * Set an icon for this link.
-	 * 
-	 * @param iconUrl
-	 */
-	public void setIconUrl(String iconUrl) {
-		this.iconUrl = iconUrl;
-	}
-
-	/**
-	 * Get a map of content requests to be executed for this link.
-	 * 
-	 * @return
-	 */
-	public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
-		return contentRequests;
-	}
-
-	/**
-	 * Set the map of content requests to be executed for this link.  Each
-	 * entry should have a key consisting of the desired configured content
-	 * request pointing to a list of interceptor keys.  Each request will be
-	 * executed in the given order after being processed by any interceptors.
-	 * 
-	 * @param contentRequests
-	 */
-	public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests) {
-		this.contentRequests = contentRequests;
-	}
-	
-    public List getAuthenticationFormModifier() {
-    	return this.authenticationFormModifier;
+    /**
+     * Get the display text for this link (user-friendly system name)
+     * 
+     * @return
+     */
+    public String getName() {
+        return name;
     }
-    
+
+    /**
+     * Set the display text (user-friendly system name) for this link.
+     * 
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get the icon for this link.
+     * 
+     * @return
+     */
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    /**
+     * Set an icon for this link.
+     * 
+     * @param iconUrl
+     */
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    /**
+     * Get a map of content requests to be executed for this link.
+     * 
+     * @return
+     */
+    public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
+        return contentRequests;
+    }
+
+    /**
+     * Set the map of content requests to be executed for this link.  Each
+     * entry should have a key consisting of the desired configured content
+     * request pointing to a list of interceptor keys.  Each request will be
+     * executed in the given order after being processed by any interceptors.
+     * 
+     * @param contentRequests
+     */
+    public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests) {
+        this.contentRequests = contentRequests;
+    }
+
+    public List getAuthenticationFormModifier() {
+        return this.authenticationFormModifier;
+    }
+
     public void setAuthenticationFormModifier(List authenticationFormModifier) {
-    	this.authenticationFormModifier = authenticationFormModifier;
+        this.authenticationFormModifier = authenticationFormModifier;
     }
 
     public boolean isRequireSecure() {

@@ -98,12 +98,29 @@
         <portlet-info>
             <title>WebProxy Portlet</title>
         </portlet-info>
+
         <portlet-preferences>
             <preference>
                 <name>openInNewPage</name>
                 <value>true</value>
             </preference>
         </portlet-preferences>
+
+        <security-role-ref>
+            <role-name>Faculty</role-name>
+            <role-link>Faculty</role-link>
+        </security-role-ref>
+
+        <security-role-ref>
+            <role-name>Staff</role-name>
+            <role-link>Staff</role-link>
+        </security-role-ref>
+
+        <security-role-ref>
+            <role-name>Students</role-name>
+            <role-link>Students</role-link>
+        </security-role-ref>
+
     </portlet>
 
     <user-attribute>

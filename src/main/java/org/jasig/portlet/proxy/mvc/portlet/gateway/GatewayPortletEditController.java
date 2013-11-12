@@ -45,7 +45,7 @@ import java.util.TreeMap;
 
 @Controller
 @RequestMapping("EDIT")
-public class GatewayPortletEditController {
+public class GatewayPortletEditController extends BaseGatewayPortletController {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String preferencesRegex;
@@ -75,13 +75,15 @@ public class GatewayPortletEditController {
     private IViewSelector viewSelector;
 
     @RequestMapping
+    //todo Drew - revise this controller as necessary for single-gateway-entry field editing
     public ModelAndView getView(RenderRequest request){
     	
         PortletPreferences prefs = request.getPreferences();
 
         final ModelAndView mv = new ModelAndView();
-        final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
-        
+        final List<GatewayEntry> entries =  removeInaccessibleEntries
+                ((List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class), request);
+
         // Look for any user-specified preference holders that are present in any of the gatewayEntry objects.
         // Store them in a list so that they can be edited.
         TreeMap<String,GatewayPreference> gatewayPreferences = new TreeMap<String,GatewayPreference>();

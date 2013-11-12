@@ -33,6 +33,8 @@
             class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:configuration.properties" />
     </bean>
+
+    <!-- This is a list instead of a set to allow the admin to order the entries in the UI. -->
     <util:list id="gatewayEntries" scope="session">
         <!--
             Gateway SSO allows the user to sign onto remote systems through capture of credentials and
@@ -51,24 +53,13 @@
             userPreferencesPreInterceptor - will replace parameters with information stored in portal preferences
             for the current user.
 
+            This bean also demonstrates an optional whitelist of roles defined in portlet.xml.  If any roles are
+            specified and the user is not in any of them, the gateway entry does not appear on the UI.
+
          -->
         <!--
         <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="MyZimbra"
               p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png">
-
-            <!- Beans in list must implement org.jasig.portlet.proxy.mvc.service.web.ExternalLogic interface.  They
-                can add form fields based on custom logic, or modifying the url to submit to.
-                This form modifier serves as an example of what can be done and should not to be uncommented for
-                Zimbra because it is not applicable to Zimbra integration. Fieldname of 'proxiedLocation' allows
-                changing the url.  Other field names would be added to the form to submit.
-             ->
-            <!- <property name="authenticationFormModifier">
-                <util:list>
-                    <bean id="step1" class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifier"
-                          scope="session" p:fieldName="proxiedLocation"/>
-                </util:list>
-            </property>
-             ->
 
             <property name="contentRequests">
                 <util:map>
@@ -110,6 +101,11 @@
                     </entry>
                 </util:map>
             </property>
+            <property name="roleWhitelist">
+                <list>
+                    <value>Staff</value>
+                </list>
+            </property>
         </bean>
         -->
 
@@ -123,7 +119,8 @@
               p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-web-browser.png"
               p:javascriptFile="/WebProxyPortlet/scripts/custom-javascript.js">
 
-            <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.IAuthenticationFormModifier interface ->
+            <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.IAuthenticationFormModifier
+                interface. They can add form fields based on custom logic, or modifying the url to submit to. ->
             <property name="authenticationFormModifier">
                 <util:list>
                     <bean class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifier"/>

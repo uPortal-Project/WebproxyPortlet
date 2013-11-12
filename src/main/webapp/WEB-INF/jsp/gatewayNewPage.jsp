@@ -33,15 +33,20 @@
     $(document).ready(function () {
 
       $( document ).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-        $(".documentBody").html("<p>An Error occurred.  See stack trace in log file for more information</p>" + jqXHR.responseText);
+        $(".documentBody").html("<p class='portlet-msg error text-danger'>An Error occurred.  See stack trace in log file for more information</p>" + jqXHR.responseText);
       });
 
       $.get(
           "${ requestsUrl }",
-          { index: ${index} },
+          { index: "${index}" },
           function (data) {
-            var contentRequests = data.contentRequests;
-            webproxyGatewayHandleRequest($, data, 0, "${n}form");
+              if (data.contentRequests === undefined) {
+                  <spring:message var="launchErrorMessage" code="error.message.invalid.beanName"/>
+                  <spring:message var="launchErrorIndexName" code="error.message.invalid.index"/>
+                  $(".documentBody").html("<p class='portlet-msg error text-danger'>${launchErrorMessage}. ${launchErrorIndexName}</p>");
+              } else {
+                webproxyGatewayHandleRequest($, data, 0, "${n}form");
+              }
           },
           "json"
       );

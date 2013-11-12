@@ -23,7 +23,9 @@ import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
+import javax.portlet.PortletRequest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +44,7 @@ public class GatewayEntry {
     private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
     private List<IAuthenticationFormModifier> authenticationFormModifier = new ArrayList<IAuthenticationFormModifier>();
     private String javascriptFile;
+    private List<String> roleWhitelist = new ArrayList<String>();
     private boolean requireSecure = true;
 
     /**
@@ -58,6 +61,7 @@ public class GatewayEntry {
      * 
      * @param name
      */
+    @Required
     public void setName(String name) {
         this.name = name;
     }
@@ -86,6 +90,14 @@ public class GatewayEntry {
 
     public void setJavascriptFile(String javascriptFile) {
         this.javascriptFile = javascriptFile;
+    }
+
+    public List<String> getRoleWhitelist() {
+        return roleWhitelist;
+    }
+
+    public void setRoleWhitelist(List<String> roleWhitelist) {
+        this.roleWhitelist = roleWhitelist;
     }
 
     /**
@@ -125,4 +137,44 @@ public class GatewayEntry {
         this.requireSecure = requireSecure;
     }
 
+    /**
+     * Returns true if the entry is accessible to the user.  An entry is accessible if there are no whitelist roles
+     * defined, or if the user has at least one of the roles in the whitelist.
+     * @param request PortletRequest
+     * @return true if the entry is accessible to the user.
+     */
+    public boolean entryIsAccessible(PortletRequest request) {
+        if (getRoleWhitelist().size() == 0) {
+            return true;
+        }
+        for (String roleName : getRoleWhitelist()) {
+            if (request.isUserInRole(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return a hashcode of the name.
+     * @return Hashcode value.
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    /**
+     * Entries are equal if the names are equal
+     * @param obj 2nd object to test
+     * @return true if entries are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof GatewayEntry) {
+                String othername = ((GatewayEntry) obj).getName();
+            return name.equals(othername);
+        }
+        return false;
+    }
 }

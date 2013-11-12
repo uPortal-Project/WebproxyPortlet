@@ -36,6 +36,7 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
+import javax.annotation.PostConstruct;
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -47,7 +48,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("VIEW")
-public class GatewayPortletController {
+public class GatewayPortletController extends BaseGatewayPortletController {
     private static final String HTTPS = "HTTPS";
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -64,10 +65,24 @@ public class GatewayPortletController {
 	@Autowired(required=true)
 	private IViewSelector viewSelector;
 
+    // Drew - This validation method should be valid after you add injecting the gatewayEntries into this controller.
+    // Please uncomment it and test it.
+    @PostConstruct
+    private void validateGatewayEntries() {
+//        HashSet<GatewayEntry> set = new HashSet<GatewayEntry>();
+//        for (GatewayEntry entry : entries) {
+//            if (!set.add(entry)) {
+//                throw new InvalidPropertyException(GatewayEntry.class, "name",
+//                        "Error initializing Gateway Entries, multiple entries with name " + entry.getName());
+//            }
+//        }
+    }
+
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
 		final ModelAndView mv = new ModelAndView();
-		final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
+		final List<GatewayEntry> entries =  removeInaccessibleEntries(
+                (List < GatewayEntry >) applicationContext.getBean("gatewayEntries", List.class), request);
 		final Map<String, Boolean> validations = new HashMap<String, Boolean>();
         for (GatewayEntry entry : entries) {
 	        for (Map.Entry<HttpContentRequestImpl, List<String>> requestEntry : entry.getContentRequests().entrySet()){
@@ -81,8 +96,7 @@ public class GatewayPortletController {
 	            }
 	        }
         }
-		
-		
+
 		mv.addObject("entries", entries);
 		mv.addObject("validations", validations);
 
@@ -94,16 +108,16 @@ public class GatewayPortletController {
 		return mv;
 	}
 
-	@ResourceMapping()
-	public String showTarget(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model, @RequestParam("index") int index) throws IOException {
-        prepareGatewayResponse(portletRequest, portletResponse, index, model);
+    @ResourceMapping()
+	public String showTarget(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model, @RequestParam("index") String beanName) throws IOException {
+        prepareGatewayResponse(portletRequest, portletResponse, beanName, model);
         return "json";
     }
 
     @ResourceMapping(value = "showTargetInNewWindow")
     public String showTargetInNewWindow(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model,
-                                        @RequestParam("index") int index) throws IOException {
-        model.addAttribute("index", index);
+                                        @RequestParam("index") String beanName) throws IOException {
+        model.addAttribute("index", beanName);
         return "gatewayNewPage";
     }
 
@@ -118,11 +132,15 @@ public class GatewayPortletController {
 //        return "gatewayNewPageNoAjax";
 //    }
 
-    private void prepareGatewayResponse(ResourceRequest portletRequest, ResourceResponse portletResponse, int index, Model model) throws IOException {
+    private void prepareGatewayResponse(ResourceRequest portletRequest, ResourceResponse portletResponse,
+                                        String beanName, Model model) throws IOException {
         // get the requested gateway link entry from the list configured for
         // this portlet
         final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
-        final GatewayEntry entry = entries.get(index);
+        final GatewayEntry entry = getAccessibleEntry(entries, portletRequest, beanName);
+        if (entry == null) {
+            return;
+        }
 
         // build a list of content requests
         final List<HttpContentRequestImpl> contentRequests = new ArrayList<HttpContentRequestImpl>();

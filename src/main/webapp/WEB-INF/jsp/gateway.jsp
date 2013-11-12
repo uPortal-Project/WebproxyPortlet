@@ -29,12 +29,12 @@
         <p class="entry">
         <c:set var="validation" value="${validations.get(entry.name)}" />
         <c:if test="${validation == true}">      
-            <a href="javascript:;" target="_self">
+            <a href="javascript:;" target="_self" index="${entry.name}">
                 <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>${ entry.name }
             </a>
         </c:if>
         <c:if test="${validation == false}">      
-            <a href="javascript:;" target="_self"></a>
+            <a href="javascript:;" target="_self" index="${entry.name}"></a>
             <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>${ entry.name }
             <spring:message code="portlet.preferences.missing"/>
         </c:if>
@@ -61,15 +61,20 @@
 	            $(link).click(function () {
    	                <c:choose>
    	                	<c:when test="${openInNewPage}">
-            	            window.open("${newPageUrl}?index="+idx);
+            	            window.open("${newPageUrl}?index=" + link.getAttribute("index"));
                 	    </c:when>
                     	<c:otherwise>
                         	$.get(
                             	"${ requestsUrl }",
-                            	{ index: idx },
+                            	{ index: link.getAttribute("index") },
                             	function (data) {
-                        	        webproxyGatewayHandleRequest($, data, 0, "${n}form");
-                    	            },
+                                    if (data.contentRequests === undefined) {
+                                        <spring:message var="launchErrorMessage" code="error.message.invalid.beanName"/>
+                                        $(link).parent().append("<p class='portlet-msg error text-danger'>${launchErrorMessage}. BeanName: " + link.getAttribute("index") + "</p>");
+                                    } else {
+                        	            webproxyGatewayHandleRequest($, data, 0, "${n}form");
+                    	            }
+                                },
                 	            "json"
             	                );
         	            </c:otherwise>

@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var webproxyGatewayHandleRequest = function ($,contentRequests, index, formId) {
+var webproxyGatewayHandleRequest = function ($,data, index, formId) {
+    var contentRequests = data.contentRequests;
     var contentRequest = contentRequests[index];
     if (index == contentRequests.length-1) {
         if (contentRequest.form) {
@@ -25,7 +26,8 @@ var webproxyGatewayHandleRequest = function ($,contentRequests, index, formId) {
             var form = $(document.createElement("form"))
                 .attr("id", formId)
                 .attr("action", contentRequest.proxiedLocation)
-                .attr("method", contentRequest.method);
+                .attr("method", contentRequest.method)
+                .attr("class", "webproxy-gateway-form");
 
             $.each(contentRequest.parameters, function (key, formFields) {
                 $(formFields).each(function (idx, formField) {
@@ -35,7 +37,35 @@ var webproxyGatewayHandleRequest = function ($,contentRequests, index, formId) {
             });
 
             form.appendTo("body");
-            form.submit();
+
+            if (data.javascriptFile && data.javascriptFile.length > 0) {
+                var jsFileUrl = window.location.protocol + "//" + window.location.host + data.javascriptFile;
+                $.ajax({
+                    url: jsFileUrl,
+                    dataType: "script",
+                    success: function (script, textStatus, jqXHR ) {
+                        eval(script);
+                        gatewayPortletFormModifier($, form);
+                        form.submit();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        form.after($(document.createElement("p")).attr("class", "error-message")
+                            .text("Error fetching or executing " + jsFileUrl
+                                + ". Error: " + textStatus + ", error thrown: " + errorThrown));
+                    }
+                });
+//                $.getScript(jsFileUrl)
+//                    .done(function( script, textStatus ) {
+////                        try {
+//                            gatewayPortletFormModifier($, form);
+//                            form.submit();
+////                        } case
+//                    })
+//                    .fail(function( jqxhr, settings, exception ) {
+//                    });
+            } else {
+                form.submit();
+            }
 
         } else {
             window.location = contentRequest.proxiedLocation;

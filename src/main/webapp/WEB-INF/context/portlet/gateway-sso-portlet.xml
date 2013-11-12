@@ -113,6 +113,70 @@
         </bean>
         -->
 
+        <!-- This bean demonstrates a custom java class that modifies the form by invoking another system to obtain
+             a token that must be embedded in the POST URL with a special name.  It also adds the calculated field
+             as a form field so custom javascript can be executed before the form is posted to perform additional
+             custom operations, in this case to also set the window name to the calculated field.
+        -->
+        <!--
+        <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="WebAdvisor"
+              p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-web-browser.png"
+              p:javascriptFile="/WebProxyPortlet/scripts/custom-javascript.js">
+
+            <!- beans in list must implement org.jasig.portlet.proxy.mvc.service.web.IAuthenticationFormModifier interface ->
+            <property name="authenticationFormModifier">
+                <util:list>
+                    <bean class="org.jasig.portlet.proxy.service.web.ExampleCustomFormModifier"/>
+                </util:list>
+            </property>
+
+            <property name="contentRequests">
+                <util:map>
+                    <entry>
+                        <key>
+                            <bean class="org.jasig.portlet.proxy.service.web.HttpContentRequestImpl"
+                                  p:proxiedLocation="formCalculated"
+                                  p:form="true" p:method="POST">
+                                <property name="parameters">
+                                    <util:map>
+                                        <entry>
+                                            <key><value>username</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="USER.NAME" p:value="{prefs.webadvisor.username}"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>password</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="CURR.PWD" p:value="{prefs.webadvisor.password}" p:secured="true"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>JS_ENABLED</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="JS_ENABLED" p:value="Y"/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>SUBMIT_OPTIONS</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="SUBMIT_OPTIONS" p:value=""/>
+                                        </entry>
+                                        <entry>
+                                            <key><value>SUBMIT</value></key>
+                                            <bean class="org.jasig.portlet.proxy.service.web.FormFieldImpl"
+                                                  p:name="SUBMIT" p:value="SUBMIT"/>
+                                        </entry>
+                                    </util:map>
+                                </property>
+                            </bean>
+                        </key>
+                        <util:list>
+                            <value>UserPreferencesPreInterceptor</value>
+                        </util:list>
+                    </entry>
+                </util:map>
+            </property>
+        </bean>
+        -->
+
     </util:list>
     <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>

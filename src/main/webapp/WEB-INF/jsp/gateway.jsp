@@ -68,8 +68,7 @@
                             	"${ requestsUrl }",
                             	{ index: idx },
                             	function (data) {
-                            	    var contentRequests = data.contentRequests;
-                        	        webproxyGatewayHandleRequest($, contentRequests, 0, "${n}form");
+                        	        webproxyGatewayHandleRequest($, data, 0, "${n}form");
                     	            },
                 	            "json"
             	                );

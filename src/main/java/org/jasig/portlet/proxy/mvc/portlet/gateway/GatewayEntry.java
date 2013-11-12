@@ -19,12 +19,14 @@
 
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
+import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
-import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 
 /**
  * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
@@ -33,10 +35,13 @@ import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
  */
 public class GatewayEntry {
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private String name;
     private String iconUrl;
     private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
     private List<IAuthenticationFormModifier> authenticationFormModifier = new ArrayList<IAuthenticationFormModifier>();
+    private String javascriptFile;
     private boolean requireSecure = true;
 
     /**
@@ -75,14 +80,22 @@ public class GatewayEntry {
         this.iconUrl = iconUrl;
     }
 
-    /**
-     * Get a map of content requests to be executed for this link.
-     * 
-     * @return
-     */
-    public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
-        return contentRequests;
+    public String getJavascriptFile() {
+        return javascriptFile;
     }
+
+    public void setJavascriptFile(String javascriptFile) {
+        this.javascriptFile = javascriptFile;
+    }
+
+    /**
+	 * Get a map of content requests to be executed for this link.
+	 * 
+	 * @return
+	 */
+	public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
+		return contentRequests;
+	}
 
     /**
      * Set the map of content requests to be executed for this link.  Each

@@ -25,48 +25,41 @@ import org.slf4j.LoggerFactory;
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 
 public class ExampleCustomFormModifier implements IAuthenticationFormModifier {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private String fieldName;
-
-	public ExampleCustomFormModifier() {
-	}
 
     /**
      * Example of modifications to a login form that invokes the system to gateway to in order to obtain a token
      * from that system that must be submitted with the login form and inserts the token into the url to submit.
-     * Also demonstrates that you can custom-calculate the url to submit to by having the fieldname of proxiedLocation
-     * (per the configuration in gateway-sso-portlet.xml).
+     * Also demonstrates that you can modify the url to submit to.
+     *
+     * @param contentRequest ContentRequest to modify
      * @param preferences PortletPreferences that may be useful when calculating the return result
      * @return value of the form field
      * @throws IOException
      */
 	@Override
-	public String getResult(PortletPreferences preferences) throws IOException {
+    public void modifyHttpContentRequest(HttpContentRequestImpl contentRequest, PortletPreferences preferences) throws IOException {
+        String urlSource ="https://prod.sdbor.edu/WebAdvisor/webadvisor?&TYPE=M&PID=CORE-WBMAIN&TOKENIDX="; //must be secure
+        URL xmlURLToOpen = new URL(urlSource);
 
-	      String urlSource ="https://prod.sdbor.edu/WebAdvisor/webadvisor?&TYPE=M&PID=CORE-WBMAIN&TOKENIDX="; //must be secure
-	      URL xmlURLToOpen = new URL(urlSource);
-
-	      String headerInfo = xmlURLToOpen.openConnection().getHeaderFields().toString();
-	      int headerInfoBegin = headerInfo.indexOf("LASTTOKEN=");
-	      String tokenID = headerInfo.substring(headerInfoBegin+10,headerInfoBegin+20);
-	      tokenID = tokenID.replaceAll("=","");
-	      tokenID = tokenID.replaceAll(",","");
-	      logger.debug("urlSource: " + urlSource);
-	      String formAction = urlSource+tokenID+"&SS=LGRQ&URL=https%3A%2F%2Fprod.sdbor.edu%2FWebAdvisor%2Fwebadvisor%3F%26TYPE%3DM%26PID%3DCORE-WBMAIN%26TOKENIDX%3D"+tokenID;
-	      logger.debug("formAction: " + formAction);
-		return formAction;
-	}
+        // Set timeout values to insure a poor network connection doesn't lock up this thread indefinitely.
+        URLConnection connection = xmlURLToOpen.openConnection();
+        connection.setReadTimeout(10000);
+        connection.setConnectTimeout(10000);
+        String headerInfo = connection.getHeaderFields().toString();
+        int headerInfoBegin = headerInfo.indexOf("LASTTOKEN=");
+        String tokenID = headerInfo.substring(headerInfoBegin+10,headerInfoBegin+20);
+        tokenID = tokenID.replaceAll("=","");
+        tokenID = tokenID.replaceAll(",","");
+        contentRequest.addParameter("tokenID", tokenID); // For use by javascript
+        logger.debug("urlSource: " + urlSource);
+        String postUrl = urlSource+tokenID+"&SS=LGRQ&URL=https%3A%2F%2Fwa-usd.prod.sdbor.edu%2FWebAdvisor%2Fwebadvisor%3F%26TYPE%3DM%26PID%3DCORE-WBMAIN%26TOKENIDX%3D"+tokenID;
+        logger.debug("postURL: " + postUrl);
+        contentRequest.setProxiedLocation(postUrl);
+    }
 	
-	@Override
-	public String getFieldName() {
-		return this.fieldName;
-	}
-	
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
-
 }

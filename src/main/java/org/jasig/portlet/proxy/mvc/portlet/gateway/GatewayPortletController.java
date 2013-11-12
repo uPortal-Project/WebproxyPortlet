@@ -21,8 +21,8 @@ package org.jasig.portlet.proxy.mvc.portlet.gateway;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IFormField;
-import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,6 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,19 +142,13 @@ public class GatewayPortletController {
         // add custom form field processing logic to the ModelAndView
         for (IAuthenticationFormModifier authenticationFormModifier :
                 (List<IAuthenticationFormModifier>) entry.getAuthenticationFormModifier()) {
-            String fieldName = authenticationFormModifier.getFieldName();
-            String result = authenticationFormModifier.getResult(portletRequest.getPreferences());
             for (HttpContentRequestImpl contentRequest : contentRequests) {
-                contentRequest.addParameter(fieldName, result);
+                authenticationFormModifier.modifyHttpContentRequest(contentRequest, portletRequest.getPreferences());
             }
         }
 
-        // If the content parameters specify a proxiedLocation, override the contentRequest's proxiedLocation value.
-        // Also insure the proxiedLocation value is secure (HTTPS) if required.
+        // Insure the proxiedLocation value is secure (HTTPS) if required.
         for (HttpContentRequestImpl contentRequest : contentRequests) {
-            if (contentRequest.getParameters().get(IAuthenticationFormModifier.PROXY_LOCATION_OVERRIDE) != null) {
-                contentRequest.setProxiedLocation(contentRequest.getParameters().get(IAuthenticationFormModifier.PROXY_LOCATION_OVERRIDE).getValue());
-            }
             if (entry.isRequireSecure() && StringUtils.isNotBlank(contentRequest.getProxiedLocation())
                     && contentRequest.getProxiedLocation().length() >= HTTPS.length()) {
                 if (!HTTPS.equalsIgnoreCase(contentRequest.getProxiedLocation().substring(0, HTTPS.length()))) {
@@ -168,6 +161,7 @@ public class GatewayPortletController {
         }
 
         model.addAttribute("contentRequests", contentRequests);
+        model.addAttribute("javascriptFile", entry.getJavascriptFile());
 
         // we don't want this response to be cached by the browser since it may
         // include one-time-only authentication tokens

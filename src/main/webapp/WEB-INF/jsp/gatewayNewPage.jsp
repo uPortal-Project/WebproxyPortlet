@@ -27,6 +27,7 @@
 <head>
   <title>Gateway</title>
 
+  <link type="text/css" rel="stylesheet" href="<c:url value="/css/webproxy.css"/>"/>
   <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-1.8.3.min.js" ></script>
   <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
   <script type="text/javascript">
@@ -54,6 +55,7 @@
   </script>
 </head>
 
-<body class="documentBody">
+<body class="documentBody gateway-portlet">
+<p><spring:message code="portlet.logging.in.display"/><img src="${pageContext.request.contextPath}/images/loading.gif"/></p>
 </body>
 </html>

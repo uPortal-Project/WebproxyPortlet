@@ -17,18 +17,6 @@
  * under the License.
  */
 
-.nonbutton {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-.nonbutton img {
-    float: left;
-}
-.nonbutton H3 {
-    float:left;
-    margin-left: 44px;
-}
-
 .gateway-portlet .hidden {
     display:none;
 }

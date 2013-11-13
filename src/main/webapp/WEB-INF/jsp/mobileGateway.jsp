@@ -25,7 +25,7 @@
 <portlet:resourceURL id="showTargetInNewWindow" var="newPageUrl" escapeXml="false"/>
 <c:set var="n"><portlet:namespace/></c:set>
 
-<div id="${n}" class="portlet">
+<div id="${n}" class="portlet gateway-portlet">
     <div class="portlet-content" data-role="content">
         <ul data-role="listview">
             <c:forEach items="${ entries }" var="entry">
@@ -49,11 +49,11 @@
         </ul>
     </div>
 
-
     <div class="edit-link">
         <portlet:renderURL var="editUrl"  portletMode="EDIT" />
         <a href="${editUrl}"><spring:message code="edit.proxy.show.preferences.link"/></a>
     </div>
+</div>
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
     <script type="text/javascript">
@@ -78,6 +78,7 @@
                                         <spring:message var="launchErrorMessage" code="error.message.invalid.beanName"/>
                                         $(link).parent().append("<p class='portlet-msg error text-danger'>${launchErrorMessage}. BeanName: " + link.getAttribute("index") + "</p>");
                                     } else {
+                                        $(link).parent().append('<div><spring:message code="portlet.logging.in.display"/><img src="${pageContext.request.contextPath}/images/loading.gif"/></div>');
                                         webproxyGatewayHandleRequest($, data, 0, "${n}form");
                                     }
                                 },

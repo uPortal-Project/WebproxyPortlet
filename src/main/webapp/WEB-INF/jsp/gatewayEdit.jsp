@@ -19,47 +19,47 @@
 
 --%>
 
-<%-- Author: Dustin Schultz | Version $Id$ --%>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <portlet:actionURL var="savePreferencesUrl">
     <portlet:param name="action" value="savePreferences"/>
 </portlet:actionURL>
+<portlet:actionURL var="clearPreferencesUrl">
+    <portlet:param name="action" value="clearPreferences"/>
+    <portlet:param name="entry" value="${gatewayEntry.name}"/>
+</portlet:actionURL>
 
-<div id="${n}jasigWeatherPortlet" class="jasigWeatherPortlet">
+<div id="${n}gatewayPortlet">
 
-    <div class="passwords">
+    <div class="credentials">
 
-        <h2><spring:message code="edit.proxy.title"/></h2>
-        <form id="${n}addLocationForm" class="select-location-form" action="${savePreferencesUrl}" method="post">
-        <table id="${n}savedLocationsTable">
-            <thead>
-                <tr>
-                    <th><spring:message code="edit.proxy.column.name"/></th>
-                    <th><spring:message code="edit.proxy.column.value"/></th>
-                </tr>
-            </thead>
+        <h2><img src="${gatewayEntry.iconUrl}" style="vertical-align: middle; padding-right: 10px;"/><c:out value="${gatewayEntry.name}" /></h2>
+        <form id="setCredentialsForm" class="set-credentials-form" action="${savePreferencesUrl}" method="post">
+        <table id="setCredentialsTable">
             <tbody>
-                <c:forEach var="gatewayPreference" items="${gatewayPreferences }">
-                        <tr>
-                            <td>${gatewayPreference.value.system} ${gatewayPreference.value.logicalFieldName}</td>
-                            <c:choose>
-                                <c:when test="${gatewayPreference.value.secured == true }">
-                                    <td><input type="password" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue }" /></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td><input type="text" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue}" /></td>
-                                </c:otherwise>
-                            </c:choose>
-                        </tr>
+                <c:forEach var="gatewayPreference" items="${gatewayPreferences}">
+                    <tr>
+                        <td>${gatewayPreference.value.logicalFieldName}</td>
+                        <c:choose>
+                            <c:when test="${gatewayPreference.value.secured == true}">
+                                <td><input type="password" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue}" /></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td><input type="text" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue}" /></td>
+                            </c:otherwise>
+                        </c:choose>
+                    </tr>
                 </c:forEach>
             </tbody>
         </table>
-        <spring:message var="savePreferencesLabel" code="edit.proxy.save.preferences"/>
-        <input type="submit" value="${savePreferencesLabel }" class="portlet-form-button"/>
-        <portlet:renderURL var="viewUrl"  portletMode="VIEW" />
-        <a href="${viewUrl}"><spring:message code="edit.proxy.cancel"/></a>
-
+        <input type="submit" value="<spring:message code="edit.proxy.save.preferences"/>" class="portlet-form-button"/>
+        <a href="<portlet:renderURL portletMode="VIEW" />" style="margin: 0 0 0 12px;"><spring:message code="edit.proxy.cancel" /></a>
+        <c:if test="${gatewayEntry.operations.clearCredentialsAllowed}">
+            <a href="${clearPreferencesUrl}" style="margin: 0 0 0 12px;">
+                <img src="<rs:resourceURL value="/rs/famfamfam/silk/1.3/application_delete.png" />" />
+                <spring:message code="portlet.preferences.clear.credentials" />
+            </a>
+        </c:if>
         </form>
     </div>
 </div>

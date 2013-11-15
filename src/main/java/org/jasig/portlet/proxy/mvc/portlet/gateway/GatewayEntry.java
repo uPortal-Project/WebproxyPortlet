@@ -19,16 +19,18 @@
 
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
-import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-
-import javax.portlet.PortletRequest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import javax.portlet.PortletRequest;
+
+import org.springframework.beans.factory.annotation.Required;
+
+import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
+import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
+import org.jasig.portlet.proxy.service.web.interceptor.UserPreferencesPreInterceptor;
 
 /**
  * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
@@ -37,15 +39,14 @@ import java.util.List;
  */
 public class GatewayEntry {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
     private String name;
     private String iconUrl;
-    private LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<String>>();
+    private LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>> contentRequests = new LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>>();
     private List<IAuthenticationFormModifier> authenticationFormModifier = new ArrayList<IAuthenticationFormModifier>();
     private String javascriptFile;
     private List<String> roleWhitelist = new ArrayList<String>();
     private boolean requireSecure = true;
+    private GatewayEntryOperations operations = new GatewayEntryOperations();
 
     /**
      * Get the display text for this link (user-friendly system name)
@@ -101,13 +102,13 @@ public class GatewayEntry {
     }
 
     /**
-	 * Get a map of content requests to be executed for this link.
-	 * 
-	 * @return
-	 */
-	public LinkedHashMap<HttpContentRequestImpl, List<String>> getContentRequests() {
-		return contentRequests;
-	}
+     * Get a map of content requests to be executed for this link.
+     * 
+     * @return
+     */
+    public LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>> getContentRequests() {
+        return contentRequests;
+    }
 
     /**
      * Set the map of content requests to be executed for this link.  Each
@@ -117,7 +118,7 @@ public class GatewayEntry {
      * 
      * @param contentRequests
      */
-    public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<String>> contentRequests) {
+    public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>> contentRequests) {
         this.contentRequests = contentRequests;
     }
 
@@ -135,6 +136,10 @@ public class GatewayEntry {
 
     public void setRequireSecure(boolean requireSecure) {
         this.requireSecure = requireSecure;
+    }
+
+    public GatewayEntryOperations getOperations() {
+        return operations;
     }
 
     /**
@@ -177,4 +182,49 @@ public class GatewayEntry {
         }
         return false;
     }
+    
+    /*
+     * Nested Types
+     */
+
+    /**
+     * Represents the set of config or administrative actions that may be performed 
+     * by a user on a {@link GatewayEntry}.  It has nothing to do with invoking or 
+     * following the entry itself.  Evaluating these questions is a bit inelegant 
+     * with the current setup-- the whole area could use some refactoring.  This 
+     * inner class exists so that these transgressions can be grouped together 
+     * and replaced easily in the future.
+     */
+    public /* non-static */ class GatewayEntryOperations {
+
+        public boolean getEnterCredentialsAllowed() {
+            // The way Gateway SSO supports user-provided credentials is by 
+            // piggy-backing on the UserPreferencesPreInterceptor, so the way 
+            // we'll answer this question (for now... until we learn why this 
+            // approach doesn't suit all circumstances) is by checking whether 
+            // the GatewayEntry uses it at all.
+            boolean rslt = false;  // default
+            for (Map.Entry<HttpContentRequestImpl, List<IPreInterceptor>> y : contentRequests.entrySet()) {
+                for (IPreInterceptor interceptor : y.getValue()) {
+                    if (interceptor instanceof UserPreferencesPreInterceptor) {
+                        rslt = true;
+                        break;
+                    }
+                }
+                if (rslt) {
+                    break;
+                }
+            }
+            return rslt;
+        }
+
+        public boolean getClearCredentialsAllowed() {
+            // For the present, we've placed this function within EDIT mode
+            // (where you may only be if you can enter creds) so we will always
+            // allow it
+            return true;
+        }
+
+    }
+
 }

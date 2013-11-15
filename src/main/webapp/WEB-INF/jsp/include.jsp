@@ -27,3 +27,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="rs" uri="http://www.jasig.org/resource-server" %>
+
+<portlet:defineObjects/>

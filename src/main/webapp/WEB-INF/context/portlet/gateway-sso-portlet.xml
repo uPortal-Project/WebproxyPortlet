@@ -29,13 +29,12 @@
     <context:component-scan base-package="org.jasig.portlet.proxy.mvc.portlet.gateway" />
     <context:annotation-config />
 
-    <bean
-            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:configuration.properties" />
     </bean>
 
     <!-- This is a list instead of a set to allow the admin to order the entries in the UI. -->
-    <util:list id="gatewayEntries" scope="session">
+    <util:list id="gatewayEntries">
         <!--
             Gateway SSO allows the user to sign onto remote systems through capture of credentials and
             replay of those credentials on remote systems.  Each bean in the contentRequest list is for a 
@@ -95,8 +94,8 @@
                             </bean>
                         </key>
                         <util:list>
-                            <value>userInfoUrlParameterizingPreInterceptor</value>
-                            <value>UserPreferencesPreInterceptor</value>
+                            <ref bean="userInfoUrlParameterizingPreInterceptor" />
+                            <ref bean="UserPreferencesPreInterceptor" />
                         </util:list>
                     </entry>
                 </util:map>
@@ -166,7 +165,7 @@
                             </bean>
                         </key>
                         <util:list>
-                            <value>UserPreferencesPreInterceptor</value>
+                            <ref bean="UserPreferencesPreInterceptor" />
                         </util:list>
                     </entry>
                 </util:map>
@@ -175,6 +174,7 @@
         -->
 
     </util:list>
+
     <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>
     </bean>

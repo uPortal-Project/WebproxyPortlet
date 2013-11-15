@@ -19,8 +19,6 @@
 
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
-import org.jasig.portlet.proxy.service.IFormField;
-
 /**
  * Simple DTO to hold a gateway preference editable by the user.
  *
@@ -81,4 +79,55 @@ public class GatewayPreference {
     public void setSecured(boolean secured) {
         this.secured = secured;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((fieldValue == null) ? 0 : fieldValue.hashCode());
+        result = prime
+                * result
+                + ((logicalFieldName == null) ? 0 : logicalFieldName.hashCode());
+        result = prime * result
+                + ((preferenceName == null) ? 0 : preferenceName.hashCode());
+        result = prime * result + (secured ? 1231 : 1237);
+        result = prime * result + ((system == null) ? 0 : system.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GatewayPreference other = (GatewayPreference) obj;
+        if (fieldValue == null) {
+            if (other.fieldValue != null)
+                return false;
+        } else if (!fieldValue.equals(other.fieldValue))
+            return false;
+        if (logicalFieldName == null) {
+            if (other.logicalFieldName != null)
+                return false;
+        } else if (!logicalFieldName.equals(other.logicalFieldName))
+            return false;
+        if (preferenceName == null) {
+            if (other.preferenceName != null)
+                return false;
+        } else if (!preferenceName.equals(other.preferenceName))
+            return false;
+        if (secured != other.secured)
+            return false;
+        if (system == null) {
+            if (other.system != null)
+                return false;
+        } else if (!system.equals(other.system))
+            return false;
+        return true;
+    }
+
 }

@@ -26,8 +26,8 @@ import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +37,14 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -53,44 +55,40 @@ public class GatewayPortletController extends BaseGatewayPortletController {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     
-	@Autowired(required=false)
+    @Resource(name="gatewayEntries")
+    private List<GatewayEntry> gatewayEntries;
+
+    @Autowired(required=false)
 	private String viewName = "gateway";
 	
 	@Autowired(required=false)
 	private String mobileViewName = "mobileGateway";
 	
 	@Autowired(required=true)
-	private ApplicationContext applicationContext;
-	
-	@Autowired(required=true)
 	private IViewSelector viewSelector;
 
-    // Drew - This validation method should be valid after you add injecting the gatewayEntries into this controller.
-    // Please uncomment it and test it.
     @PostConstruct
     private void validateGatewayEntries() {
-//        HashSet<GatewayEntry> set = new HashSet<GatewayEntry>();
-//        for (GatewayEntry entry : entries) {
-//            if (!set.add(entry)) {
-//                throw new InvalidPropertyException(GatewayEntry.class, "name",
-//                        "Error initializing Gateway Entries, multiple entries with name " + entry.getName());
-//            }
-//        }
+        HashSet<GatewayEntry> set = new HashSet<GatewayEntry>();
+        for (GatewayEntry entry : gatewayEntries) {
+            if (!set.add(entry)) {
+                throw new InvalidPropertyException(GatewayEntry.class, "name",
+                        "Error initializing Gateway Entries, multiple entries with name " + entry.getName());
+            }
+        }
     }
 
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
 		final ModelAndView mv = new ModelAndView();
-		final List<GatewayEntry> entries =  removeInaccessibleEntries(
-                (List < GatewayEntry >) applicationContext.getBean("gatewayEntries", List.class), request);
+		final List<GatewayEntry> entries =  removeInaccessibleEntries(gatewayEntries, request);
 		final Map<String, Boolean> validations = new HashMap<String, Boolean>();
         for (GatewayEntry entry : entries) {
-	        for (Map.Entry<HttpContentRequestImpl, List<String>> requestEntry : entry.getContentRequests().entrySet()){
+	        for (Map.Entry<HttpContentRequestImpl, List<IPreInterceptor>> requestEntry : entry.getContentRequests().entrySet()){
 	
 	            // run each content request through any configured preinterceptors to validate each entry
 	            final HttpContentRequestImpl contentRequest = requestEntry.getKey();
-	            for (String interceptorKey : requestEntry.getValue()) {
-	                final IPreInterceptor interceptor = applicationContext.getBean(interceptorKey, IPreInterceptor.class);
+	            for (IPreInterceptor interceptor : requestEntry.getValue()) {
 	                boolean isValid = interceptor.validate(contentRequest, request);
 	                validations.put(entry.getName(), isValid);
 	            }
@@ -136,7 +134,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
                                         String beanName, Model model) throws IOException {
         // get the requested gateway link entry from the list configured for
         // this portlet
-        final List<GatewayEntry> entries =  (List<GatewayEntry>) applicationContext.getBean("gatewayEntries", List.class);
+        final List<GatewayEntry> entries =  gatewayEntries;
         final GatewayEntry entry = getAccessibleEntry(entries, portletRequest, beanName);
         if (entry == null) {
             return;
@@ -144,14 +142,13 @@ public class GatewayPortletController extends BaseGatewayPortletController {
 
         // build a list of content requests
         final List<HttpContentRequestImpl> contentRequests = new ArrayList<HttpContentRequestImpl>();
-        for (Map.Entry<HttpContentRequestImpl, List<String>> requestEntry : entry.getContentRequests().entrySet()){
+        for (Map.Entry<HttpContentRequestImpl, List<IPreInterceptor>> requestEntry : entry.getContentRequests().entrySet()){
 
             // run each content request through any configured preinterceptors
             // before adding it to the list.  Use a clone so that preinterceptors can change the
             // values without impacting future executions (e.g. need to retain substitution tokens).
             final HttpContentRequestImpl contentRequest = requestEntry.getKey().duplicate();
-            for (String interceptorKey : requestEntry.getValue()) {
-                final IPreInterceptor interceptor = applicationContext.getBean(interceptorKey, IPreInterceptor.class);
+            for (IPreInterceptor interceptor : requestEntry.getValue()) {
                 interceptor.intercept(contentRequest, portletRequest);
             }
             contentRequests.add(contentRequest);

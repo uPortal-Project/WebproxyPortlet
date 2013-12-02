@@ -203,19 +203,19 @@ public class GatewayEntry {
             // we'll answer this question (for now... until we learn why this 
             // approach doesn't suit all circumstances) is by checking whether 
             // the GatewayEntry uses it at all.
-            boolean rslt = false;  // default
+            boolean allowed = false;  // default
             for (Map.Entry<HttpContentRequestImpl, List<IPreInterceptor>> y : contentRequests.entrySet()) {
                 for (IPreInterceptor interceptor : y.getValue()) {
                     if (interceptor instanceof UserPreferencesPreInterceptor) {
-                        rslt = true;
+                        allowed = true;
                         break;
                     }
                 }
-                if (rslt) {
+                if (allowed) {
                     break;
                 }
             }
-            return rslt;
+            return allowed;
         }
 
         public boolean getClearCredentialsAllowed() {

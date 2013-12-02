@@ -27,6 +27,7 @@
       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:component-scan base-package="org.jasig.portlet.proxy.mvc.portlet.gateway" />
+    <context:component-scan base-package="org.jasig.portlet.proxy.mvc.portlet.utilities" />
     <context:annotation-config />
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -37,7 +38,7 @@
     <util:list id="gatewayEntries">
         <!--
             Gateway SSO allows the user to sign onto remote systems through capture of credentials and
-            replay of those credentials on remote systems.  Each bean in the contentRequest list is for a 
+            replay of those credentials on remote systems.  Each bean in the contentRequest list is for a
             different system.  The parameters property lists the fields that will be added to a form and then
             submitted to the proxiedLocation in order to authenticate.  The formFieldImpl class contains three
             fields: the field name, value, and whether the field is secured.  Secured is only relevant at this

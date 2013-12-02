@@ -30,28 +30,34 @@
         <ul data-role="listview">
             <c:forEach items="${ entries }" var="entry">
                 <li class="entry">
-                    <c:set var="validation" value="${validations.get(entry.name)}" />
-                    <c:if test="${validation == true}">
-                        <a href="javascript:;" target="_self" index="${entry.name}">
-                            <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
-                            <h3>${ entry.name }</h3>
+                    <portlet:renderURL var="editUrl" portletMode="EDIT"><portlet:param name="entryName" value="${entry.name}"/></portlet:renderURL>
+                    <c:choose>
+                        <c:when test="${validations.get(entry.name)}">
+                            <a href="javascript:;" target="_self" index="${entry.name}">
+                                <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
+                                <h3>${ entry.name }</h3>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="buttonUrl" value="${editUrl}"/>
+                            <c:if test="${!entry.operations.enterCredentialsAllowed}">
+                                <c:set var="editIconDisabled" value="data-icon='false'"/>
+                                <c:set var="buttonUrl" value="javascript:;"/>
+                            </c:if>
+                            <a href="${buttonUrl}" target="_self" index="${entry.name}" ${editIconDisabled}>
+                                <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
+                                <h3>${ entry.name } <spring:message code="portlet.preferences.missing"/></h3>
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
+                    <c:if test="${entry.operations.enterCredentialsAllowed}">
+                        <a href="${editUrl}" class="gateway-edit-link"
+                           title="<spring:message code='portlet.preferences.missing.title'/>" data-icon="gear">
                         </a>
-                    </c:if>
-                    <c:if test="${validation == false}">
-                        <div class="ui-helper-clearfix nonbutton">
-                            <a href="javascript:;" target="_self" index="${entry.name}"></a>
-                            <img src="${entry.iconUrl}" style="vertical-align: middle; text-decoration: none; padding-right: 10px;"/>
-                            <h3>${ entry.name } <spring:message code="portlet.preferences.missing"/></h3>
-                        </div>
                     </c:if>
                 </li>
             </c:forEach>
         </ul>
-    </div>
-
-    <div class="edit-link">
-        <portlet:renderURL var="editUrl"  portletMode="EDIT" />
-        <a href="${editUrl}"><spring:message code="edit.proxy.show.preferences.link"/></a>
     </div>
 </div>
 
@@ -78,7 +84,7 @@
                                         <spring:message var="launchErrorMessage" code="error.message.invalid.beanName"/>
                                         $(link).parent().append("<p class='portlet-msg error text-danger'>${launchErrorMessage}. BeanName: " + link.getAttribute("index") + "</p>");
                                     } else {
-                                        $(link).parent().append('<div><spring:message code="portlet.logging.in.display"/><img src="${pageContext.request.contextPath}/images/loading.gif"/></div>');
+                                        $(link).parent().append('<div><spring:message code="portlet.logging.in.display"/></div>');
                                         webproxyGatewayHandleRequest($, data, 0, "${n}form");
                                     }
                                 },

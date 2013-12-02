@@ -24,42 +24,56 @@
 
 <portlet:actionURL var="savePreferencesUrl">
     <portlet:param name="action" value="savePreferences"/>
+    <portlet:param name="entryName" value="${gatewayEntry.name}"/>
+</portlet:actionURL>
+<portlet:actionURL var="clearPreferencesUrl">
+    <portlet:param name="action" value="clearPreferences"/>
+    <portlet:param name="entryName" value="${gatewayEntry.name}"/>
 </portlet:actionURL>
 
-<div id="${n}jasigWeatherPortlet" class="jasigWeatherPortlet">
+<div id="${n}gatewayPortlet" class="gateway-portlet">
 
     <div class="passwords">
 
-        <h2><spring:message code="edit.proxy.title"/></h2>
+        <h2><img src="${gatewayEntry.iconUrl}" style="vertical-align: middle; padding-right: 10px;"/><c:out value="${gatewayEntry.name}" /></h2>
         <form id="${n}addLocationForm" class="select-location-form" action="${savePreferencesUrl}" method="post">
-        <table id="${n}savedLocationsTable">
-            <thead>
-                <tr>
-                    <th><spring:message code="edit.proxy.column.name"/></th>
-                    <th><spring:message code="edit.proxy.column.value"/></th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="gatewayPreference" items="${gatewayPreferences }">
+            <c:if test="${!empty error}">
+                <div class="portlet-msg-error portlet-msg error"><spring:message code="${error}"/></div>
+            </c:if>
+            <table id="${n}savedLocationsTable">
+                <thead>
+                    <tr>
+                        <th><spring:message code="edit.proxy.column.name"/></th>
+                        <th><spring:message code="edit.proxy.column.value"/></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="gatewayPreference" items="${gatewayPreferences }" varStatus="index">
+                        <c:set var="autofocus" value=""/>
+                        <c:if test="${index.first}">
+                            <c:set var="autofocus" value="autofocus"/>
+                        </c:if>
                         <tr>
-                            <td>${gatewayPreference.value.system} ${gatewayPreference.value.logicalFieldName}</td>
+                            <td>${gatewayPreference.value.logicalFieldName}</td>
                             <c:choose>
                                 <c:when test="${gatewayPreference.value.secured == true }">
-                                    <td><input type="password" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue }" /></td>
+                                    <td><input type="password" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue }" ${autofocus}/></td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td><input type="text" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue}" /></td>
+                                    <td><input type="text" name="${gatewayPreference.value.preferenceName}" value="${gatewayPreference.value.fieldValue}" ${autofocus}/></td>
                                 </c:otherwise>
                             </c:choose>
                         </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-        <spring:message var="savePreferencesLabel" code="edit.proxy.save.preferences"/>
-        <input type="submit" value="${savePreferencesLabel }" class="portlet-form-button"/>
-        <portlet:renderURL var="viewUrl"  portletMode="VIEW" />
-        <a href="${viewUrl}"><spring:message code="edit.proxy.cancel"/></a>
-
+                    </c:forEach>
+                </tbody>
+            </table>
+            <spring:message var="savePreferencesLabel" code="edit.proxy.save.preferences"/>
+            <input type="submit" value="${savePreferencesLabel }" class="portlet-form-button"/>
+            <portlet:renderURL var="viewUrl"  portletMode="VIEW" />
+            <c:if test="${gatewayEntry.operations.clearCredentialsAllowed}">
+                <a href="${clearPreferencesUrl}" data-role="button"><spring:message code="portlet.preferences.clear.credentials"/></a>
+            </c:if>
+            <a href="${viewUrl}" data-role="button"><spring:message code="edit.proxy.cancel"/></a>
         </form>
     </div>
 </div>

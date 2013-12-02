@@ -20,3 +20,11 @@
 .gateway-portlet .hidden {
     display:none;
 }
+
+.gateway-portlet .gateway-edit-link img {
+    margin-left: 3px;
+}
+
+.gateway-portlet .portlet-msg-error {
+    color: red;
+}

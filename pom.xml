@@ -400,6 +400,7 @@
                             <includes>
                                 <include>rs/jquery/1.8.3/</include>
                                 <include>/rs/jqueryui/1.8.24/</include>
+                                <include>/rs/famfamfam/silk/1.3/error.png</include>
                                 <include>/rs/famfamfam/silk/1.3/application_delete.png</include>
                                 <include>/rs/famfamfam/silk/1.3/application_edit.png</include>
                             </includes>

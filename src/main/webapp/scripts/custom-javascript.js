@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to Jasig under one or more contributor license
  * agreements. See the NOTICE file distributed with this work
  * for additional information regarding copyright ownership.
@@ -17,9 +17,9 @@
  * under the License.
  */
 
- /* Example javascript that looks for an input field with the name "tokenID" and sets the window name to this
-  * tokenID value.
-  */
+/* Example javascript that looks for an input field with the name "tokenID" and sets the window name to this
+ * tokenID value.
+ */
 var gatewayPortletFormModifier = function($, form) {
     var tokenID = form.find("input[name=tokenID]").val();
     window.name=tokenID;

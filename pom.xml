@@ -333,6 +333,8 @@
                         <exclude>NOTICE</exclude>
                         <exclude>NOTICE.template</exclude>
                         <exclude>bin/**</exclude>
+                        <exclude>.idea/**</exclude>  <!-- for intelliJ Idea -->
+                        <exclude>overlays/**</exclude>  <!-- for intelliJ Idea -->
                     </excludes>
                 </configuration>
             </plugin>

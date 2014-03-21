@@ -19,6 +19,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -46,17 +47,12 @@ public class CosignPreInterceptor implements PreInterceptor {
     public static final String DEFAULT_BASE_PATH = "/var/cosign/proxy";
     
     /**
-     * Default set of service names to check against when searching cookies for
-     * the Cosign cookie.
+     * Default service name to check against when searching cookies for the Cosign cookie.
      */
-    public static final String[] DEFAULT_COSIGN_SERVICES = {
-        "cosign-eucsCosigntest-www-beta.myed.ed.ac.uk",
-        "cosign-eucsCosigntest-www-dev.myed.ed.ac.uk",
-        "cosign-eucsCosigntest-www-test.myed.ed.ac.uk",
-        "cosign-eucsCosign-www.myed.ed.ac.uk"
-    };
-    public static final String INIT_PARAMETER_COSIGN_BASE_PATH = "org.jasig.portal.security.CosignConnectionContext.cosign_base_path";
-    public static final String INIT_PARAMETER_COSIGN_SERVICE = "org.jasig.portal.security.CosignConnectionContext.cosignService";
+    public static final String DEFAULT_COSIGN_SERVICE = "cosign-eucsCosign-www.myed.ed.ac.uk";
+    
+    public static final String PREFERENCE_COSIGN_BASE_PATH = "uk.ac.ed.myed.cosign.cosign_base_path";
+    public static final String PREFERENCE_COSIGN_SERVICE = "uk.ac.ed.myed.cosign.cosign_service";
     
     public static final String SESSION_COSIGN_COOKIES = "cosign_cookies";
     
@@ -132,6 +128,8 @@ public class CosignPreInterceptor implements PreInterceptor {
     private org.apache.http.cookie.Cookie getProxyCookie(final PortletRequest req, final Request outgoingRequest)
             throws IOException, MalformedProxyLineException, MissingCosignCookieException, MissingCosignFileException, MalformedURLException, UnknownServiceException {
         final PortletSession session = req.getPortletSession();
+        final PortletPreferences preferences = req.getPreferences();
+        
         Map<String, org.apache.http.cookie.Cookie> cookieHash = null;
         
         /*
@@ -147,11 +145,9 @@ public class CosignPreInterceptor implements PreInterceptor {
              * the portlet context, or we use intelligent defaults if they're
              * not available.
              */
-            String path = context.getInitParameter(INIT_PARAMETER_COSIGN_BASE_PATH);
-            final String cosignService = context.getInitParameter(INIT_PARAMETER_COSIGN_SERVICE);
-            if (null == path) {
-                path = DEFAULT_BASE_PATH;
-            }
+             
+            final String path = preferences.getValue(PREFERENCE_COSIGN_BASE_PATH, DEFAULT_BASE_PATH);
+            final String cosignService = preferences.getValue(PREFERENCE_COSIGN_SERVICE, DEFAULT_COSIGN_SERVICE);
         
             cookieHash = this.getCookieHash(outgoingRequest, getCookiesKludge(req),
                 new File(path), cosignService);
@@ -191,8 +187,8 @@ public class CosignPreInterceptor implements PreInterceptor {
              *  The values 'path' and 'cosignService' are read here from
              *  the servlet context, or we use intelligent defaults otherwise.
              */
-            String path = context.getInitParameter(INIT_PARAMETER_COSIGN_BASE_PATH);
-            final String cosignService = context.getInitParameter(INIT_PARAMETER_COSIGN_SERVICE);
+            String path = context.getInitParameter(PREFERENCE_COSIGN_BASE_PATH);
+            final String cosignService = context.getInitParameter(PREFERENCE_COSIGN_SERVICE);
             if (null == path) {
                 path = DEFAULT_BASE_PATH;
             }
@@ -270,13 +266,6 @@ public class CosignPreInterceptor implements PreInterceptor {
         final javax.servlet.http.Cookie[] cookies, final File path, final String cosignServiceId)
             throws IOException, MalformedProxyLineException, MissingCosignCookieException, MissingCosignFileException {
         final Map<String, org.apache.http.cookie.Cookie> cookieHash = new HashMap<String, org.apache.http.cookie.Cookie>();
-        final Set<String> cosignServices = new HashSet<String>();
-
-        if (null != cosignServiceId) {
-            cosignServices.add(cosignServiceId);
-        } else {
-            cosignServices.addAll(Arrays.asList(DEFAULT_COSIGN_SERVICES));
-        }
 
         /*
          *  We need to find our file path and try to read service cookies.
@@ -284,7 +273,7 @@ public class CosignPreInterceptor implements PreInterceptor {
         javax.servlet.http.Cookie cosignCookie = null;
 
         for (int cookieIdx = 0; cookieIdx < cookies.length; cookieIdx++) {
-            if (cosignServices.contains(cookies[cookieIdx].getName())) {
+            if (cosignServiceId.equals(cookies[cookieIdx].getName())) {
                 cosignCookie = cookies[cookieIdx];
                 break;
             }

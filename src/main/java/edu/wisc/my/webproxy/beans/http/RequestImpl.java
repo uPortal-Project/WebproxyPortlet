@@ -23,6 +23,11 @@
  */
 package edu.wisc.my.webproxy.beans.http;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collection;
+
+import org.apache.http.cookie.Cookie;
 
 /**
  * This class is the implementation of the methods defined in the (@link edu.wisc.my.webproxy.beans.http.Request) interface
@@ -32,9 +37,9 @@ package edu.wisc.my.webproxy.beans.http;
  * @version $Id$
  */
 public class RequestImpl implements Request {
-
     private ParameterPair[] postAttributes;
     private IHeader[] headers;
+    private List<Cookie> extraCookies = null;
     private String url;
     private String type;
     private String authType;
@@ -57,6 +62,23 @@ public class RequestImpl implements Request {
         this.setUrl(url);
         this.setType(type);
         this.setAuthType(authType);
+    }
+
+    /**
+     * Add an additional cookie to be sent as part of the request.
+     */
+    public void addCookie(final Cookie cookie) {
+        if (null == this.extraCookies) {
+            this.extraCookies = new ArrayList<Cookie>();
+        }
+        this.extraCookies.add(cookie);
+    }
+
+    /**
+     * Get extra cookies to be sent with the request.
+     */
+    public Collection<Cookie> getExtraCookies() {
+        return this.extraCookies;
     }
 
     /**

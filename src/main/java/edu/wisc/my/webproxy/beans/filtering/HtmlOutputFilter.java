@@ -22,6 +22,7 @@ package edu.wisc.my.webproxy.beans.filtering;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -160,12 +161,12 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
                 final String value = atts.getValue(index);
                 
                 out.write(SPACE);
-                out.write(name);
+                out.write(StringEscapeUtils.escapeHtml(name));
                 
                 if (value != null) {
                     out.write(EQUAL);
                     out.write(QUOTE);
-                    out.write(value);
+                    out.write(StringEscapeUtils.escapeHtml(value));
                     out.write(QUOTE);
                 }
             }

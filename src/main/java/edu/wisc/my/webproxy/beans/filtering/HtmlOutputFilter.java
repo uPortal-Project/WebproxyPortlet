@@ -56,6 +56,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
         this.out = out;
     }
 
+    @Override
     public String getName() {
         return "Output Filter";
     }
@@ -64,6 +65,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ext.LexicalHandler#comment(char[], int, int)
      */
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
             out.write(COMMENT_START);
@@ -78,6 +80,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see edu.wisc.my.webproxy.beans.filtering.ChainingSaxFilter#startEntity(java.lang.String)
      */
+    @Override
     public void startEntity(String name) throws SAXException {
         this.currentEntity = name;
         
@@ -94,6 +97,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see edu.wisc.my.webproxy.beans.filtering.ChainingSaxFilter#endEntity(java.lang.String)
      */
+    @Override
     public void endEntity(String name) throws SAXException {
         this.currentEntity = null;
     }
@@ -101,6 +105,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         try {
             if (this.currentEntity == null) {
@@ -116,6 +121,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#endDocument()
      */
+    @Override
     public void endDocument() throws SAXException {
         try {
             out.flush();
@@ -128,6 +134,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
             out.write(TAG_CLOSE_START);
@@ -142,6 +149,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         try {
             out.write(TAG_OPEN_START);

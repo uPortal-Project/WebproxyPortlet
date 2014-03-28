@@ -36,8 +36,6 @@ import org.xml.sax.SAXException;
  * @version $Id$
  */
 public final class HtmlOutputFilter extends ChainingSaxFilter {
-    private static final String ENTITY_START    = "&";
-    private static final String ENTITY_END      = ";";
     private static final String TAG_OPEN_START  = "<";
     private static final String TAG_CLOSE_START = "</";
     private static final String TAG_END         = ">";
@@ -48,7 +46,6 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     private static final String SPACE           = " ";
     
     private final Writer out;
-    private String currentEntity = null; //The current entity that is being rendered
     
     public HtmlOutputFilter(Writer out) {
         if (out == null)
@@ -83,16 +80,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
      */
     @Override
     public void startEntity(String name) throws SAXException {
-        this.currentEntity = name;
-        
-        try {
-            out.write(ENTITY_START);
-            out.write(this.currentEntity);
-            out.write(ENTITY_END);
-        }
-        catch (IOException ioe) {
-            throw new SAXException("Error writing data to output stream", ioe);
-        }
+        // Leave this to characters() to handle
     }
 
     /**
@@ -100,7 +88,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
      */
     @Override
     public void endEntity(String name) throws SAXException {
-        this.currentEntity = null;
+        // Leave this to characters() to handle
     }
 
     /**
@@ -109,10 +97,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         try {
-            if (this.currentEntity == null) {
-                final String chars = new String(ch, start, length);
-                out.write(chars);
-            }
+            out.write(ch, start, length);
         }
         catch (IOException ioe) {
             throw new SAXException("Error writing data to output stream", ioe);

@@ -78,12 +78,14 @@
                 </p>
                 
                 <p>
-                    Whitelist Regex of URLs to rewrite to proxy through portlet: <br/>
+                    Whitelist Regex to partially-matching URLs to rewrite to proxy through portlet;<br/>
+                    e.g. /news/ matches http://www.my.edu/news/academic: <br/>
                     <form:input path="whitelistRegexes" type="text" size="80"/>
                 </p>
                 
                 <p>
-                    Content clipping selector (leave blank to avoid clipping):<br/>
+                    Content clipping HTML element name (leave blank to avoid clipping);<br/>
+                    e.g. body will return everything inside &lt;body&gt; ... &lt;/body&gt;:<br/>
                     <form:input path="clippingSelector" type="text" size="80"/>
                 </p>
 
@@ -93,7 +95,7 @@
                 </p>
 
                 <p>
-                    Static footer HTML header content (cannot include inline Javascript):<br>
+                    Static HTML footer content (cannot include inline Javascript):<br>
                     <form:textarea path="footer" rows="5" cols="80"/>
                 </p>
 

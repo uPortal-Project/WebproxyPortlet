@@ -40,7 +40,8 @@ import edu.wisc.my.webproxy.portlet.WebproxyConstants;
 public class HttpClientConfigImpl extends JspConfigPage {
     private static final String HTTPCLIENT_PREF_PREFIX = "webproxy.httpclient.";
     
-    public static final String HTTP_TIMEOUT     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("httpTimeout").toString(); 
+    public static final String HTTP_CONNECTION_TIMEOUT     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("httpConnectionTimeout").toString();
+    public static final String HTTP_SOCKET_TIMEOUT     = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("httpSocketTimeout").toString();
     public static final String MAX_REDIRECTS    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("redirects").toString();
     public static final String CIRCULAR_REDIRECTS    = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("circularRedirects").toString();
     public static final String AUTH_TYPE        = new StringBuffer(WebproxyConstants.UNIQUE_CONSTANT).append(HTTPCLIENT_PREF_PREFIX).append("sAuthType").toString();
@@ -115,19 +116,34 @@ public class HttpClientConfigImpl extends JspConfigPage {
         final Boolean circularRedirects = Boolean.valueOf(request.getParameter(CIRCULAR_REDIRECTS));
         prefs.setValue(CIRCULAR_REDIRECTS, circularRedirects.toString());
         
-        String httpTimeoutStr = null;
+        String httpConnectionTimeoutStr = null;
         try {
-            httpTimeoutStr = ConfigUtils.checkEmptyNullString(request.getParameter(HTTP_TIMEOUT), null);
-            if (httpTimeoutStr != null && httpTimeoutStr.length() > 0) {
-                final Long httpTimeout = new Long(httpTimeoutStr);
-                prefs.setValue(HTTP_TIMEOUT, httpTimeout.toString());
+            httpConnectionTimeoutStr = ConfigUtils.checkEmptyNullString(request.getParameter(HTTP_CONNECTION_TIMEOUT), null);
+            if (httpConnectionTimeoutStr != null && httpConnectionTimeoutStr.length() > 0) {
+                final Long httpConnectionTimeout = new Long(httpConnectionTimeoutStr);
+                prefs.setValue(HTTP_CONNECTION_TIMEOUT, httpConnectionTimeout.toString());
             }
             else {
-                prefs.setValue(HTTP_TIMEOUT, "");
+                prefs.setValue(HTTP_CONNECTION_TIMEOUT, "");
             }
         }
         catch (NumberFormatException nfe) {
-            errorMessages.append("Invalid authorization timeout specified '").append(httpTimeoutStr).append("'\n");
+            errorMessages.append("Invalid authorization connection timeout specified '").append(httpConnectionTimeoutStr).append("'\n");
+        }
+        
+        String httpSocketTimeoutStr = null;
+        try {
+            httpSocketTimeoutStr = ConfigUtils.checkEmptyNullString(request.getParameter(HTTP_SOCKET_TIMEOUT), null);
+            if (httpSocketTimeoutStr != null && httpSocketTimeoutStr.length() > 0) {
+                final Long httpSocketTimeout = new Long(httpSocketTimeoutStr);
+                prefs.setValue(HTTP_SOCKET_TIMEOUT, httpSocketTimeout.toString());
+            }
+            else {
+                prefs.setValue(HTTP_SOCKET_TIMEOUT, "");
+            }
+        }
+        catch (NumberFormatException nfe) {
+            errorMessages.append("Invalid authorization socket timeout specified '").append(httpSocketTimeoutStr).append("'\n");
         }
 
         String sessionTimeoutStr = null;

@@ -35,7 +35,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class MultiRequestHttpClientServiceImplTest {
-
+    private static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
+    private static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
+    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
+    private static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
 	@Mock PortletRequest request;
 	@Mock PortletPreferences preferences;
 	@Mock PortletSession session;
@@ -50,7 +53,10 @@ public class MultiRequestHttpClientServiceImplTest {
 		
 		when(request.getPreferences()).thenReturn(preferences);
 		when(request.getPortletSession()).thenReturn(session);
+		when(preferences.getValue(HTTP_CLIENT_CONNECTION_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT))).thenReturn(String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
+		when(preferences.getValue(HTTP_CLIENT_SOCKET_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT))).thenReturn(String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT));
 	}
+
 	
 	@Test
 	public void testGetSharedClient() {
@@ -72,7 +78,6 @@ public class MultiRequestHttpClientServiceImplTest {
 	@Test
 	public void testCreateSharedClient() {
 		when(preferences.getValue(MultiRequestHttpClientServiceImpl.SHARED_SESSION_KEY, null)).thenReturn("sharedSession");
-
 		HttpClient response = service.getHttpClient(request);
 		assertNotNull(response);
 		verify(session).setAttribute("sharedSession", response, PortletSession.APPLICATION_SCOPE); 

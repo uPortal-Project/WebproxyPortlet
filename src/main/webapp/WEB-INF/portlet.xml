@@ -44,6 +44,12 @@
         <portlet-info>
             <title>WebProxy Portlet</title>
         </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>sourcePageCharacterEncoding</name>
+                <value>UTF-8</value>
+            </preference>
+        </portlet-preferences>
     </portlet>
 
     <portlet>
@@ -96,7 +102,7 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <portlet-info>
-            <title>WebProxy Portlet</title>
+            <title>Gateway Portlet</title>
         </portlet-info>
 
         <portlet-preferences>

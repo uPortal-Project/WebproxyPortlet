@@ -42,4 +42,11 @@
         </property>
     </bean>
 
+    <util:map id="pageCharacterEncodings">
+        <entry key="UTF-8" value="UTF-8 (standard for HTML5)"/>
+        <entry key="Cp1252" value="ANSI/Windows-1252/Cp1252"/>
+        <entry key="ISO-8859-1" value="ISO-8859-1 (standard for HTML4)"/>
+        <entry key="UTF-16" value="UTF-16"/>
+    </util:map>
+
 </beans>

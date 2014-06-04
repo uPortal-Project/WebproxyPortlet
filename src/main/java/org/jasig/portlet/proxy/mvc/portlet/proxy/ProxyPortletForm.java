@@ -39,6 +39,7 @@ public class ProxyPortletForm {
 
   private String contentService;
 	private String location;
+    private String pageCharacterEncodingFormat;
 	
 	// filters
 	private String whitelistRegexes; // TODO: support multiple whitelist entries
@@ -124,4 +125,11 @@ public class ProxyPortletForm {
 		this.passwordKey = passwordKey;
 	}
 
+    public String getPageCharacterEncodingFormat() {
+        return pageCharacterEncodingFormat;
+    }
+
+    public void setPageCharacterEncodingFormat(String pageCharacterEncodingFormat) {
+        this.pageCharacterEncodingFormat = pageCharacterEncodingFormat;
+    }
 }

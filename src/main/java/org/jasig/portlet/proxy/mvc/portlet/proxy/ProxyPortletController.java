@@ -69,7 +69,9 @@ public class ProxyPortletController {
 
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
-    
+    public static final String PREF_CHARACTER_ENCODING = "sourcePageCharacterEncoding";
+    public static final String CHARACTER_ENCODING_DEFAULT = "UTF-8";
+
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private ApplicationContext applicationContext;
     
@@ -117,7 +119,7 @@ public class ProxyPortletController {
         	// TODO: error handling
         	return;
         }
-        
+
         // locate all filters configured for this portlet
         final List<IDocumentFilter> filters = new ArrayList<IDocumentFilter>();
         final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
@@ -127,7 +129,9 @@ public class ProxyPortletController {
         }
         
         try {
-            final Document document = Jsoup.parse(proxyResponse.getContent(), "UTF-8", proxyResponse.getProxiedLocation());
+            String sourceEncodingFormat = preferences.getValue(PREF_CHARACTER_ENCODING, CHARACTER_ENCODING_DEFAULT);
+            final Document document = Jsoup.parse(proxyResponse.getContent(), sourceEncodingFormat,
+                    proxyResponse.getProxiedLocation());
             
             
             // apply each of the document filters in order
@@ -158,7 +162,8 @@ public class ProxyPortletController {
     }
 
     @ActionMapping
-    public void proxyTarget(final @RequestParam("proxy.url") String url,  final ActionRequest request, final ActionResponse response) throws IOException {
+    public void proxyTarget(final @RequestParam("proxy.url") String url,  final ActionRequest request,
+                            final ActionResponse response) throws IOException {
 
         final PortletPreferences preferences = request.getPreferences();
         IContentResponse proxyResponse = null;

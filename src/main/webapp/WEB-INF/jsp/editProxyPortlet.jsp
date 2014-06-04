@@ -23,8 +23,14 @@
 <portlet:actionURL var="formUrl" escapeXml="false"/>
 <c:set var="n"><portlet:namespace/></c:set>
 
+<style type="text/css">
+    #${n}proxyConfig ul {
+        list-style-type: none;
+    }
+</style>
+
 <!-- Portlet -->
-<div class="fl-widget portlet" role="section">
+<div id="${n}proxyConfig" class="fl-widget portlet" role="section">
     
     <!-- Portlet Titlebar -->
     <div class="fl-widget-titlebar titlebar portlet-titlebar" role="sectionhead">
@@ -52,7 +58,14 @@
 
                 <p>
                     Content location (fully-qualified URL or classpath location):<br/>
-                    <form:input path="location" type="text"/>
+                    <form:input path="location" type="text" size="80"/>
+                </p>
+
+                <p>
+                    Page Encoding Format:<br/>
+                    <form:select path="pageCharacterEncodingFormat">
+                        <form:options items="${pageCharacterEncodings}"/>
+                    </form:select>
                 </p>
                 
                 <p>
@@ -65,27 +78,28 @@
                 </p>
                 
                 <p>
-                    Whitelist:<br/>
-                    <form:input path="whitelistRegexes" type="text"/>
+                    Whitelist Regex of URLs to rewrite to proxy through portlet: <br/>
+                    <form:input path="whitelistRegexes" type="text" size="80"/>
                 </p>
                 
                 <p>
-                    Content clipping selector (leave blank to avoid clipping):
-                    <form:input path="clippingSelector" type="text"/>
+                    Content clipping selector (leave blank to avoid clipping):<br/>
+                    <form:input path="clippingSelector" type="text" size="80"/>
                 </p>
 
                 <p>
-                    Static header:
-                    <form:input path="header" type="text"/>
+                    Static HTML header content (cannot include inline Javascript):<br/>
+                    <form:textarea path="header" rows="5" cols="80"/>
                 </p>
 
                 <p>
-                    Static footer:
-                    <form:input path="footer" type="text"/>
+                    Static footer HTML header content (cannot include inline Javascript):<br>
+                    <form:textarea path="footer" rows="5" cols="80"/>
                 </p>
 
                 <div class="buttons">
-                    <input class="button primary" type="submit" value="<spring:message code="save"/>"/>
+                    <input class="button primary" type="submit" name="Save" value="<spring:message code="save"/>"/>
+                    <input class="button" type="submit" name="Cancel" value="<spring:message code="edit.proxy.cancel"/>"/>
                 </div>
 
             </form:form>

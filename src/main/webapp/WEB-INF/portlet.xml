@@ -41,6 +41,22 @@
             <short-title>Web Proxy</short-title>
             <keywords>Web, Proxy, Clipping, HTTP, HTTPS</keywords>
         </portlet-info>
+        <portlet-preferences>
+            <!-- Define a default value for a connection timeout (establishing a socket connection) so the
+                 socket doesn't hang indefinitely if there are firewall or network issues. -->
+            <preference>
+                <name>edu.wisc.my.webproxy.webproxy.httpclient.httpTimeout</name>
+                <value>30</value>
+                <read-only>false</read-only>
+            </preference>
+            <!-- Define a default value for a socket timeout (reading from an established socket connection) so the
+                 socket doesn't hang indefinitely if there are firewall or network issues. -->
+            <preference>
+                <name>edu.wisc.my.webproxy.webproxy.httpclient.httpSocketTimeout</name>
+                <value>120</value>
+                <read-only>false</read-only>
+            </preference>
+        </portlet-preferences>
     </portlet>
 
     <custom-portlet-mode>

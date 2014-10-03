@@ -34,7 +34,7 @@ Configuration Examples
 *---------------------------------------------------------------------+-----------------------------------+
 | edu.wisc.my.webproxy.webproxy.general.config.sListType              | INCLUDE                           |
 *---------------------------------------------------------------------+-----------------------------------+
-| edu.wisc.my.webproxy.webproxy.httpclient.httpConnectionTimeout      | 5                                 |
+| edu.wisc.my.webproxy.webproxy.httpclient.httpTimeout                | 5                                 |
 *---------------------------------------------------------------------+-----------------------------------+
 | edu.wisc.my.webproxy.webproxy.httpclient.httpSocketTimeout          | 5                                 |
 *---------------------------------------------------------------------+-----------------------------------+
@@ -86,7 +86,7 @@ Full Configuration Options List
 *---------------------------------------------------------------------+-----------+-----------------------------------------------+
 | <<Commons HTTP Client Preferences>> | | |
 *---------------------------------------------------------------------+-----------+-----------------------------------------------+
-| edu.wisc.my.webproxy.webproxy.httpclient.httpConnectTimeout         | single    | HTTP Connect timeout |
+| edu.wisc.my.webproxy.webproxy.httpclient.httpTimeout                | single    | HTTP Socket Connect timeout |
 *---------------------------------------------------------------------+-----------+-----------------------------------------------+
 | edu.wisc.my.webproxy.webproxy.httpclient.httpSocketTimeout          | single    | HTTP Socket timeout |
 *---------------------------------------------------------------------+-----------+-----------------------------------------------+

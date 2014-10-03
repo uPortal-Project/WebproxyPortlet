@@ -196,8 +196,8 @@ public class HttpManagerImpl extends HttpManager {
 	protected DefaultHttpClient setHttpClientTimeouts(PortletRequest request, DefaultHttpClient client) {
 		PortletPreferences prefs = new PortletPreferencesWrapper(request.getPreferences(), (Map)request.getAttribute(PortletRequest.USER_INFO));
 		HttpParams params = client.getParams();
-        final String httpConnectionTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_CONNECTION_TIMEOUT, "");
-        final String httpSocketTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_SOCKET_TIMEOUT, "");
+        final String httpConnectionTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_CONNECTION_TIMEOUT, "30");
+        final String httpSocketTimeout = prefs.getValue(HttpClientConfigImpl.HTTP_SOCKET_TIMEOUT, "120");
         try {
             /*
              * The connection is attempted 5 times prior to stopping

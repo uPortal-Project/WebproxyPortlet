@@ -524,6 +524,8 @@
                         <exclude>NOTICE.template</exclude>
                         <exclude>release.properties</exclude>
                         <excluse>.gitignore</excluse>
+                        <exclude>.idea/**</exclude> <!-- for IntelliJ working folders -->
+                        <exclude>overlays/**</exclude> <!-- for IntelliJ working folders -->
                     </excludes>
                 </configuration>
             </plugin>

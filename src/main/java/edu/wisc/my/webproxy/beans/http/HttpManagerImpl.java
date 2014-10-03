@@ -144,7 +144,11 @@ public class HttpManagerImpl extends HttpManager {
                 method.setHeader(headers[index].getName(), headers[index].getValue());
             }
         }
-        
+        // WPP-84 Insure connection closes and doesn't leave socket in CLOSE_WAIT.  Tried other approaches but
+        // they weren't reliable.  Unfortunately this will use a 2nd socket for authentication scenarios but it
+        // will insure sockets aren't left hanging.
+        method.setHeader("Connection", "close");
+
         return new ResponseImpl(method, client);
     }
 

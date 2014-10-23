@@ -59,6 +59,18 @@
         </portlet-preferences>
     </portlet>
 
+    <!-- Preferences used by Cosign pre-interceptor -->
+    <portlet-preferences>
+      <preference>
+        <name>uk.ac.ed.myed.cosign.cosign_base_path</name>
+        <value>/var/cosign/proxy</value>
+      </preference>
+      <preference>
+        <name>uk.ac.ed.myed.cosign.cosign_service</name>
+        <value>cosign</value>
+      </preference>
+    </portlet-preferences>
+
     <custom-portlet-mode>
         <description>Allows the portlet to render a preferences edit UI during publishing</description>
         <portlet-mode>config</portlet-mode>

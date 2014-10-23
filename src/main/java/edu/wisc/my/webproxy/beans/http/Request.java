@@ -54,6 +54,9 @@
 *******************************************************************************/
 package edu.wisc.my.webproxy.beans.http;
 
+import java.util.Collection;
+
+import org.apache.http.cookie.Cookie;
 
 /**
  * Represents the data needed to make a HTTP request.
@@ -64,7 +67,16 @@ package edu.wisc.my.webproxy.beans.http;
  * 
  */
 public interface Request {
-	
+     /** 
+      * Add an additional cookie to be sent as part of the request.
+      */
+     public void addCookie(final Cookie cookie);
+ 
+     /**
+      * Get extra cookies to be sent with the request.
+      */
+     public Collection<Cookie> getExtraCookies();
+     
 	/** 
      * Sets the Static Headers to this object 
      *

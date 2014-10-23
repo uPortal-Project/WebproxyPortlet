@@ -22,6 +22,7 @@ package edu.wisc.my.webproxy.beans.filtering;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -35,8 +36,6 @@ import org.xml.sax.SAXException;
  * @version $Id$
  */
 public final class HtmlOutputFilter extends ChainingSaxFilter {
-    private static final String ENTITY_START    = "&";
-    private static final String ENTITY_END      = ";";
     private static final String TAG_OPEN_START  = "<";
     private static final String TAG_CLOSE_START = "</";
     private static final String TAG_END         = ">";
@@ -47,7 +46,6 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     private static final String SPACE           = " ";
     
     private final Writer out;
-    private String currentEntity = null; //The current entity that is being rendered
     
     public HtmlOutputFilter(Writer out) {
         if (out == null)
@@ -56,6 +54,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
         this.out = out;
     }
 
+    @Override
     public String getName() {
         return "Output Filter";
     }
@@ -64,6 +63,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ext.LexicalHandler#comment(char[], int, int)
      */
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         try {
             out.write(COMMENT_START);
@@ -78,35 +78,26 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see edu.wisc.my.webproxy.beans.filtering.ChainingSaxFilter#startEntity(java.lang.String)
      */
+    @Override
     public void startEntity(String name) throws SAXException {
-        this.currentEntity = name;
-        
-        try {
-            out.write(ENTITY_START);
-            out.write(this.currentEntity);
-            out.write(ENTITY_END);
-        }
-        catch (IOException ioe) {
-            throw new SAXException("Error writing data to output stream", ioe);
-        }
+        // Leave this to characters() to handle
     }
 
     /**
      * @see edu.wisc.my.webproxy.beans.filtering.ChainingSaxFilter#endEntity(java.lang.String)
      */
+    @Override
     public void endEntity(String name) throws SAXException {
-        this.currentEntity = null;
+        // Leave this to characters() to handle
     }
 
     /**
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         try {
-            if (this.currentEntity == null) {
-                final String chars = new String(ch, start, length);
-                out.write(chars);
-            }
+            out.write(ch, start, length);
         }
         catch (IOException ioe) {
             throw new SAXException("Error writing data to output stream", ioe);
@@ -116,6 +107,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#endDocument()
      */
+    @Override
     public void endDocument() throws SAXException {
         try {
             out.flush();
@@ -128,6 +120,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
             out.write(TAG_CLOSE_START);
@@ -142,6 +135,7 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
     /**
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         try {
             out.write(TAG_OPEN_START);
@@ -152,12 +146,12 @@ public final class HtmlOutputFilter extends ChainingSaxFilter {
                 final String value = atts.getValue(index);
                 
                 out.write(SPACE);
-                out.write(name);
+                out.write(StringEscapeUtils.escapeHtml(name));
                 
                 if (value != null) {
                     out.write(EQUAL);
                     out.write(QUOTE);
-                    out.write(value);
+                    out.write(StringEscapeUtils.escapeHtml(value));
                     out.write(QUOTE);
                 }
             }

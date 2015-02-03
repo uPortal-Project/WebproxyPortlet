@@ -32,6 +32,7 @@ import javax.portlet.PortletSession;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
+import org.jasig.portlet.spring.IExpressionProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
     public HttpContentRequestImpl() { 
     }
     
-    public HttpContentRequestImpl(PortletRequest request) {
+    public HttpContentRequestImpl(PortletRequest request, IExpressionProcessor expressionProcessor) {
     	this();
     	
         // If a URL parameter has been specified, check to make sure that it's 
@@ -62,13 +63,16 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
             if (!rewrittenUrls.containsKey(urlParam)) {
             	throw new RuntimeException("Illegal URL " + urlParam);
             }
-            setProxiedLocation(urlParam);
+            
+            setProxiedLocation(expressionProcessor.process(urlParam, request));
         } 
         
         // otherwise use the default starting URL for this proxy portlet
         else {
             final PortletPreferences preferences = request.getPreferences();
-        	setProxiedLocation(preferences.getValue(CONTENT_LOCATION_KEY, null));
+            String url = expressionProcessor.process( preferences.getValue(CONTENT_LOCATION_KEY, null), request);
+            
+        	setProxiedLocation( url);
         }
         
         final Map<String, String[]> params = request.getParameterMap();

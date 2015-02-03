@@ -49,6 +49,7 @@ import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
+import org.jasig.portlet.spring.IExpressionProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,9 +93,12 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         this.replayedRequestHeaders = replayedRequestHeaders;
     }
 
+    @Autowired(required = true)
+    private IExpressionProcessor expressionParser;
+
     @Override
     public HttpContentRequestImpl getRequest(PortletRequest request) {
-        final HttpContentRequestImpl contentRequest = new HttpContentRequestImpl(request);
+        final HttpContentRequestImpl contentRequest = new HttpContentRequestImpl(request, expressionParser);
 
         for (String headerName : replayedRequestHeaders) {
             final String headerValue = request.getProperty(headerName);

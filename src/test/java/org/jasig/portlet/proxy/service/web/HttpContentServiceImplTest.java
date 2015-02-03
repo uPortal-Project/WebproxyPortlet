@@ -29,8 +29,10 @@ import javax.portlet.PortletRequest;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
+import org.jasig.portlet.spring.SpringELProcessor;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -41,7 +43,8 @@ public class HttpContentServiceImplTest {
 	Map<String, String[]> params = new LinkedHashMap<String, String[]>();;
 	@Mock PortletRequest request;
 	@Mock PortletPreferences preferences;
-	
+    @Mock SpringELProcessor processor;
+    
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
@@ -56,8 +59,9 @@ public class HttpContentServiceImplTest {
 	@Test
 	public void testPostFormNoParams() {
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
-		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("POST");		
-		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request);
+		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("POST");
+        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("POST", httpRequest.getMethod());
@@ -73,7 +77,8 @@ public class HttpContentServiceImplTest {
 		
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request);
+        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());
@@ -85,7 +90,8 @@ public class HttpContentServiceImplTest {
 	public void testGetFormNoParams() {
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request);
+        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());
@@ -98,7 +104,8 @@ public class HttpContentServiceImplTest {
 	public void testNonForm() {
 		
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("false");
-		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request);
+        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());

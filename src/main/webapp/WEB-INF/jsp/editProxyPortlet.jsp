@@ -49,7 +49,7 @@
             <form:form modelAttribute="form" action="${formUrl}" method="POST">
             
                 <p>
-                    Content source:
+                    <label>Content source:</label>
                     <ul>
                         <li><form:radiobutton path="contentService" value="httpContentService"/> HTTP (Web-based document)</li>
                         <li><form:radiobutton path="contentService" value="fileContentService"/> File in the portlet's classpath</li>
@@ -57,19 +57,36 @@
                 </p>
 
                 <p>
-                    Content location (fully-qualified URL or classpath location):<br/>
+                    <label>Content location (fully-qualified URL or classpath location):</label><br/>
                     <form:input path="location" type="text" size="80"/>
                 </p>
-
+                <div class="instructions form-group">
+                    <div class="col-sm-10">
+                        <div class="collapse" id="advancedUrlOptions">
+                            <div class="well">
+                                <spring:message code="edit.proxy.url.instructions"/>
+                                <ul>
+                                    <li><spring:message code="edit.proxy.url.instructions.ex1"/></li>
+                                    <li><spring:message code="edit.proxy.url.instructions.ex2"/></li>
+                                    <li><spring:message code="edit.proxy.url.instructions.ex3"/></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a class="btn btn-info" href="javascript:void(0)" data-toggle="collapse" data-target="#advancedUrlOptions" aria-expanded="false" aria-controls="advancedUrlOptions">
+                            <spring:message code="edit.proxy.url.advancedUrlOptions"/>
+                        </a>
+                    </div>
+                </div>
+                <br/>
                 <p>
-                    Page Encoding Format:<br/>
+                <label>Page Encoding Format:</label><br/>
                     <form:select path="pageCharacterEncodingFormat">
                         <form:options items="${pageCharacterEncodings}"/>
                     </form:select>
                 </p>
                 
                 <p>
-                    Authentication:
+                    <label>Authentication:</label>
                     <ul>
                         <li><form:radiobutton path="authType" value="NONE"/> None</li>
                         <li><form:radiobutton path="authType" value="CAS"/> CAS</li>
@@ -78,24 +95,24 @@
                 </p>
                 
                 <p>
-                    Whitelist Regex to partially-matching URLs to rewrite to proxy through portlet;<br/>
+                    <label>Whitelist Regex to partially-matching URLs to rewrite to proxy through portlet;</label><br/>
                     e.g. /news/ matches http://www.my.edu/news/academic: <br/>
                     <form:input path="whitelistRegexes" type="text" size="80"/>
                 </p>
                 
                 <p>
-                    Content clipping HTML element name (leave blank to avoid clipping);<br/>
+                    <label>Content clipping HTML element name (leave blank to avoid clipping);</label><br/>
                     e.g. body will return everything inside &lt;body&gt; ... &lt;/body&gt;:<br/>
                     <form:input path="clippingSelector" type="text" size="80"/>
                 </p>
 
                 <p>
-                    Static HTML header content (cannot include inline Javascript):<br/>
+                    <label>Static HTML header content (cannot include inline Javascript):</label><br/>
                     <form:textarea path="header" rows="5" cols="80"/>
                 </p>
 
                 <p>
-                    Static HTML footer content (cannot include inline Javascript):<br>
+                    <label>Static HTML footer content (cannot include inline Javascript):</label><br>
                     <form:textarea path="footer" rows="5" cols="80"/>
                 </p>
 

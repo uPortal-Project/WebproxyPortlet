@@ -21,7 +21,7 @@
         <developerConnection>scm:git:git@github.com:Jasig/WebproxyPortlet.git</developerConnection>
         <url>https://github.com/Jasig/WebproxyPortlet</url>
     </scm>
-    
+
     <issueManagement>
         <url>${jasig-issues-base}/WPP</url>
         <system>${jasig-issues-system}</system>
@@ -41,6 +41,7 @@
         <logbackVersion>1.0.13</logbackVersion>
         <slf4jVersion>1.7.5</slf4jVersion>
         <mockito.version>1.9.5</mockito.version>
+        <portlet.mvc.util.version>1.1.2-SNAPSHOT</portlet.mvc.util.version>
     </properties>
 
     <dependencyManagement>
@@ -281,7 +282,12 @@
             <artifactId>jasypt</artifactId>  
             <version>1.6</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.jasig.portlet.utils</groupId>
+            <artifactId>portlet-mvc-util</artifactId>
+            <version>${portlet.mvc.util.version}</version>
+        </dependency>
         <!-- ===== Runtime Dependencies ================================== -->
         <dependency>
             <groupId>org.jasig.resourceserver</groupId>

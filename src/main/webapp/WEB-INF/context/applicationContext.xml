@@ -167,6 +167,8 @@
     <bean id="proxyGrantingTicketStorage" 
             class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>
 
+    <bean id="springELProcessor" class="org.jasig.portlet.spring.SpringELProcessor">
+    </bean>
   <!-- End of common config -->
 
 </beans>

@@ -43,7 +43,7 @@ public class HttpContentServiceImplTest {
 	Map<String, String[]> params = new LinkedHashMap<String, String[]>();;
 	@Mock PortletRequest request;
 	@Mock PortletPreferences preferences;
-    @Mock SpringELProcessor processor;
+	@Mock SpringELProcessor processor;
     
 	@Before
 	public void setUp() {
@@ -60,7 +60,7 @@ public class HttpContentServiceImplTest {
 	public void testPostFormNoParams() {
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("POST");
-        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -77,7 +77,7 @@ public class HttpContentServiceImplTest {
 		
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -90,7 +90,7 @@ public class HttpContentServiceImplTest {
 	public void testGetFormNoParams() {
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -104,7 +104,7 @@ public class HttpContentServiceImplTest {
 	public void testNonForm() {
 		
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("false");
-        when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 		
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);

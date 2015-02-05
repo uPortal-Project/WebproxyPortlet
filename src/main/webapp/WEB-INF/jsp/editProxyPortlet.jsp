@@ -61,25 +61,22 @@
                     <form:input path="location" type="text" size="80"/>
                 </p>
                 <div class="instructions form-group">
-                    <div class="col-sm-10">
-                        <div class="collapse" id="advancedUrlOptions">
-                            <div class="well">
-                                <spring:message code="edit.proxy.url.instructions"/>
-                                <ul>
-                                    <li><spring:message code="edit.proxy.url.instructions.ex1"/></li>
-                                    <li><spring:message code="edit.proxy.url.instructions.ex2"/></li>
-                                    <li><spring:message code="edit.proxy.url.instructions.ex3"/></li>
-                                </ul>
-                            </div>
+                    <div class="collapse" id="advancedUrlOptions">
+                        <div class="well">
+                            <spring:message code="edit.proxy.url.instructions"/>
+                            <ol>
+                                <li><spring:message code="edit.proxy.url.instructions.ex1"/></li>
+                                <li><spring:message code="edit.proxy.url.instructions.ex2"/></li>
+                                <li><spring:message code="edit.proxy.url.instructions.ex3"/></li>
+                            </ol>
                         </div>
-                        <a class="btn btn-info" href="javascript:void(0)" data-toggle="collapse" data-target="#advancedUrlOptions" aria-expanded="false" aria-controls="advancedUrlOptions">
-                            <spring:message code="edit.proxy.url.advancedUrlOptions"/>
-                        </a>
                     </div>
+                    <a class="btn btn-info" href="javascript:void(0)" data-toggle="collapse" data-target="#advancedUrlOptions" aria-expanded="false" aria-controls="advancedUrlOptions">
+                        <spring:message code="edit.proxy.url.advancedUrlOptions"/>
+                    </a>
                 </div>
-                <br/>
                 <p>
-                <label>Page Encoding Format:</label><br/>
+                <label>Page Encoding Format:</label>&nbsp;
                     <form:select path="pageCharacterEncodingFormat">
                         <form:options items="${pageCharacterEncodings}"/>
                     </form:select>

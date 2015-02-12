@@ -122,7 +122,7 @@ public class URLRewritingFilter implements IDocumentFilter {
 
                     String attributeUrl = element.attr(attributeName);
                     LOG.trace("Considering element {}  with URL attribute {} of value {}", element, attributeName, attributeUrl);
-                    
+
                     // don't adjust or filter javascript url targets
                     if (StringUtils.isNotBlank(attributeUrl) && !attributeUrl.startsWith(JAVASCRIPT_PREFIX) && 
                         !attributeUrl.startsWith(JAVASCRIPT_PREFIX.toLowerCase())) {
@@ -131,15 +131,19 @@ public class URLRewritingFilter implements IDocumentFilter {
                         // relative URLs into absolute URLs
                         if (baseUrl != null) {
 
-                            // if the URL is relative to the server base, prepend
-                            // the base URL
-                            if (attributeUrl.startsWith("/") && !attributeUrl.startsWith("//")) {
+                            // (1) do not prefix absolute URLs
+                            if (attributeUrl.contains("://") || attributeUrl.startsWith("//")) {
+                                // do nothing...
+                            }
+
+                            // (2) if the URL is relative to the server base,
+                            // prepend the base URL
+                            else if (attributeUrl.startsWith("/")) {
                                 attributeUrl = baseUrl.concat(attributeUrl);
                             }
 
-                            // if the URL contains no path information, use
-                            // the full relative path
-                            else if (!attributeUrl.contains("://")) {
+                            // (3) otherwise use the full relative path
+                            else {
                                 attributeUrl = relativeUrl.concat(attributeUrl);
                             }
 

@@ -24,9 +24,10 @@ import java.util.Map;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;

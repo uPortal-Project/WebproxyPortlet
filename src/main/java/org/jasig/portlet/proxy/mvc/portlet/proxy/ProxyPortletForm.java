@@ -52,6 +52,17 @@ public class ProxyPortletForm {
 	private String usernameKey = "user.login.id";
 	private String passwordKey = "password";
 	
+    // strategies
+    private String[] searchStrategies;
+    
+	// gsa
+	private String gsaHost;
+	private String gsaCollection;
+	private String gsaFrontend;
+	private String gsaWhitelistRegex;
+	
+	// anchor
+	private String anchorWhitelistRegex;
 
 	public String getContentService() {
 		return contentService;
@@ -131,5 +142,53 @@ public class ProxyPortletForm {
 
     public void setPageCharacterEncodingFormat(String pageCharacterEncodingFormat) {
         this.pageCharacterEncodingFormat = pageCharacterEncodingFormat;
+    }
+
+    public String getGsaHost() {
+        return gsaHost;
+    }
+
+    public void setGsaHost(String gsaHost) {
+        this.gsaHost = gsaHost;
+    }
+
+    public String getGsaCollection() {
+        return gsaCollection;
+    }
+
+    public void setGsaCollection(String gsaCollection) {
+        this.gsaCollection = gsaCollection;
+    }
+
+    public String getGsaFrontend() {
+        return gsaFrontend;
+    }
+
+    public void setGsaFrontend(String gsaFrontend) {
+        this.gsaFrontend = gsaFrontend;
+    }
+
+    public String[] getSearchStrategies() {
+        return searchStrategies;
+    }
+
+    public void setSearchStrategies(String[] searchStrategies) {
+        this.searchStrategies = searchStrategies;
+    }
+
+    public String getGsaWhitelistRegex() {
+        return gsaWhitelistRegex;
+    }
+
+    public void setGsaWhitelistRegex(String gsaWhitelistRegex) {
+        this.gsaWhitelistRegex = gsaWhitelistRegex;
+    }
+
+    public String getAnchorWhitelistRegex() {
+        return anchorWhitelistRegex;
+    }
+
+    public void setAnchorWhitelistRegex(String anchorWhitelistRegex) {
+        this.anchorWhitelistRegex = anchorWhitelistRegex;
     }
 }

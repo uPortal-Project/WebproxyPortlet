@@ -156,6 +156,11 @@
                 <artifactId>standard</artifactId>
                 <version>${jstl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jasig.portal</groupId>
+                <artifactId>uportal-search-api</artifactId>
+                <version>4.0.10</version>
+            </dependency>
 
             <!-- For sl4j/logback logging, see https://wiki.jasig.org/display/PLT/Logging+Best+Practices -->
             <dependency>
@@ -290,6 +295,11 @@
             <groupId>org.jasypt</groupId> 
             <artifactId>jasypt</artifactId>  
             <version>1.6</version>
+        </dependency>
+               
+        <dependency>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uportal-search-api</artifactId>
         </dependency>
         
         <dependency>

@@ -112,6 +112,37 @@
                     <form:textarea path="footer" rows="5" cols="80"/>
                 </p>
 
+                <p>
+                    <label>Page Search Strategies</label><br>
+                    <form:checkboxes path="searchStrategies" items="${strategyNames }" />
+                </p>
+                
+                <p>
+                    <label>Google Search Appliance Host</label><br>
+                    <form:input path="gsaHost" type="text" size="80"/>
+                </p>
+                
+                <p>
+                    <label>Google Search Appliance Collection</label><br>
+                    <form:input path="gsaCollection" type="text" size="80"/>
+                </p>
+                
+                <p>
+                    <label>Google Search Appliance Frontend</label><br>
+                    <form:input path="gsaFrontend" type="text" size="80"/>
+                </p>
+                
+                <p>
+                    <label>Google Search Appliance Whitelist Regex</label><br>
+                    <form:input path="gsaWhitelistRegex" type="text" size="80"/>
+                </p>
+                
+                <p>
+                    <label>Anchor Strategy Whitelist Regex</label><br>
+                    <form:input path="anchorWhitelistRegex" type="text" size="80"/>
+                </p>
+                
+                					                
                 <div class="buttons">
                     <input class="button primary" type="submit" name="Save" value="<spring:message code="save"/>"/>
                     <input class="button" type="submit" name="Cancel" value="<spring:message code="edit.proxy.cancel"/>"/>

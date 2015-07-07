@@ -31,6 +31,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.jasig.portlet.proxy.search.ISearchService;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
 import org.jasig.portlet.proxy.service.proxy.document.HeaderFooterFilter;
@@ -38,6 +39,7 @@ import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -69,9 +71,17 @@ public class EditProxyController {
         return pageCharacterEncodings;
     }
 
+    private ISearchService searchService;
+    @Required
+    @Resource(name="contentSearchProvider")
+    public void setSearchService(ISearchService searchService) {
+        this.searchService = searchService;
+    }
+
     @RenderMapping
 	public String getEditView(PortletRequest request, Model model) {
         model.addAttribute("form", getForm(request));
+        model.addAttribute("strategyNames", searchService.getStrategyNames());
 		return "editProxyPortlet";
 	}
 	
@@ -123,6 +133,14 @@ public class EditProxyController {
 
                 preferences.setValue(ProxyPortletForm.AUTHENTICATION_TYPE, form.getAuthType().toString());
                 preferences.setValues(HttpContentServiceImpl.PREINTERCEPTOR_LIST_KEY, preInterceptors.toArray(new String[]{}));
+                
+                preferences.setValue("gsaHost", form.getGsaHost());
+                preferences.setValue("gsaCollection", form.getGsaCollection());
+                preferences.setValue("gsaFrontend", form.getGsaFrontend());
+                preferences.setValue("gsaWhitelistRegex", form.getGsaWhitelistRegex());
+                preferences.setValue("anchorWhitelistRegex", form.getAnchorWhitelistRegex());
+                
+                preferences.setValues("searchStrategies", form.getSearchStrategies());
                 preferences.store();
 
             } catch (Exception e) {
@@ -148,6 +166,14 @@ public class EditProxyController {
 		form.setClippingSelector(preferences.getValue(ContentClippingFilter.SELECTOR_KEY, null));
         form.setHeader(preferences.getValue(HeaderFooterFilter.HEADER_KEY, null));
         form.setFooter(preferences.getValue(HeaderFooterFilter.FOOTER_KEY, null));
+        
+        form.setGsaHost(preferences.getValue("gsaHost", null));
+        form.setGsaCollection(preferences.getValue("gsaCollection", null));
+        form.setGsaFrontend(preferences.getValue("gsaFrontend",  null));
+        form.setGsaWhitelistRegex(preferences.getValue("gsaWhitelistRegex",  null));
+        
+        form.setAnchorWhitelistRegex(preferences.getValue("anchorWhitelistRegex", null));
+        form.setSearchStrategies(preferences.getValues("searchStrategies", new String[]{}));
 		
 		String authTypeForm = preferences.getValue(ProxyPortletForm.AUTHENTICATION_TYPE, null);
 		ProxyPortletForm.ProxyAuthType authType = ProxyPortletForm.ProxyAuthType.NONE;

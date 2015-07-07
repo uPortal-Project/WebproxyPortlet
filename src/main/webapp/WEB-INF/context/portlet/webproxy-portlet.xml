@@ -40,7 +40,19 @@
             </list>
         </property>
     </bean>
-
+    
+    <bean id="anchorSearchStrategy" class="org.jasig.portlet.proxy.search.AnchorSearchStrategy">
+    	<property name="contentSearchProvider" ref="contentSearchProvider" />
+    </bean>
+    
+    <bean id="gsaSearchStrategy" class="org.jasig.portlet.proxy.search.GsaSearchStrategy">
+    	<property name="contentSearchProvider" ref="contentSearchProvider" />
+    </bean>
+    
+    <bean id="contentSearchProvider" class="org.jasig.portlet.proxy.search.DefaultSearchService">
+        
+    </bean>
+    
     <util:map id="pageCharacterEncodings">
         <entry key="UTF-8" value="UTF-8 (standard for HTML5)"/>
         <entry key="Cp1252" value="ANSI/Windows-1252/Cp1252"/>

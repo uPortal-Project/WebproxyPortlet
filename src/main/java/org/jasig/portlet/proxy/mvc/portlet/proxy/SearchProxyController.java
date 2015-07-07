@@ -19,23 +19,23 @@ import org.springframework.web.portlet.bind.annotation.EventMapping;
 @Controller
 @RequestMapping("VIEW")
 public class SearchProxyController {
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	private ISearchService searchService;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private ISearchService searchService;
     @Required
     @Resource(name="contentSearchProvider")
     public void setSearchService(ISearchService searchService) {
-	    this.searchService = searchService;
+        this.searchService = searchService;
     }
-    
-	@EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING) 
-	public void searchRequest(EventRequest request, EventResponse response) {   
+
+    @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING) 
+    public void searchRequest(EventRequest request, EventResponse response) {   
         log.debug("EVENT HANDLER -- START");
         final Event event = request.getEvent();
         final SearchRequest searchQuery = (SearchRequest)event.getValue();
-        
+
         SearchResults searchResults = searchService.search(searchQuery, request);
-        
+
         response.setEvent(SearchConstants.SEARCH_RESULTS_QNAME, searchResults);
         log.debug("EVENT HANDLER -- END");
     }

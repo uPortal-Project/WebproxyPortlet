@@ -23,118 +23,118 @@ import java.beans.PropertyEditorSupport;
 
 public class ProxyPortletForm {
 
-  public static final String AUTHENTICATION_TYPE = "authType";
-    
-	enum ProxyAuthType {
-		NONE, CAS, BASIC;
-	}
-	
-  public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
-      @Override
-      public void setAsText(String text) {
-          ProxyAuthType value = ProxyAuthType.valueOf(text);
-          setValue(value);
-      }
-  }
+    public static final String AUTHENTICATION_TYPE = "authType";
 
-  private String contentService;
-	private String location;
+    enum ProxyAuthType {
+        NONE, CAS, BASIC;
+    }
+
+    public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
+        @Override
+        public void setAsText(String text) {
+            ProxyAuthType value = ProxyAuthType.valueOf(text);
+            setValue(value);
+        }
+    }
+
+    private String contentService;
+    private String location;
     private String pageCharacterEncodingFormat;
-	
-	// filters
-	private String whitelistRegexes; // TODO: support multiple whitelist entries
-	private String clippingSelector;
-	private String header;
-	private String footer;
-	
-	// authentication
-	private ProxyAuthType authType = ProxyAuthType.NONE;
-	private String usernameKey = "user.login.id";
-	private String passwordKey = "password";
-	
+
+    // filters
+    private String whitelistRegexes; // TODO: support multiple whitelist entries
+    private String clippingSelector;
+    private String header;
+    private String footer;
+
+    // authentication
+    private ProxyAuthType authType = ProxyAuthType.NONE;
+    private String usernameKey = "user.login.id";
+    private String passwordKey = "password";
+
     // strategies
     private String[] searchStrategies;
-    
-	// gsa
-	private String gsaHost;
-	private String gsaCollection;
-	private String gsaFrontend;
-	private String gsaWhitelistRegex;
-	
-	// anchor
-	private String anchorWhitelistRegex;
 
-	public String getContentService() {
-		return contentService;
-	}
+    // gsa
+    private String gsaHost;
+    private String gsaCollection;
+    private String gsaFrontend;
+    private String gsaWhitelistRegex;
 
-	public void setContentService(String contentService) {
-		this.contentService = contentService;
-	}
+    // anchor
+    private String anchorWhitelistRegex;
 
-	public String getLocation() {
-		return location;
-	}
+    public String getContentService() {
+        return contentService;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public void setContentService(String contentService) {
+        this.contentService = contentService;
+    }
 
-	public String getClippingSelector() {
-		return clippingSelector;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public String getWhitelistRegexes() {
-		return whitelistRegexes;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setWhitelistRegexes(String whitelistRegexes) {
-		this.whitelistRegexes = whitelistRegexes;
-	}
+    public String getClippingSelector() {
+        return clippingSelector;
+    }
 
-	public void setClippingSelector(String clippingSelector) {
-		this.clippingSelector = clippingSelector;
-	}
+    public String getWhitelistRegexes() {
+        return whitelistRegexes;
+    }
 
-	public String getHeader() {
-		return header;
-	}
+    public void setWhitelistRegexes(String whitelistRegexes) {
+        this.whitelistRegexes = whitelistRegexes;
+    }
 
-	public void setHeader(String header) {
-		this.header = header;
-	}
+    public void setClippingSelector(String clippingSelector) {
+        this.clippingSelector = clippingSelector;
+    }
 
-	public String getFooter() {
-		return footer;
-	}
+    public String getHeader() {
+        return header;
+    }
 
-	public void setFooter(String footer) {
-		this.footer = footer;
-	}
+    public void setHeader(String header) {
+        this.header = header;
+    }
 
-	public ProxyAuthType getAuthType() {
-		return authType;
-	}
+    public String getFooter() {
+        return footer;
+    }
 
-	public void setAuthType(ProxyAuthType authType) {
-		this.authType = authType;
-	}
+    public void setFooter(String footer) {
+        this.footer = footer;
+    }
 
-	public String getUsernameKey() {
-		return usernameKey;
-	}
+    public ProxyAuthType getAuthType() {
+        return authType;
+    }
 
-	public void setUsernameKey(String usernameKey) {
-		this.usernameKey = usernameKey;
-	}
+    public void setAuthType(ProxyAuthType authType) {
+        this.authType = authType;
+    }
 
-	public String getPasswordKey() {
-		return passwordKey;
-	}
+    public String getUsernameKey() {
+        return usernameKey;
+    }
 
-	public void setPasswordKey(String passwordKey) {
-		this.passwordKey = passwordKey;
-	}
+    public void setUsernameKey(String usernameKey) {
+        this.usernameKey = usernameKey;
+    }
+
+    public String getPasswordKey() {
+        return passwordKey;
+    }
+
+    public void setPasswordKey(String passwordKey) {
+        this.passwordKey = passwordKey;
+    }
 
     public String getPageCharacterEncodingFormat() {
         return pageCharacterEncodingFormat;

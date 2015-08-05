@@ -56,12 +56,17 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 			@SuppressWarnings("unchecked")
 			final Map<String, String> userInfo = (Map<String, String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
 			for (final String key : userInfo.keySet()) {
+				if (log.isDebugEnabled()) {
+					log.debug("Checking user attribute {} with value {}", key, "password".equals(key) ?
+							"length is " + userInfo.get(key) : userInfo.get(key));
+				}
 				final String token = "{".concat(key).concat("}");
 
 				// if the URL contains {attributeName}, replace that string
 				// with the attribute's value
 				if (url.contains(token)) {
 					url = url.replaceAll("\\{".concat(key).concat("\\}"), URLEncoder.encode(userInfo.get(key), "UTF-8"));
+					log.debug("Token {} found in url and replaced", key);
 				}
 				
 				// if any parameter values associated with the request contain
@@ -73,6 +78,7 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 						String value = param.getValue().getValues()[i];
 						if (value.contains(token)) {
 							param.getValue().getValues()[i] = value.replaceAll("\\{".concat(key).concat("\\}"), userInfo.get(key));
+							log.debug("Token {} found in parameter and replaced", key);
 						}
 					}
 					

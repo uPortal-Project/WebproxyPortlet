@@ -72,10 +72,10 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
             final PortletPreferences preferences = request.getPreferences();
             String location = null;
             if (WindowState.MAXIMIZED.equals(request.getWindowState())) {
-                location = preferences.getValue(CONTENT_MAX_LOCATION_KEY, null);
+                location = preferences.getValue(CONTENT_LOCATION_MAXIMIZED_PREFERENCE, null);
             }
             if (location == null || location.length() == 0) {
-                location = preferences.getValue(CONTENT_LOCATION_KEY, null);
+                location = preferences.getValue(CONTENT_LOCATION_PREFERENCE, null);
             }
             String url = expressionProcessor.process(location, request);
 

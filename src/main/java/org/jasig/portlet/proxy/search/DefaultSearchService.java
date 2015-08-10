@@ -36,7 +36,7 @@ public class DefaultSearchService implements ISearchService {
         searchResults.setWindowId(request.getWindowID());
         
         String baseUrl = request.getPreferences().getValue(
-                GenericContentRequestImpl.CONTENT_LOCATION_KEY, "/");
+                GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, "/");
         try {
             Document document = Jsoup.connect(baseUrl).get();
             final PortletPreferences preferences = request.getPreferences();

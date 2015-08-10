@@ -35,8 +35,8 @@ public class GenericContentRequestImpl implements IContentRequest {
     /**
      * Standard key for storing a content location in the portlet preferences.
      */
-    public static final String CONTENT_LOCATION_KEY = "location";
-    public static final String CONTENT_MAX_LOCATION_KEY = "max_location";
+    public static final String CONTENT_LOCATION_PREFERENCE = "location";
+    public static final String CONTENT_LOCATION_MAXIMIZED_PREFERENCE = "location.MAXIMIZED";
 
     public GenericContentRequestImpl() { }
 
@@ -49,10 +49,10 @@ public class GenericContentRequestImpl implements IContentRequest {
     public GenericContentRequestImpl(final PortletRequest portletRequest) {
         final PortletPreferences preferences = portletRequest.getPreferences();
         if (WindowState.MAXIMIZED.equals(portletRequest.getWindowState())) {
-            this.proxiedLocation = preferences.getValue(CONTENT_MAX_LOCATION_KEY, null);
+            this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_MAXIMIZED_PREFERENCE, null);
         }
         if (this.proxiedLocation == null || this.proxiedLocation.length() == 0) {
-            this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_KEY, null);
+            this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_PREFERENCE, null);
         }
     }
 

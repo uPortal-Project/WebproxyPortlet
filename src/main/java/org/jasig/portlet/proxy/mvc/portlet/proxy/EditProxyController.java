@@ -94,8 +94,8 @@ public class EditProxyController {
 
                 final PortletPreferences preferences = request.getPreferences();
 
-                preferences.setValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, form.getLocation());
-                preferences.setValue(GenericContentRequestImpl.CONTENT_MAX_LOCATION_KEY, form.getMaxLocation());
+                preferences.setValue(GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, form.getLocation());
+                preferences.setValue(GenericContentRequestImpl.CONTENT_LOCATION_MAXIMIZED_PREFERENCE, form.getMaxLocation());
                 preferences.setValue(ProxyPortletController.CONTENT_SERVICE_KEY, form.getContentService());
                 preferences.setValue(URLRewritingFilter.WHITELIST_REGEXES_KEY, form.getWhitelistRegexes());
                 preferences.setValue(ProxyPortletController.PREF_CHARACTER_ENCODING, form.getPageCharacterEncodingFormat());
@@ -160,8 +160,8 @@ public class EditProxyController {
         final ProxyPortletForm form = new ProxyPortletForm();
 
         form.setContentService(preferences.getValue(ProxyPortletController.CONTENT_SERVICE_KEY, null));
-        form.setLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, null));
-        form.setMaxLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_MAX_LOCATION_KEY, null));
+        form.setLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, null));
+        form.setMaxLocation(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_MAXIMIZED_PREFERENCE, null));
         form.setWhitelistRegexes(preferences.getValue(URLRewritingFilter.WHITELIST_REGEXES_KEY, null));
         form.setPageCharacterEncodingFormat(preferences.getValue(ProxyPortletController.PREF_CHARACTER_ENCODING,
                 ProxyPortletController.CHARACTER_ENCODING_DEFAULT));

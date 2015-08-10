@@ -51,7 +51,7 @@ public class HttpContentServiceImplTest {
 		when(request.getParameterMap()).thenReturn(params);
 
 		when(request.getPreferences()).thenReturn(preferences);
-  		when(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_KEY, null)).thenReturn("http://somewhere.com/path/page.html");
+  		when(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, null)).thenReturn("http://somewhere.com/path/page.html");
 
 	}
 	

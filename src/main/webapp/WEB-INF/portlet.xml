@@ -69,7 +69,7 @@
                 <value>UTF-8</value>
             </preference>
         </portlet-preferences>
-        
+
         <supported-processing-event>
             <qname xmlns:x="https://source.jasig.org/schemas/uportal/search">x:SearchRequest</qname>
         </supported-processing-event>

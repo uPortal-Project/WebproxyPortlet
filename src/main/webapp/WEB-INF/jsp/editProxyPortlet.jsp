@@ -59,6 +59,10 @@
                     <label>Content location (fully-qualified URL or classpath location):</label><br/>
                     <form:input path="location" type="text" size="80"/>
                 </p>
+                <p>
+                    <label>Content location for Maximised view:</label><br/>
+                    <form:input path="maxLocation" type="text" size="80"/>
+                </p>
                 <div class="instructions form-group">
                     <div class="collapse" id="advancedUrlOptions">
                         <div class="well">

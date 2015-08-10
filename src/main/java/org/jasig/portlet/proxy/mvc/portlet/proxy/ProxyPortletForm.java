@@ -39,6 +39,7 @@ public class ProxyPortletForm {
 
     private String contentService;
     private String location;
+    private String maxLocation;
     private String pageCharacterEncodingFormat;
 
     // filters
@@ -78,6 +79,14 @@ public class ProxyPortletForm {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getMaxLocation() {
+        return maxLocation;
+    }
+
+    public void setMaxLocation(String maxLocation) {
+        this.maxLocation = maxLocation;
     }
 
     public String getClippingSelector() {

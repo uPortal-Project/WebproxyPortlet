@@ -20,49 +20,56 @@ package org.jasig.portlet.proxy.service;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.WindowState;
 
 /**
  * GenericContentRequestImpl represents a basic content request consisting
  * simply of a target location.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 public class GenericContentRequestImpl implements IContentRequest {
 
-	private String proxiedLocation;
+    private String proxiedLocation;
 
-	/**
-	 * Standard key for storing a content location in the portlet preferences.
-	 */
-  public static final String CONTENT_LOCATION_KEY = "location";
+    /**
+     * Standard key for storing a content location in the portlet preferences.
+     */
+    public static final String CONTENT_LOCATION_KEY = "location";
+    public static final String CONTENT_MAX_LOCATION_KEY = "max_location";
 
-	public GenericContentRequestImpl() { }
-	
-	/**
-	 * Construct a new content request, populating the location from the 
-	 * portlet preferences.
-	 * 
-	 * @param portletRequest
-	 */
-	public GenericContentRequestImpl(final PortletRequest portletRequest) {
-		final PortletPreferences preferences = portletRequest.getPreferences();
-		this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_KEY, null);
-	}
+    public GenericContentRequestImpl() { }
 
-	/**
-	 * @return Get the target location.
-	 */
-	public String getProxiedLocation() {
-		return proxiedLocation;
-	}
+    /**
+     * Construct a new content request, populating the location from the
+     * portlet preferences.
+     *
+     * @param portletRequest
+     */
+    public GenericContentRequestImpl(final PortletRequest portletRequest) {
+        final PortletPreferences preferences = portletRequest.getPreferences();
+        if (WindowState.MAXIMIZED.equals(portletRequest.getWindowState())) {
+            this.proxiedLocation = preferences.getValue(CONTENT_MAX_LOCATION_KEY, null);
+        }
+        if (this.proxiedLocation == null || this.proxiedLocation.length() == 0) {
+            this.proxiedLocation = preferences.getValue(CONTENT_LOCATION_KEY, null);
+        }
+    }
 
-	/**
-	 * Set the target location.
-	 * 
-	 * @param proxiedLocation
-	 */
-	public void setProxiedLocation(String proxiedLocation) {
-		this.proxiedLocation = proxiedLocation;
-	}
-	
+    /**
+     * @return Get the target location.
+     */
+    public String getProxiedLocation() {
+        return proxiedLocation;
+    }
+
+    /**
+     * Set the target location.
+     *
+     * @param proxiedLocation
+     */
+    public void setProxiedLocation(String proxiedLocation) {
+        this.proxiedLocation = proxiedLocation;
+    }
+
 }

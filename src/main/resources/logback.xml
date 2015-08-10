@@ -20,7 +20,7 @@
 
 -->
 <configuration scan="true" scanPeriod="30 seconds">
-  <contextName>uPortal</contextName>
+  <contextName>WebproxyPortlet</contextName>
  
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
     <resetJUL>true</resetJUL>

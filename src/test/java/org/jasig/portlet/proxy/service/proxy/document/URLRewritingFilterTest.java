@@ -71,7 +71,7 @@ public class URLRewritingFilterTest {
         when(preferences.getValues(URLRewritingFilter.WHITELIST_REGEXES_KEY, new String[]{})).thenReturn(new String[]{});
 
         filter = spy(new URLRewritingFilter());
-        
+
         proxyResponse = new GenericContentResponseImpl();
         proxyResponse.setProxiedLocation("http://external.site.com/somewhere/index.html?q=a&b=t");
         
@@ -79,6 +79,7 @@ public class URLRewritingFilterTest {
         urlAttributes.put("a", Collections.singleton("href"));
         urlAttributes.put("img", Collections.singleton("src"));
         urlAttributes.put("form", Collections.singleton("action"));
+        urlAttributes.put("script",Collections.singleton("src"));
         filter.setActionElements(urlAttributes);
         
         filter.setResourceElements(new HashMap<String, Set<String>>());
@@ -109,6 +110,19 @@ public class URLRewritingFilterTest {
     public void testGetBaseUrl() throws URISyntaxException {
         final String result = filter.getBaseServerUrl("http://somewhere.com/some/path?query=nothing");
         assertEquals(result, "http://somewhere.com");
+    }
+
+    @Test
+    public void testFilterInlineScripts()
+    {
+        final String expectedInlineScriptResult="<div>test</div><scriptlanguage=\"JavaScript\">functionhelloWorld(){alert(\"HellofromWebProxyPortlet!\");}</script>";
+        final Document document = Jsoup.parse("<div>test</div><script language=\"JavaScript\">\n" +
+                "function helloWorld()\n" +
+                "{ alert (\"Hello from WebProxyPortlet!\"); }\n" +
+                "</script>");
+        filter.filter(document, proxyResponse, request, response);
+        final String result = document.body().html().replace(" ", "").replace("\n", "");
+        assertEquals(expectedInlineScriptResult,result);
     }
     
 }

@@ -187,7 +187,10 @@ public class URLRewritingFilter implements IDocumentFilter {
 
                     }
 
-                    element.attr(attributeName, attributeUrl.replace("&amp;", "&"));
+                    // Don't set the src attribute if it's an empty script tag
+                    if (StringUtils.isNotBlank(attributeUrl)||!element.tagName().equals("script")) {
+                        element.attr(attributeName, attributeUrl.replace("&amp;", "&"));
+                    }
 
                 }
 

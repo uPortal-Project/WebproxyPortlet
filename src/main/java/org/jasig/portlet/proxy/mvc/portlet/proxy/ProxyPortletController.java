@@ -29,6 +29,9 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.Event;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -39,6 +42,10 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.jasig.portal.search.SearchConstants;
+import org.jasig.portal.search.SearchRequest;
+import org.jasig.portal.search.SearchResults;
+import org.jasig.portlet.proxy.search.ISearchService;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
@@ -56,6 +63,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.EventMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
@@ -92,11 +100,14 @@ public class ProxyPortletController {
         }
     }
 
+    @Resource(name="contentSearchProvider")
+    private ISearchService searchService;
+
     @RenderMapping
     public void showContent(final RenderRequest request, final RenderResponse response) {
 
         // locate the content service to use to retrieve our HTML content
-        final IContentService contentService = selectContentService(request);
+        final IContentService<IContentRequest,IContentResponse> contentService = selectContentService(request);
 
         final IContentRequest proxyRequest;
         try {
@@ -166,7 +177,7 @@ public class ProxyPortletController {
 
         try {
           // locate the content service to use to retrieve our HTML content
-          final IContentService contentService = selectContentService(request);
+          final IContentService<IContentRequest,IContentResponse> contentService = selectContentService(request);
 
           final IContentRequest proxyRequest;
           try {
@@ -214,7 +225,7 @@ public class ProxyPortletController {
     public void proxyResourceTarget(final @RequestParam("proxy.url") String url, final ResourceRequest request, final ResourceResponse response) {
 
         // locate the content service to use to retrieve our HTML content
-        final IContentService contentService = selectContentService(request);
+        final IContentService<IContentRequest,IContentResponse> contentService = selectContentService(request);
 
         // construct the proxy request
         final IContentRequest proxyRequest;
@@ -259,6 +270,18 @@ public class ProxyPortletController {
 
     }
 
+    @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING)
+    public void searchRequest(EventRequest request, EventResponse response) {
+        log.debug("EVENT HANDLER -- START");
+        final Event event = request.getEvent();
+        final SearchRequest searchQuery = (SearchRequest)event.getValue();
+
+        SearchResults searchResults = searchService.search(searchQuery, request);
+
+        response.setEvent(SearchConstants.SEARCH_RESULTS_QNAME, searchResults);
+        log.debug("EVENT HANDLER -- END");
+    }
+
     /*
      * Implementation (private stuff)
      */
@@ -266,10 +289,11 @@ public class ProxyPortletController {
     /**
      * @throws NoSuchBeanDefinitionException If there is no such bean
      */
-    private IContentService selectContentService(final PortletRequest req) {
+    private IContentService<IContentRequest,IContentResponse> selectContentService(final PortletRequest req) {
         final PortletPreferences prefs = req.getPreferences();
         final String contentServiceKey = prefs.getValue(CONTENT_SERVICE_KEY, null);
-        final IContentService rslt = applicationContext.getBean(contentServiceKey, IContentService.class);
+        @SuppressWarnings("unchecked")
+        final IContentService<IContentRequest,IContentResponse> rslt = applicationContext.getBean(contentServiceKey, IContentService.class);
         return rslt;
     }
 

@@ -20,15 +20,15 @@ package org.jasig.portlet.proxy.search;
 
 import javax.portlet.EventRequest;
 
-import org.jasig.portal.search.SearchRequest;
 import org.jasig.portal.search.SearchResults;
+import org.jsoup.nodes.Document;
 
 public interface ISearchService {
-    
-    public void addSearchStrategy(ISearchStrategy strategy);
-    
-    public String[] getStrategyNames();
 
-    public SearchResults search(SearchRequest searchQuery, EventRequest request);
+    void addSearchStrategy(ISearchStrategy strategy);
+
+    String[] getStrategyNames();
+
+    SearchResults search(EventRequest request, Document document);
 
 }

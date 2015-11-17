@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.Event;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
 import javax.portlet.PortletPreferences;
@@ -43,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.jasig.portal.search.SearchConstants;
-import org.jasig.portal.search.SearchRequest;
 import org.jasig.portal.search.SearchResults;
 import org.jasig.portlet.proxy.search.ISearchService;
 import org.jasig.portlet.proxy.service.IContentRequest;
@@ -109,19 +107,10 @@ public class ProxyPortletController {
         // locate the content service to use to retrieve our HTML content
         final IContentService<IContentRequest,IContentResponse> contentService = selectContentService(request);
 
-        final IContentRequest proxyRequest;
-        try {
-            proxyRequest = contentService.getRequest(request);
-        } catch (RuntimeException e) {
-            log.error("URL was not in the proxy list");
-            // TODO: how should we handle these errors?
-            return;
-        }
-
         // retrieve the HTML content
         final IContentResponse proxyResponse;
         try {
-            proxyResponse = contentService.getContent(proxyRequest, request);
+            proxyResponse = invokeProxy(contentService, request);
         } catch (Exception e) {
             log.error("Failed to proxy content", e);
             // TODO: error handling
@@ -129,18 +118,10 @@ public class ProxyPortletController {
         }
 
         // locate all filters configured for this portlet
-        final PortletPreferences preferences = request.getPreferences();
-        final List<IDocumentFilter> filters = new ArrayList<IDocumentFilter>();
-        final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
-        for (final String filterKey : filterKeys) {
-            final IDocumentFilter filter = applicationContext.getBean(filterKey, IDocumentFilter.class);
-            filters.add(filter);
-        }
+        final List<IDocumentFilter> filters = prepareFilters(request);
 
         try {
-            String sourceEncodingFormat = preferences.getValue(PREF_CHARACTER_ENCODING, CHARACTER_ENCODING_DEFAULT);
-            final Document document = Jsoup.parse(proxyResponse.getContent(), sourceEncodingFormat,
-                    proxyResponse.getProxiedLocation());
+            final Document document = parseDocument(request, proxyResponse);
 
             // apply each of the document filters in order
             for (final IDocumentFilter filter : filters) {
@@ -273,12 +254,20 @@ public class ProxyPortletController {
     @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING)
     public void searchRequest(EventRequest request, EventResponse response) {
         log.debug("EVENT HANDLER -- START");
-        final Event event = request.getEvent();
-        final SearchRequest searchQuery = (SearchRequest)event.getValue();
 
-        SearchResults searchResults = searchService.search(searchQuery, request);
+        // locate the content service to use to retrieve our HTML content
+        final IContentService<IContentRequest,IContentResponse> contentService = selectContentService(request);
 
-        response.setEvent(SearchConstants.SEARCH_RESULTS_QNAME, searchResults);
+        try {
+            // retrieve the HTML content
+            final IContentResponse proxyResponse = invokeProxy(contentService, request);
+            final Document document = parseDocument(request, proxyResponse);
+            SearchResults searchResults = searchService.search(request, document);
+            response.setEvent(SearchConstants.SEARCH_RESULTS_QNAME, searchResults);
+        } catch (IOException e) {
+            throw new RuntimeException("Search request failed", e);
+        }
+
         log.debug("EVENT HANDLER -- END");
     }
 
@@ -294,6 +283,44 @@ public class ProxyPortletController {
         final String contentServiceKey = prefs.getValue(CONTENT_SERVICE_KEY, null);
         @SuppressWarnings("unchecked")
         final IContentService<IContentRequest,IContentResponse> rslt = applicationContext.getBean(contentServiceKey, IContentService.class);
+        return rslt;
+    }
+
+    private IContentResponse invokeProxy(final IContentService<IContentRequest,IContentResponse> contentService, final PortletRequest req) {
+        final IContentRequest proxyRequest;
+        try {
+            proxyRequest = contentService.getRequest(req);
+        } catch (Exception e) {
+            throw new RuntimeException("URL was not in the proxy list", e);
+        }
+
+        // retrieve the HTML content
+        final IContentResponse rslt;
+        try {
+            rslt = contentService.getContent(proxyRequest, req);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to proxy content", e);
+        }
+
+        return rslt;
+    }
+
+    private List<IDocumentFilter> prepareFilters(final PortletRequest req) {
+        final PortletPreferences preferences = req.getPreferences();
+        final List<IDocumentFilter> rslt = new ArrayList<IDocumentFilter>();
+        final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
+        for (final String filterKey : filterKeys) {
+            final IDocumentFilter filter = applicationContext.getBean(filterKey, IDocumentFilter.class);
+            rslt.add(filter);
+        }
+        return rslt;
+    }
+
+    private Document parseDocument(final PortletRequest req, final IContentResponse proxyResponse) throws IOException {
+        final PortletPreferences preferences = req.getPreferences();
+        String sourceEncodingFormat = preferences.getValue(PREF_CHARACTER_ENCODING, CHARACTER_ENCODING_DEFAULT);
+        final Document rslt = Jsoup.parse(proxyResponse.getContent(), sourceEncodingFormat,
+                proxyResponse.getProxiedLocation());
         return rslt;
     }
 

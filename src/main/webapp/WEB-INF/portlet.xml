@@ -68,6 +68,11 @@
                 <name>sourcePageCharacterEncoding</name>
                 <value>UTF-8</value>
             </preference>
+            <!-- Indicates which approaches to search will be employed in responding to the uportal-search-api;
+                 e.g. 'Anchor' or 'GSA' -->
+            <preference>
+                <name>searchStrategies</name>
+            </preference>
         </portlet-preferences>
 
         <supported-processing-event>

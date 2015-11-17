@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -92,14 +93,10 @@ public class ProxyPortletController {
     }
 
     @RenderMapping
-    public void showContent(final RenderRequest request,
-            final RenderResponse response) {
-
-        final PortletPreferences preferences = request.getPreferences();
+    public void showContent(final RenderRequest request, final RenderResponse response) {
 
         // locate the content service to use to retrieve our HTML content
-        final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
-        final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+        final IContentService contentService = selectContentService(request);
 
         final IContentRequest proxyRequest;
         try {
@@ -121,6 +118,7 @@ public class ProxyPortletController {
         }
 
         // locate all filters configured for this portlet
+        final PortletPreferences preferences = request.getPreferences();
         final List<IDocumentFilter> filters = new ArrayList<IDocumentFilter>();
         final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
         for (final String filterKey : filterKeys) {
@@ -164,13 +162,11 @@ public class ProxyPortletController {
     public void proxyTarget(final @RequestParam("proxy.url") String url,  final ActionRequest request,
                             final ActionResponse response) throws IOException {
 
-        final PortletPreferences preferences = request.getPreferences();
         IContentResponse proxyResponse = null;
 
         try {
           // locate the content service to use to retrieve our HTML content
-          final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
-          final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+          final IContentService contentService = selectContentService(request);
 
           final IContentRequest proxyRequest;
           try {
@@ -217,11 +213,8 @@ public class ProxyPortletController {
     @ResourceMapping
     public void proxyResourceTarget(final @RequestParam("proxy.url") String url, final ResourceRequest request, final ResourceResponse response) {
 
-        final PortletPreferences preferences = request.getPreferences();
-
         // locate the content service to use to retrieve our HTML content
-        final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
-        final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
+        final IContentService contentService = selectContentService(request);
 
         // construct the proxy request
         final IContentRequest proxyRequest;
@@ -264,6 +257,20 @@ public class ProxyPortletController {
             IOUtils.closeQuietly(out);
         }
 
+    }
+
+    /*
+     * Implementation (private stuff)
+     */
+
+    /**
+     * @throws NoSuchBeanDefinitionException If there is no such bean
+     */
+    private IContentService selectContentService(final PortletRequest req) {
+        final PortletPreferences prefs = req.getPreferences();
+        final String contentServiceKey = prefs.getValue(CONTENT_SERVICE_KEY, null);
+        final IContentService rslt = applicationContext.getBean(contentServiceKey, IContentService.class);
+        return rslt;
     }
 
 }

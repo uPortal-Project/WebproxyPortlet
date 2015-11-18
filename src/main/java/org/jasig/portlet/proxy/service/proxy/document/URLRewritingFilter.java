@@ -54,7 +54,6 @@ public class URLRewritingFilter implements IDocumentFilter {
     public final static String REWRITTEN_URLS_KEY = "rewrittenUrls";
     public final static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
 
-    protected static final String JAVASCRIPT_PREFIX = "JAVASCRIPT:";
     protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> actionElements;
@@ -69,6 +68,30 @@ public class URLRewritingFilter implements IDocumentFilter {
     @Resource(name = "urlRewritingResourceElements")
     public void setResourceElements(Map<String, Set<String>> resourceElements) {
         this.resourceElements = resourceElements;
+    }
+
+    /**
+     * This filter is for rewriting URLs inside the proxy, but some protocols
+     * should be ignored (NOT rewritten), e.g. 'javascript:' and 'mailto:'
+     */
+    private enum IgnorableProtocol {
+
+        JAVASCRIPT("javascript:"),
+
+        MAILTO("mailto:");
+
+        private final String prefix;
+
+        private IgnorableProtocol(String prefix) {
+            this.prefix = prefix;
+        }
+
+        /**
+         * Always in lower case
+         */
+        public String getPrefix() {
+            return prefix;
+        }
     }
 
     @Override
@@ -123,68 +146,78 @@ public class URLRewritingFilter implements IDocumentFilter {
                     String attributeUrl = element.attr(attributeName);
                     LOG.trace("Considering element {}  with URL attribute {} of value {}", element, attributeName, attributeUrl);
 
-                    // don't adjust or filter javascript url targets
-                    if (StringUtils.isNotBlank(attributeUrl) && !attributeUrl.startsWith(JAVASCRIPT_PREFIX) && 
-                        !attributeUrl.startsWith(JAVASCRIPT_PREFIX.toLowerCase())) {
+                    // Ignore blank
+                    if (StringUtils.isBlank(attributeUrl)) {
+                        continue;
+                    }
 
-                        // if we're proxying a remote website, adjust any 
-                        // relative URLs into absolute URLs
-                        if (baseUrl != null) {
+                    // DON'T adjust (i.e. ignore) ignorable protocols
+                    boolean ignorable = false;  // default
+                    for (IgnorableProtocol p : IgnorableProtocol.values()) {
+                        if (attributeUrl.toLowerCase().startsWith(p.getPrefix())) {
+                            ignorable = true;
+                        }
+                    }
+                    if (ignorable) {
+                        continue;
+                    }
 
-                            // (1) do not prefix absolute URLs
-                            if (attributeUrl.contains("://") || attributeUrl.startsWith("//")) {
-                                // do nothing...
-                            }
+                    // if we're proxying a remote website, adjust any 
+                    // relative URLs into absolute URLs
+                    if (baseUrl != null) {
 
-                            // (2) if the URL is relative to the server base,
-                            // prepend the base URL
-                            else if (attributeUrl.startsWith("/")) {
-                                attributeUrl = baseUrl.concat(attributeUrl);
-                            }
-
-                            // (3) otherwise use the full relative path
-                            else {
-                                attributeUrl = relativeUrl.concat(attributeUrl);
-                            }
-
+                        // (1) do not prefix absolute URLs
+                        if (attributeUrl.contains("://") || attributeUrl.startsWith("//")) {
+                            // do nothing...
                         }
 
-                        // if this URL matches our whitelist regex, rewrite it 
-                        // to pass through this portlet
-                        for (String regex : whitelistRegexes) {
+                        // (2) if the URL is relative to the server base,
+                        // prepend the base URL
+                        else if (attributeUrl.startsWith("/")) {
+                            attributeUrl = baseUrl.concat(attributeUrl);
+                        }
 
-                            if (StringUtils.isNotBlank(regex)) {
-                              final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
-                              if (pattern.matcher(attributeUrl).find()) {
-  
-                                  // record that we've rewritten this URL
-                                  rewrittenUrls.put(attributeUrl, attributeUrl);
-  
-                                  // TODO: the value in the rewritten URLs map needs to 
-                                  // be a resource URL.  we also want to key URLs by a short
-                                  // string rather than the full URL
-  
-                                  if (elementEntry.getKey().equals("form")) {
-                                      // the form action needs to be set to POST to
-                                      // properly pass through our portlet
-                                      boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
-                                      if (!isPost) {
-                                          element.attr("method", "POST");
-                                      }
-                                      attributeUrl = createFormUrl(response, isPost, attributeUrl);
+                        // (3) otherwise use the full relative path
+                        else {
+                            attributeUrl = relativeUrl.concat(attributeUrl);
+                        }
+
+                    }
+
+                    // if this URL matches our whitelist regex, rewrite it 
+                    // to pass through this portlet
+                    for (String regex : whitelistRegexes) {
+
+                        if (StringUtils.isNotBlank(regex)) {
+                          final Pattern pattern = Pattern.compile(regex);  // TODO share compiled regexes
+                          if (pattern.matcher(attributeUrl).find()) {
+
+                              // record that we've rewritten this URL
+                              rewrittenUrls.put(attributeUrl, attributeUrl);
+
+                              // TODO: the value in the rewritten URLs map needs to 
+                              // be a resource URL.  we also want to key URLs by a short
+                              // string rather than the full URL
+
+                              if (elementEntry.getKey().equals("form")) {
+                                  // the form action needs to be set to POST to
+                                  // properly pass through our portlet
+                                  boolean isPost = "POST".equalsIgnoreCase(element.attr("method"));
+                                  if (!isPost) {
+                                      element.attr("method", "POST");
                                   }
-  
-                                  else if (action) {
-                                      attributeUrl = createActionUrl(response, attributeUrl);
-                                  }
-  
-                                  else {
-                                      attributeUrl = createResourceUrl(response, attributeUrl);
-                                  }
+                                  attributeUrl = createFormUrl(response, isPost, attributeUrl);
                               }
-                            }
-                        }
 
+                              else if (action) {
+                                  attributeUrl = createActionUrl(response, attributeUrl);
+                              }
+
+                              else {
+                                  attributeUrl = createResourceUrl(response, attributeUrl);
+                              }
+                          }
+                        }
                     }
 
                     element.attr(attributeName, attributeUrl.replace("&amp;", "&"));

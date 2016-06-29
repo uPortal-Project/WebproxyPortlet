@@ -70,7 +70,6 @@
         <entry key="del"><set><value>cite</value></set></entry>
         <entry key="form"><set><value>action</value></set></entry>
         <entry key="meta"><set><value>url</value></set></entry>
-        <entry key="link"><set><value>href</value></set></entry>
     </util:map>
 
     <util:map id="urlRewritingResourceElements">

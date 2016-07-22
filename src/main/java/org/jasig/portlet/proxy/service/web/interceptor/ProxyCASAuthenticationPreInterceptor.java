@@ -41,8 +41,10 @@ import org.springframework.stereotype.Service;
  * 
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
-@Service("proxyCASAuthenticationPreInterceptor")
+@Service(ProxyCASAuthenticationPreInterceptor.BEAN_ID)
 public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
+
+    public static final String BEAN_ID = "proxyCASAuthenticationPreInterceptor";
 
     private String      serviceUrl;
 

@@ -44,6 +44,12 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
 		this.httpClientService = httpClientService;
 	}
 
+    @Override
+    public boolean validate(HttpContentRequestImpl proxyRequest,
+            PortletRequest portletRequest) {
+        return true;
+    }
+
 	/**
 	 * Add BASIC authentication credentials to the user's HttpClientService.
 	 */

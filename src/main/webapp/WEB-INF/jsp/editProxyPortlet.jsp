@@ -90,14 +90,15 @@
                     <ul>
                         <li><form:radiobutton path="authType" value="NONE"/> None</li>
                         <li><form:radiobutton path="authType" value="CAS"/> CAS</li>
-                        <li><form:radiobutton path="authType" value="BASIC"/> Basic (user attributes)</li>
+                        <li><form:radiobutton path="authType" value="BASIC"/> Basic (<i>via</i> user attributes)</li>
                         <li>
-                            <form:radiobutton path="authType" value="BASIC_PORTLET_PREFERENCES"/> Basic (portlet preferences)
+                            <form:radiobutton path="authType" value="BASIC_PORTLET_PREFERENCES"/> Basic (<i>via</i> portlet preferences)
                             Username: <form:input path="basicAuthPreferencesUsername" type="text" size="40"/>
                             Password: <form:input path="basicAuthPreferencesPassword" type="password" size="60"/>
                         </li>
                     </ul>
                 </p>
+                <p class="bg-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> WARNING:  Credentials for Basic/Portlet Preferences authentication are stored in plain text (though they will <strong>not</strong> be visible, except on this screen).</p>
 
                 <p>
                     <label>Whitelist Regex to partially-matching URLs to rewrite to proxy through portlet;</label><br/>

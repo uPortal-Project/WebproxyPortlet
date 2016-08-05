@@ -204,6 +204,14 @@ public class EditProxyController {
         ProxyPortletForm.ProxyAuthType authType = ProxyPortletForm.ProxyAuthType.NONE;
         if (!StringUtils.isBlank(authTypeForm)) {
             authType = ProxyPortletForm.ProxyAuthType.valueOf(authTypeForm);
+            if (ProxyPortletForm.ProxyAuthType.BASIC_PORTLET_PREFERENCES.equals(authType)) {
+                final String basicAuthPreferencesUsername = preferences.getValue(
+                        PortletPreferencesBasicAuthenticationPreInterceptor.USERNAME_PREFERENCE, "");
+                form.setBasicAuthPreferencesUsername(basicAuthPreferencesUsername);
+                final String basicAuthPreferencesPassword = preferences.getValue(
+                        PortletPreferencesBasicAuthenticationPreInterceptor.PASSWORD_PREFERENCE, "");
+                form.setBasicAuthPreferencesPassword(basicAuthPreferencesPassword);
+            }
         }
 
         form.setAuthType(authType);

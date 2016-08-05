@@ -24,7 +24,6 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,12 +32,14 @@ import org.springframework.stereotype.Service;
  * 
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
-@Service("userInfoBasicAuthenticationPreInterceptor")
+@Service(UserInfoBasicAuthenticationPreInterceptor.BEAN_ID)
 public class UserInfoBasicAuthenticationPreInterceptor extends AbstractBasicAuthenticationPreInterceptor {
 
-	final public static String USERNAME_KEY = "usernameKey";
-	final public static String PASSWORD_KEY = "passwordKey";
-	
+    public static final String  BEAN_ID = "userInfoBasicAuthenticationPreInterceptor";
+
+    public static final String  USERNAME_KEY = "usernameKey";
+    public static final String  PASSWORD_KEY = "passwordKey";
+
 	@Override
 	protected UsernamePasswordCredentials getCredentials(PortletRequest portletRequest) {
 
@@ -60,10 +61,4 @@ public class UserInfoBasicAuthenticationPreInterceptor extends AbstractBasicAuth
 		return credentials;
 	}
 
-	@Override
-	public boolean validate(HttpContentRequestImpl proxyRequest,
-			PortletRequest portletRequest) {
-		return true;
-	}
-	
 }

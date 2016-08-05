@@ -37,6 +37,9 @@ import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
 import org.jasig.portlet.proxy.service.proxy.document.HeaderFooterFilter;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
+import org.jasig.portlet.proxy.service.web.interceptor.PortletPreferencesBasicAuthenticationPreInterceptor;
+import org.jasig.portlet.proxy.service.web.interceptor.ProxyCASAuthenticationPreInterceptor;
+import org.jasig.portlet.proxy.service.web.interceptor.UserInfoBasicAuthenticationPreInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -125,11 +128,31 @@ public class EditProxyController {
                 final List<String> preInterceptors = new ArrayList<String>();
                 preInterceptors.add("userInfoUrlParameterizingPreInterceptor");
 
+                // Authentication
                 ProxyPortletForm.ProxyAuthType authType = form.getAuthType();
-                if (authType.equals(ProxyPortletForm.ProxyAuthType.BASIC)) {
-                    preInterceptors.add("userInfoBasicAuthenticationPreInterceptor");
-                } else if (authType.equals(ProxyPortletForm.ProxyAuthType.CAS)) {
-                    preInterceptors.add("proxyCASAuthenticationPreInterceptor");
+                switch (authType) {
+                    case NONE:
+                        // Fair enough;  nothing to do...
+                        break;
+                    case CAS:
+                        preInterceptors.add(ProxyCASAuthenticationPreInterceptor.BEAN_ID);
+                        break;
+                    case BASIC:
+                        preInterceptors.add(UserInfoBasicAuthenticationPreInterceptor.BEAN_ID);
+                        break;
+                    case BASIC_PORTLET_PREFERENCES:
+                        preInterceptors.add(PortletPreferencesBasicAuthenticationPreInterceptor.BEAN_ID);
+                        preferences.setValue(PortletPreferencesBasicAuthenticationPreInterceptor.USERNAME_PREFERENCE, form.getBasicAuthPreferencesUsername());
+                        preferences.setValue(PortletPreferencesBasicAuthenticationPreInterceptor.PASSWORD_PREFERENCE, form.getBasicAuthPreferencesPassword());
+                        break;
+                    default:
+                        final String msg = "Unrecognized authentication type:  " + authType;
+                        throw new IllegalArgumentException(msg);
+                }
+                if (!ProxyPortletForm.ProxyAuthType.BASIC_PORTLET_PREFERENCES.equals(authType)) {
+                    // Clear out any previous data...
+                    preferences.reset(PortletPreferencesBasicAuthenticationPreInterceptor.USERNAME_PREFERENCE);
+                    preferences.reset(PortletPreferencesBasicAuthenticationPreInterceptor.PASSWORD_PREFERENCE);
                 }
 
                 preferences.setValue(ProxyPortletForm.AUTHENTICATION_TYPE, form.getAuthType().toString());
@@ -181,6 +204,14 @@ public class EditProxyController {
         ProxyPortletForm.ProxyAuthType authType = ProxyPortletForm.ProxyAuthType.NONE;
         if (!StringUtils.isBlank(authTypeForm)) {
             authType = ProxyPortletForm.ProxyAuthType.valueOf(authTypeForm);
+            if (ProxyPortletForm.ProxyAuthType.BASIC_PORTLET_PREFERENCES.equals(authType)) {
+                final String basicAuthPreferencesUsername = preferences.getValue(
+                        PortletPreferencesBasicAuthenticationPreInterceptor.USERNAME_PREFERENCE, "");
+                form.setBasicAuthPreferencesUsername(basicAuthPreferencesUsername);
+                final String basicAuthPreferencesPassword = preferences.getValue(
+                        PortletPreferencesBasicAuthenticationPreInterceptor.PASSWORD_PREFERENCE, "");
+                form.setBasicAuthPreferencesPassword(basicAuthPreferencesPassword);
+            }
         }
 
         form.setAuthType(authType);

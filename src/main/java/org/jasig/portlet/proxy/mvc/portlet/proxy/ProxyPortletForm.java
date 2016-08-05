@@ -26,7 +26,7 @@ public class ProxyPortletForm {
     public static final String AUTHENTICATION_TYPE = "authType";
 
     enum ProxyAuthType {
-        NONE, CAS, BASIC;
+        NONE, CAS, BASIC, BASIC_PORTLET_PREFERENCES;
     }
 
     public static final class ProxyAuthTypeEditor extends PropertyEditorSupport {
@@ -52,6 +52,8 @@ public class ProxyPortletForm {
     private ProxyAuthType authType = ProxyAuthType.NONE;
     private String usernameKey = "user.login.id";
     private String passwordKey = "password";
+    private String basicAuthPreferencesUsername;
+    private String basicAuthPreferencesPassword;
 
     // strategies
     private String[] searchStrategies;
@@ -143,6 +145,22 @@ public class ProxyPortletForm {
 
     public void setPasswordKey(String passwordKey) {
         this.passwordKey = passwordKey;
+    }
+
+    public String getBasicAuthPreferencesUsername() {
+        return basicAuthPreferencesUsername;
+    }
+
+    public void setBasicAuthPreferencesUsername(String basicAuthPreferencesUsername) {
+        this.basicAuthPreferencesUsername = basicAuthPreferencesUsername;
+    }
+
+    public String getBasicAuthPreferencesPassword() {
+        return basicAuthPreferencesPassword;
+    }
+
+    public void setBasicAuthPreferencesPassword(String basicAuthPreferencesPassword) {
+        this.basicAuthPreferencesPassword = basicAuthPreferencesPassword;
     }
 
     public String getPageCharacterEncodingFormat() {

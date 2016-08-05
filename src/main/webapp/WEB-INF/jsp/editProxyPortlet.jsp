@@ -19,7 +19,7 @@
 
 --%>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
-<portlet:actionURL var="formUrl" escapeXml="false"/>
+<portlet:actionURL var="formUrl" escapeXml="false" />
 <c:set var="n"><portlet:namespace/></c:set>
 
 <style type="text/css">
@@ -30,14 +30,14 @@
 
 <!-- Portlet -->
 <div id="${n}proxyConfig" class="fl-widget portlet" role="section">
-    
+
     <!-- Portlet Titlebar -->
     <div class="fl-widget-titlebar titlebar portlet-titlebar" role="sectionhead">
         <h2 class="title" role="heading">
             <spring:message code="edit.portlet"/>
         </h2>
     </div>
-    
+
     <!-- Portlet Content -->
     <div class="fl-widget-content content portlet-content" role="main">
 
@@ -46,7 +46,7 @@
             <div class="content">
 
             <form:form modelAttribute="form" action="${formUrl}" method="POST">
-            
+
                 <p>
                     <label>Content source:</label>
                     <ul>
@@ -79,27 +79,33 @@
                     </a>
                 </div>
                 <p>
-                <label>Page Encoding Format:</label>&nbsp;
+                    <label>Page Encoding Format:</label>&nbsp;
                     <form:select path="pageCharacterEncodingFormat">
                         <form:options items="${pageCharacterEncodings}"/>
                     </form:select>
                 </p>
-                
+
                 <p>
                     <label>Authentication:</label>
                     <ul>
                         <li><form:radiobutton path="authType" value="NONE"/> None</li>
                         <li><form:radiobutton path="authType" value="CAS"/> CAS</li>
-                        <li><form:radiobutton path="authType" value="BASIC"/> Basic</li>
+                        <li><form:radiobutton path="authType" value="BASIC"/> Basic (<i>via</i> user attributes)</li>
+                        <li>
+                            <form:radiobutton path="authType" value="BASIC_PORTLET_PREFERENCES"/> Basic (<i>via</i> portlet preferences)
+                            Username: <form:input path="basicAuthPreferencesUsername" type="text" size="40"/>
+                            Password: <form:input path="basicAuthPreferencesPassword" type="password" size="60"/>
+                        </li>
                     </ul>
                 </p>
-                
+                <p class="bg-warning"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> WARNING:  Credentials for Basic/Portlet Preferences authentication are stored in plain text (though they will <strong>not</strong> be visible, except on this screen).</p>
+
                 <p>
                     <label>Whitelist Regex to partially-matching URLs to rewrite to proxy through portlet;</label><br/>
                     e.g. /news/ matches http://www.my.edu/news/academic: <br/>
                     <form:input path="whitelistRegexes" type="text" size="80"/>
                 </p>
-                
+
                 <p>
                     <label>Content clipping HTML element name (leave blank to avoid clipping);</label><br/>
                     e.g. body will return everything inside &lt;body&gt; ... &lt;/body&gt;:<br/>
@@ -112,7 +118,7 @@
                 </p>
 
                 <p>
-                    <label>Static HTML footer content (cannot include inline Javascript):</label><br>
+                    <label>Static HTML footer content (cannot include inline Javascript):</label><br/>
                     <form:textarea path="footer" rows="5" cols="80"/>
                 </p>
 
@@ -120,40 +126,39 @@
                     <label>Page Search Strategies</label><br>
                     <form:checkboxes path="searchStrategies" items="${strategyNames }" />
                 </p>
-                
+
                 <p>
-                    <label>Google Search Appliance Host</label><br>
+                    <label>Google Search Appliance Host</label><br/>
                     <form:input path="gsaHost" type="text" size="80"/>
                 </p>
-                
+
                 <p>
-                    <label>Google Search Appliance Collection</label><br>
+                    <label>Google Search Appliance Collection</label><br/>
                     <form:input path="gsaCollection" type="text" size="80"/>
                 </p>
-                
+
                 <p>
-                    <label>Google Search Appliance Frontend</label><br>
+                    <label>Google Search Appliance Frontend</label><br/>
                     <form:input path="gsaFrontend" type="text" size="80"/>
                 </p>
-                
+
                 <p>
-                    <label>Google Search Appliance Whitelist Regex</label><br>
+                    <label>Google Search Appliance Whitelist Regex</label><br/>
                     <form:input path="gsaWhitelistRegex" type="text" size="80"/>
                 </p>
-                
+
                 <p>
-                    <label>Anchor Strategy Whitelist Regex</label><br>
+                    <label>Anchor Strategy Whitelist Regex</label><br/>
                     <form:input path="anchorWhitelistRegex" type="text" size="80"/>
                 </p>
-                
-                					                
+
                 <div class="buttons">
                     <input class="button primary" type="submit" name="Save" value="<spring:message code="save"/>"/>
                     <input class="button" type="submit" name="Cancel" value="<spring:message code="edit.proxy.cancel"/>"/>
                 </div>
 
             </form:form>
-            
+
         </div>
     </div>
 

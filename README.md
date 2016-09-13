@@ -54,7 +54,7 @@ be modified in the system the content is obtained from.
 Gateway SSO allows services to be brought into the portal that require a login form.
 
 ## <a name="prefs"></a> User Preferences
-Web Proxy Portlet and Gateway SSO are rarely configured to all users to modify any preferences.
+Web Proxy Portlet and Gateway SSO are rarely configured to allow users to modify any preferences.
 
 ## <a name="install"></a> Installation
 This project is published to Maven Central and can be installed with uPortal
@@ -86,7 +86,7 @@ Gateway SSO
 The <uportal-user@apereo.org> mailing list is the best place to go with
 questions related to Apereo portlets and uPortal.
 
-Issues should be reported at <https://www.ja-sig.org/issues/browse/WPP>.
+Issues should be reported at <https://issues.jasig.org/browse/WPP>.
 Check if your issue has already been reported. If so, comment that you are also
 experiencing the issue and add any detail that could help resolve it. Feel free to
 create an issue if it has not been reported. Creating an account is free and can be

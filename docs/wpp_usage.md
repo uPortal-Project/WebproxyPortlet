@@ -1,8 +1,10 @@
 # Web Proxy Portlet Usage
 
-  - 
+## Table of Contents
+  - [Dynmaic Parameters in Location URL](#dynamic_params)
+  - [Basic Authentication Based On User Attributes](#basic_auth)
 
-## Dynamic Parameters
+## <a name="dynamic_params"></a> Dynamic Parameters in Location URL
 The parameters need to be included in the portlet definitions as user
 attributes. Once there, you can add them to the URL by surrounding them
 in curly braces. The `userInfoUrlParameterizingPreInterceptor`
@@ -48,7 +50,7 @@ Portlet definition snippets for the previous two preferences:
     </user-attribute>
 ```
 
-## Basic Authentication Based On User Attributes
+## <a name="basic_auth"></a> Basic Authentication Based On User Attributes
 Basic Authentication with user values is implemented with `UserInfoBasicAuthenticationPreInterceptor`.
 The user values for ID and password need to be added to the portlet
 definition. Then, BASIC authentication interceptor will use them.

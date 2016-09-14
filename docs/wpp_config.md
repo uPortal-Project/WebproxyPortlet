@@ -31,7 +31,8 @@ Encoding expecting for the proxied content.
 Authentication type.
 
 ### Whitelist Regex (whitelistRegexes)
-Restricts URLs that will be proxied to those that partially match this value.
+Rewrite URLs in the proxied content that match the regex. This includes other references besides anchors, such as
+images.
 
 ![Content](wpp_config_content.png)
 

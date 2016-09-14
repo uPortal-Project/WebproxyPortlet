@@ -76,8 +76,8 @@ used in the top-level pom.xml:
 
 ### <a name="portlet_config"></a> Portlet Instance Configuration
 Web Proxy Portlet
-  - [Web Proxy Use Cases](/docs/wwp_usage.md)
-  - [Web Proxy Configuration](/docs/wwp_config.md)
+  - [Web Proxy Use Cases](/docs/wpp_usage.md)
+  - [Web Proxy Configuration](/docs/wpp_config.md)
   
 Gateway SSO
   - [Gateway Configuration](/docs/gateway_config.md)

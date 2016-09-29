@@ -19,7 +19,7 @@ This is the fully-qualified URL or classpath location for the content to proxy. 
 such as the one that substitutes user attributes for tokens.
 
 ### location.MAXIMIZED
-This is an optional value used when the portlet is maximized. If no value is entered, then this defaults back to the 
+This is an optional value used when the portlet is maximized. If no value is entered, then this defaults back to the
 location value.
 
 ![Misc](wpp_config_encode-auth-whitelist.png)
@@ -71,7 +71,7 @@ Timeout limit in milliseconds for socket packet replies from the web content.
 
 ### preInterceptors
 The pre-interceptors consist of authentication interceptors and URL paramatizing
-interceptors. The authenticator interceptors implement the `authType`. The URL 
+interceptors. The authenticator interceptors implement the `authType`. The URL
 paramatizing interceptors are used on the location values.
 
 #### PortletPreferencesBasicAuthenticationPreInterceptor
@@ -107,6 +107,57 @@ Note: the keys need to be defined as user attributes in the portlet definition f
 
 #### UserPreferencesPreInterceptor
 
+#### HeaderPassingPreInterceptor
+This interceptor will pass along user attribute headers to the proxy request.  
+Configured by adding the user attributes desired in the portlet.xml file.  
+Included casProxyTicket is an example.  Then in the portlet publishing XML file,
+ you add the preInterceptor as described above.  Example:
+
+```xml
+<portlet-preference>
+  <name>preInterceptors</name>
+  <value>headerPassingPreInterceptor</value>
+</portlet-preference>
+```
+
+Then you add a portlet preference listing the headers you want to pass.  The
+name to use is HeaderPassingPreInterceptor.HEADER_PREFERENCE (`headers`)
+Example:
+
+```xml
+<portlet-preference>
+  <name>headers</name>
+  <value>uid</value>
+  <value>displayName</value>
+  <value>cn</value>
+  <value>givenName</value>
+  <value>mail</value>
+  <value>telephoneNumber</value>
+</portlet-preference>
+```
+
+Those are the names of the headers you will be sending. The user attributes you
+will send are  in the portlet preference named
+HeaderPassingPreInterceptor.HEADER_PREFERENCE_VALUES ('headerValues'). It is an
+ordered list that you need to keep in sync with headerNames.  This allows you to
+rename your header names in case they aren't exactly in sync with the user
+attributes.
+
+```xml
+<portlet-preference>
+  <name>headerValues</name>
+  <value>userName</value>
+  <value>wiscedupvi</value>
+  <value>displayName</value>
+  <value>wisceduudds</value>
+  <value>cn</value>
+  <value>givenNameOfUser</value>
+</portlet-preference>
+```
+
+Usage is if the proxied content uses header attributes to display certain
+information to the user for a more customized experience
+
 ### filters
 Filters should automatically be added based on non-empty values for their respective
 preferences (except URLRewritingFilter).
@@ -115,7 +166,7 @@ preferences (except URLRewritingFilter).
 This filter is added and performs the work when a value is entered for `clippingSelector`.
 
 #### HeaderFooterFilter
-This filter is added and performs the work when static head and/or footer HTML is 
+This filter is added and performs the work when static head and/or footer HTML is
 entered for `headerHtml` or `footerHtml`.
 
 #### URLRewritingFilter

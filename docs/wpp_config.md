@@ -108,8 +108,8 @@ Note: the keys need to be defined as user attributes in the portlet definition f
 #### UserPreferencesPreInterceptor
 
 #### HeaderPassingPreInterceptor
-This interceptor will pass along user attribute headers to the proxy request.  
-Configured by adding the user attributes desired in the portlet.xml file.  
+This interceptor will pass along user attribute headers to the proxy request.
+Configured by adding the user attributes desired in the portlet.xml file.
 Included casProxyTicket is an example.  Then in the portlet publishing XML file,
  you add the preInterceptor as described above.  Example:
 
@@ -120,13 +120,13 @@ Included casProxyTicket is an example.  Then in the portlet publishing XML file,
 </portlet-preference>
 ```
 
-Then you add a portlet preference listing the headers you want to pass.  The
-name to use is HeaderPassingPreInterceptor.HEADER_PREFERENCE (`headers`)
-Example:
+Then you add a portlet preference listing the headers you want to pass. The
+name to use is HeaderPassingPreInterceptor.HEADER_PREFERENCE_NAMES
+(`headerNames`) Example:
 
 ```xml
 <portlet-preference>
-  <name>headers</name>
+  <name>headerNames</name>
   <value>uid</value>
   <value>displayName</value>
   <value>cn</value>

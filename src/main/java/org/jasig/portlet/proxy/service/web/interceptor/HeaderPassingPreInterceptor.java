@@ -38,21 +38,27 @@ public class HeaderPassingPreInterceptor implements IPreInterceptor {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String HEADER_PREFERENCE = "headers";
+    public static final String HEADER_PREFERENCE_NAMES = "headerNames";
+    public static final String HEADER_PREFERENCE_VALUES = "headerValues";
 
     @SuppressWarnings("unchecked")
     @Override
     public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest) {
         PortletPreferences prefs = portletRequest.getPreferences();
-        final String[] headerNames = prefs.getValues(HEADER_PREFERENCE, new String[0]);
-        Map<String, String> userInfo = (Map<String, String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
-        Map<String, String> headerMap = proxyRequest.getHeaders();
-        for(int i = 0; i<headerNames.length; i++){
-            String headerName = headerNames[i];
-            String headerValue = userInfo.get(headerName);
-            headerMap.put(headerName, headerValue);
+        final String[] headerNames = prefs.getValues(HEADER_PREFERENCE_NAMES, new String[0]);
+        final String[] headerValues = prefs.getValues(HEADER_PREFERENCE_VALUES, new String[0]);
+        if (headerNames.length == headerValues.length) {
+          Map<String, String> userInfo = (Map<String, String>) portletRequest.getAttribute(PortletRequest.USER_INFO);
+          Map<String, String> headerMap = proxyRequest.getHeaders();
+          for(int i = 0; i<headerNames.length; i++){
+              String headerName = headerNames[i];
+              String headerValue = userInfo.get(headerValues[i]);
+              headerMap.put(headerName, headerValue);
+          }
+          proxyRequest.setHeaders(headerMap);
+        }else{
+          logger.warn("Invalid data in preferences. Header name array length does not equal header value array length");
         }
-        proxyRequest.setHeaders(headerMap);
     }
 
     @Override

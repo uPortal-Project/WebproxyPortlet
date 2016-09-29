@@ -44,6 +44,7 @@ public class HeaderPassingPreInterceptorTest {
   Map<String, String> userInfoMap;
   @Mock PortletPreferences prefs;
   String[] headerNames;
+  String[] headerValues;
 
   @Before
   public void setUp() {
@@ -51,13 +52,17 @@ public class HeaderPassingPreInterceptorTest {
 
     preprocessor = new HeaderPassingPreInterceptor();
 
-    headerNames = new String[]{"uid", "cn", "displayName"};
-    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE, new String[0])).thenReturn(headerNames);
+    headerNames = new String[]{"uid", "ApplicationSpecificCN", "displayName"};
+    headerValues = new String[]{"uid", "cn", "displayName"};
+    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE_NAMES, new String[0])).thenReturn(headerNames);
+    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE_VALUES, new String[0])).thenReturn(headerValues);
     when(portletRequest.getPreferences()).thenReturn(prefs);
 
     userInfoMap = new HashMap<String, String>();
     userInfoMap.put("uid", "Admin");
     userInfoMap.put("telephone", "6081234567");
+    userInfoMap.put("cn", "AmyTheGreat");
+    userInfoMap.put("ApplicationSpecificCN", "Amy");
     when(portletRequest.getAttribute(PortletRequest.USER_INFO)).thenReturn(userInfoMap);
 
 
@@ -70,13 +75,18 @@ public class HeaderPassingPreInterceptorTest {
   public void testHeaderPassing() {
     preprocessor.intercept(proxyRequest, portletRequest);
     assertEquals(proxyRequest.getHeaders().get("uid"), "Admin");
+    assertEquals(proxyRequest.getHeaders().get("ApplicationSpecificCN"), "AmyTheGreat");
   }
 
+  /*
+  * Displayname should be there but have no value since no user preference
+  * User preferences should not pass just because they're there
+  */
   @Test
   public void testHeaderNotPassing() {
     preprocessor.intercept(proxyRequest, portletRequest);
-    assertTrue(proxyRequest.getHeaders().containsKey("cn"));
-    assertEquals(proxyRequest.getHeaders().get("cn"), null);
+    assertTrue(proxyRequest.getHeaders().containsKey("displayName"));
+    assertEquals(proxyRequest.getHeaders().get("displayName"), null);
     assertEquals(proxyRequest.getHeaders().get("telephone"), null);
     assertEquals(proxyRequest.getHeaders().get("madeUpHeader"), null);
   }
@@ -84,13 +94,21 @@ public class HeaderPassingPreInterceptorTest {
   @Test
   public void testNoHeaderToPass() {
     preprocessor.intercept(proxyRequest, portletRequest);
-    assertFalse(proxyRequest.getHeaders().containsKey("madeUpHeader"));
+    assertFalse(proxyRequest.getHeaders().containsKey("cn"));
+    assertEquals(proxyRequest.getHeaders().get("cn"), null);
   }
 
   @Test
-  public void testIncorrectPreferences(){
+  public void testIncorrectPreferencesNaming(){
     //when def isn't found, def is returned for portletprefernce.getValues
-    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE, new String[0])).thenReturn(new String[0]);
+    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE_NAMES, new String[0])).thenReturn(new String[0]);
+    preprocessor.intercept(proxyRequest, portletRequest);
+    assertEquals(proxyRequest.getHeaders().get("uid"), null);
+  }
+
+  @Test
+  public void testIncorrectPreferencesLength(){
+    when(prefs.getValues(HeaderPassingPreInterceptor.HEADER_PREFERENCE_VALUES, new String[0])).thenReturn(new String[2]);
     preprocessor.intercept(proxyRequest, portletRequest);
     assertEquals(proxyRequest.getHeaders().get("uid"), null);
   }

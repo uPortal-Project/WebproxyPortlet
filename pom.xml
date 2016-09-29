@@ -291,17 +291,17 @@
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
         </dependency>
-        <dependency> 
-            <groupId>org.jasypt</groupId> 
-            <artifactId>jasypt</artifactId>  
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
             <version>1.6</version>
         </dependency>
-               
+
         <dependency>
             <groupId>org.jasig.portal</groupId>
             <artifactId>uportal-search-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jasig.portlet.utils</groupId>
             <artifactId>portlet-mvc-util</artifactId>
@@ -462,15 +462,12 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>localdev</id>
@@ -513,6 +510,24 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+              <id>doclint-java8-disable</id>
+              <activation>
+                  <jdk>[1.8,)</jdk>
+              </activation>
+              <build>
+                  <plugins>
+                      <plugin>
+                          <groupId>org.apache.maven.plugins</groupId>
+                          <artifactId>maven-javadoc-plugin</artifactId>
+                          <version>2.10.2</version>
+                          <configuration>
+                              <additionalparam>-Xdoclint:none</additionalparam>
+                          </configuration>
+                      </plugin>
+                  </plugins>
+              </build>
+          </profile>
     </profiles>
-    
+
 </project>

@@ -37,8 +37,8 @@ import org.springframework.stereotype.Service;
 public class HeaderPassingPreInterceptor implements IPreInterceptor {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-  
-    public static final String HEADER_PREFERENCE = "portletPreferencesBasicAuthenticationPreInterceptor";
+
+    public static final String HEADER_PREFERENCE = "headers";
 
     @SuppressWarnings("unchecked")
     @Override

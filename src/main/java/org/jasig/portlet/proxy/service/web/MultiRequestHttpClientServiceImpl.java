@@ -40,14 +40,14 @@ import org.springframework.web.portlet.util.PortletUtils;
 @Service
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
     private static final Logger LOG = LoggerFactory.getLogger(MultiRequestHttpClientServiceImpl.class);
-    private static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
-    private static final String HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = "httpClientConnectionRequestTimeout";
-    private static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
-    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
-    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = 5000;
-    private static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
-    protected static final String CLIENT_SESSION_KEY = "httpClient";
-    protected static final String SHARED_SESSION_KEY = "sharedSessionKey";
+    public static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
+    public static final String HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = "httpClientConnectionRequestTimeout";
+    public static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
+    public static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
+    public static final int DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = 5000;
+    public static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
+    public static final String CLIENT_SESSION_KEY = "httpClient";
+    public static final String SHARED_SESSION_KEY = "sharedSessionKey";
 
     @Override
     public HttpClient getHttpClient(PortletRequest request) {

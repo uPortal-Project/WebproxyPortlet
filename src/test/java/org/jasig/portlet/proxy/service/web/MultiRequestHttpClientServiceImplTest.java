@@ -20,29 +20,25 @@ package org.jasig.portlet.proxy.service.web;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class MultiRequestHttpClientServiceImplTest {
-    private static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
-    private static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
-    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
-    private static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
+
 	@Mock PortletRequest request;
 	@Mock PortletPreferences preferences;
 	@Mock PortletSession session;
-	@Mock DefaultHttpClient client;
+	@Mock HttpClient client;
 	MultiRequestHttpClientServiceImpl service;
 	
 	@Before
@@ -53,8 +49,15 @@ public class MultiRequestHttpClientServiceImplTest {
 		
 		when(request.getPreferences()).thenReturn(preferences);
 		when(request.getPortletSession()).thenReturn(session);
-		when(preferences.getValue(HTTP_CLIENT_CONNECTION_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT))).thenReturn(String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
-		when(preferences.getValue(HTTP_CLIENT_SOCKET_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT))).thenReturn(String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT));
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT));
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_SOCKET_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT));
 	}
 
 	

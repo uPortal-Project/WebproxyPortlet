@@ -41,11 +41,13 @@ import org.springframework.web.portlet.util.PortletUtils;
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
     private static final Logger LOG = LoggerFactory.getLogger(MultiRequestHttpClientServiceImpl.class);
     private static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
+    private static final String HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = "httpClientConnectionRequestTimeout";
     private static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
     private static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
+    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = 5000;
     private static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
-    protected static final String          CLIENT_SESSION_KEY = "httpClient";
-    protected static final String          SHARED_SESSION_KEY = "sharedSessionKey";
+    protected static final String CLIENT_SESSION_KEY = "httpClient";
+    protected static final String SHARED_SESSION_KEY = "sharedSessionKey";
 
     @Override
     public HttpClient getHttpClient(PortletRequest request) {
@@ -84,10 +86,11 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
     protected HttpClient createHttpClient(PortletRequest request) {
         PortletPreferences prefs = request.getPreferences();
         int httpClientConnectionTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_CONNECTION_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)));
+        int httpClientConnectionRequestTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT)));
         int httpClientSocketTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_SOCKET_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT)));
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(httpClientConnectionTimeout)
-                //.setConnectionRequestTimeout(????)
+                .setConnectionRequestTimeout(httpClientConnectionRequestTimeout)
                 .setSocketTimeout(httpClientSocketTimeout).build();
         final HttpClient client = HttpClientBuilder.create()
                 .setDefaultRequestConfig(config)

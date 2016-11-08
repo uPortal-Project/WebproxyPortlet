@@ -54,11 +54,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
-//@Service("httpContentService")
+@Service("httpContentService")
 public class HttpContentServiceImpl implements IContentService<HttpContentRequestImpl, GenericContentResponseImpl> {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());

@@ -33,14 +33,6 @@
     <context:component-scan base-package="org.jasig.portlet.proxy.service"/>
     <context:annotation-config/>
 
-  <!-- EHCache Configuration -->
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-          p:configLocation="classpath:ehcache.xml"/>
-
-    <bean id="urlCache"
-          class="org.springframework.cache.ehcache.EhCacheFactoryBean"
-          p:cacheManager-ref="cacheManager" p:cacheName="urlCache"/>
-
     <bean
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:configuration.properties" />

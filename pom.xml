@@ -306,7 +306,14 @@
             <groupId>org.jasig.portlet.utils</groupId>
             <artifactId>portlet-mvc-util</artifactId>
             <version>${portlet.mvc.util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
         <!-- ===== Runtime Dependencies ================================== -->
         <dependency>
             <groupId>org.jasig.resourceserver</groupId>
@@ -402,6 +409,11 @@
                                 <requireJavaVersion>
                                     <version>1.6</version>
                                 </requireJavaVersion>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>commons-collections:commons-collections:[3.0,3.2.1],[4.0]</exclude>
+                                    </excludes>
+                                </bannedDependencies>
                             </rules>
                         </configuration>
                     </execution>

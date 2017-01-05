@@ -2,6 +2,10 @@
 
 # Web Proxy Portlet
 
+[![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet) 
+[![codeclimate.com Issue Count](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
+
+
 [Link to old documentation](https://wiki.jasig.org/display/PLT/WebProxy)
 
 ## Table of Contents

@@ -124,6 +124,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
 
     @Override
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
+        beforeGetContent(proxyRequest, request);
         return getContent(proxyRequest, request, true);
     }
 

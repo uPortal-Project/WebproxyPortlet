@@ -97,6 +97,7 @@ public class URLRewritingFilterTest {
     public void testProxiedUrls() {
         when(preferences.getValues(URLRewritingFilter.WHITELIST_REGEXES_KEY, new String[]{})).thenReturn(new String[]{"^http://external.site.com"});
         doReturn("portletUrl").when(filter).createActionUrl(any(RenderResponse.class), any(String.class));        
+        doReturn("portletUrl").when(filter).createResourceUrl(any(RenderResponse.class), any(String.class));
         
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
         filter.filter(document, proxyResponse, request, response);

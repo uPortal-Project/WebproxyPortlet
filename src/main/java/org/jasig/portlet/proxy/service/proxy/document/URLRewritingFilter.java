@@ -193,11 +193,7 @@ public class URLRewritingFilter implements IDocumentFilter {
                           if (pattern.matcher(attributeUrl).find()) {
 
                               // record that we've rewritten this URL
-                              rewrittenUrls.put(attributeUrl, attributeUrl);
-
-                              // TODO: the value in the rewritten URLs map needs to 
-                              // be a resource URL.  we also want to key URLs by a short
-                              // string rather than the full URL
+                              rewrittenUrls.put(attributeUrl, createResourceUrl(response, attributeUrl));
 
                               if (elementEntry.getKey().equals("form")) {
                                   // the form action needs to be set to POST to

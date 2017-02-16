@@ -2,6 +2,7 @@
 
 # Web Proxy Portlet
 
+[![Build Status](https://travis-ci.org/Jasig/WebproxyPortlet.svg?branch=master)](https://travis-ci.org/Jasig/WebproxyPortlet)
 [![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet) 
 [![codeclimate.com Issue Count](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
 

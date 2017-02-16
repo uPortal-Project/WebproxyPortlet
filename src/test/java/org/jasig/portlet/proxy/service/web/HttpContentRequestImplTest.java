@@ -20,9 +20,11 @@ package org.jasig.portlet.proxy.service.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.http.client.protocol.HttpClientContext;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +57,10 @@ public class HttpContentRequestImplTest {
 		final String originalParameterValue1 = "A";
 		final String originalParameterValue2 = "B";
 		final String newParameterValue1 = "99";
-		
+
+		final HttpClientContext originalHttpClientContext = HttpClientContext.create();
+		final HttpClientContext newHttpClientContext = HttpClientContext.create();
+
 		Map<String, IFormField> parameters = new LinkedHashMap<String, IFormField>();
 		IFormField parameter = new FormFieldImpl();
 		parameter.setName(originalParameterKey);
@@ -72,6 +77,7 @@ public class HttpContentRequestImplTest {
 		original.setMethod(originalMethod);
 		original.setHeaders(headers);
 		original.setParameters(parameters);
+		original.setHttpContext(originalHttpClientContext);
 		
 		HttpContentRequestImpl copy = original.duplicate();
 		
@@ -79,6 +85,7 @@ public class HttpContentRequestImplTest {
 		assertEquals(copy.getMethod(), originalMethod);
 		assertEquals(copy.getProxiedLocation(), originalProxiedLocation);
 		assertEquals(copy.getHeaders().get(originalHeaderKey), originalHeaderValue);
+		assertEquals(copy.getHttpContext(), originalHttpClientContext);
 		IFormField copyParameter = copy.getParameters().get(originalParameterKey);
 		assertEquals(copyParameter.getValues()[0], originalParameterValue1);
 		assertEquals(copyParameter.getValues()[1], originalParameterValue2);
@@ -86,6 +93,7 @@ public class HttpContentRequestImplTest {
 		original.setForm(false);
 		original.setProxiedLocation(newProxiedLocation);
 		original.setMethod(newMethod);
+		original.setHttpContext(newHttpClientContext);
 		IFormField originalParameter = original.getParameters().get(originalParameterKey);
 		originalParameter.getValues()[0] = newParameterValue1;
 		original.getHeaders().put(originalHeaderKey, newHeaderValue);
@@ -93,6 +101,7 @@ public class HttpContentRequestImplTest {
 		assertNotSame(original.isForm(), copy.isForm());
 		assertNotSame(original.getMethod(), copy.getMethod());
 		assertNotSame(original.getProxiedLocation(), copy.getProxiedLocation());
+		assertNotSame(original.getHttpContext(), copy.getHttpContext());
 		assertNotSame(original.getParameters().get(originalParameterKey), copy.getParameters().get(originalParameterKey));
 		assertNotSame(original.getHeaders().get(originalHeaderKey), copy.getHeaders().get(originalHeaderKey));
 	}

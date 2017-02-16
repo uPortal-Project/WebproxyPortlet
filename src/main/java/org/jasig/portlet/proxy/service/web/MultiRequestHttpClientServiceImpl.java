@@ -22,17 +22,13 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.portlet.util.PortletUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.portlet.util.PortletUtils;
 
 /**
  * MultiRequestHttpClientServiceImpl associates a single HTTP client with each
@@ -44,22 +40,17 @@ import org.slf4j.LoggerFactory;
 @Service
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
     private static final Logger LOG = LoggerFactory.getLogger(MultiRequestHttpClientServiceImpl.class);
-    private static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
-    private static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
-    private static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
-    private static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
-    protected static final String          CLIENT_SESSION_KEY = "httpClient";
-    protected static final String          SHARED_SESSION_KEY = "sharedSessionKey";
-
-    private PoolingClientConnectionManager connectionManager;
-
-    @Autowired(required = true)
-    public void setPoolingClientConnectionManager(PoolingClientConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
-    }
+    public static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
+    public static final String HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = "httpClientConnectionRequestTimeout";
+    public static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
+    public static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
+    public static final int DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = 5000;
+    public static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
+    public static final String CLIENT_SESSION_KEY = "httpClient";
+    public static final String SHARED_SESSION_KEY = "sharedSessionKey";
 
     @Override
-    public AbstractHttpClient getHttpClient(PortletRequest request) {
+    public HttpClient getHttpClient(PortletRequest request) {
         final PortletSession session = request.getPortletSession();
         final PortletPreferences preferences = request.getPreferences();
         // determine whether this portlet should share its HttpClient with
@@ -70,9 +61,9 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
 
         // get the client currently in the user session, or if none exists, 
         // create a new one
-        AbstractHttpClient client;
+        HttpClient client;
         synchronized (PortletUtils.getSessionMutex(session)) {
-            client = (AbstractHttpClient) session.getAttribute(clientSessionKey, scope);
+            client = (HttpClient) session.getAttribute(clientSessionKey, scope);
             if (client == null) {
                 client = createHttpClient(request);
                 session.setAttribute(clientSessionKey, client, scope);
@@ -80,7 +71,9 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
         }
 
         // TODO: allow session to be persisted to database
-        client = setHttpClientTimeouts(request, client);
+
+        // Don't know why this was needed as the httpClient configuration shouldn't change
+        //client = setHttpClientTimeouts(request, client);
         return client;
     }
 
@@ -90,37 +83,19 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
      * @param request
      * @return
      */
-    protected AbstractHttpClient createHttpClient(PortletRequest request) {
-        final AbstractHttpClient client = new DefaultHttpClient(this.connectionManager);
-        client.addResponseInterceptor(new RedirectTrackingResponseInterceptor());
-        return client;
-    }
-
-    private AbstractHttpClient setHttpClientTimeouts(PortletRequest request, AbstractHttpClient client) {
+    protected HttpClient createHttpClient(PortletRequest request) {
         PortletPreferences prefs = request.getPreferences();
-        HttpParams params = client.getParams();
-        if (params == null) {
-            params = new BasicHttpParams();
-            client.setParams(params);
-        }
-        /*
-         * The connection is attempted 5 times prior to stopping
-         * so the actual time before failure will be 5 times this setting.
-         * Suggested way of testing Connection Timeout is by hitting a
-         * domain with a port that is firewalled:
-         * ie. http://www.google.com:81
-         */
         int httpClientConnectionTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_CONNECTION_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)));
-        /*
-         * Suggested way of testing Socket Timeout is by using a tool locally to connect
-         * but not respond.  Example tool: bane
-         * http://blog.danielwellman.com/2010/09/introducing-bane-a-test-harness-for-server-connections.html
-         * usage: $bane 10010 NeverRespond
-         * ie. http://localhost:10010
-         */
+        int httpClientConnectionRequestTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT)));
         int httpClientSocketTimeout = Integer.parseInt(prefs.getValue(HTTP_CLIENT_SOCKET_TIMEOUT, String.valueOf(DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT)));
-        HttpConnectionParams.setConnectionTimeout(params, httpClientConnectionTimeout);
-        HttpConnectionParams.setSoTimeout(params, httpClientSocketTimeout);
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(httpClientConnectionTimeout)
+                .setConnectionRequestTimeout(httpClientConnectionRequestTimeout)
+                .setSocketTimeout(httpClientSocketTimeout).build();
+        final HttpClient client = HttpClientBuilder.create()
+                .setDefaultRequestConfig(config)
+                .addInterceptorFirst(new RedirectTrackingResponseInterceptor())
+                .build();
         return client;
     }
 }

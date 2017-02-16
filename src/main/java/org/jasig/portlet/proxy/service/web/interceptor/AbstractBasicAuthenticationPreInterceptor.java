@@ -23,7 +23,7 @@ import javax.portlet.PortletRequest;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.IHttpClientService;
@@ -66,8 +66,10 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
 		// not limited to the session of the target website, so these credentials
 		// may be applied more than once.  We expect these periodic updates to 
 		// be unnecessary but do not expect them to cause any problems.
-		final AbstractHttpClient client = httpClientService.getHttpClient(portletRequest);
-		client.setCredentialsProvider(credentialsProvider);
+		final HttpClientContext context = HttpClientContext.create();
+		context.setCredentialsProvider(credentialsProvider);
+
+		contentRequest.setHttpContext(context);
 	}
 
 	/**

@@ -29,6 +29,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
 
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.protocol.HttpContext;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
@@ -44,6 +46,7 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
     private Map<String, String> headers = new HashMap<String, String>();
     private String method;
     private boolean isForm;
+    private HttpContext httpContext;
 
     public HttpContentRequestImpl() {
     }
@@ -92,6 +95,8 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
         this.isForm = Boolean.valueOf(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM));
         this.method = request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM);
+
+        this.httpContext = HttpClientContext.create();
 
     }
 
@@ -147,6 +152,14 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
         this.isForm = isForm;
     }
 
+    public HttpContext getHttpContext() {
+        return httpContext;
+    }
+
+    public void setHttpContext(HttpContext httpContext) {
+        this.httpContext = httpContext;
+    }
+
     /**
      * duplicate() creates a duplicate of the HttpContentRequest without
      * using clone().  All objects are unique, but the data contained within
@@ -158,6 +171,7 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
         copy.setMethod(this.getMethod());
         copy.setForm(this.isForm());
         copy.setProxiedLocation(this.getProxiedLocation());
+        copy.setHttpContext(this.getHttpContext());
 
         Map<String, String> copyHeaders = new LinkedHashMap<String, String>();
         copyHeaders.putAll(this.headers);

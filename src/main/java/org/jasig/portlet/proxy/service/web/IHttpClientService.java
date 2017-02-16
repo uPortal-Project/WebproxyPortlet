@@ -20,10 +20,9 @@ package org.jasig.portlet.proxy.service.web;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.client.HttpClient;
 
 public interface IHttpClientService {
 	
-	public AbstractHttpClient getHttpClient(PortletRequest portletRequest);
-
+	HttpClient getHttpClient(PortletRequest portletRequest);
 }

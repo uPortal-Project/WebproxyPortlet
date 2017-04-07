@@ -2,8 +2,9 @@
 
 # Web Proxy Portlet
 
-[![Build Status](https://travis-ci.org/Jasig/WebproxyPortlet.svg?branch=master)](https://travis-ci.org/Jasig/WebproxyPortlet)
-[![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet) 
+[![Linux Build Status](https://travis-ci.org/Jasig/WebproxyPortlet.svg?branch=master)](https://travis-ci.org/Jasig/WebproxyPortlet)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/w832ay3finb789ng/branch/master?svg=true)](https://ci.appveyor.com/project/ChristianMurphy/webproxyportlet/branch/master)
+[![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
 [![codeclimate.com Issue Count](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
 
 
@@ -83,7 +84,7 @@ used in the top-level pom.xml:
 Web Proxy Portlet
   - [Web Proxy Use Cases](/docs/wpp_usage.md)
   - [Web Proxy Configuration](/docs/wpp_config.md)
-  
+
 Gateway SSO
   - [Gateway Configuration](/docs/gateway_config.md)
 
@@ -99,14 +100,14 @@ initiated at the Login widget in the default dashboard.
 
 ## <a name="contrib"></a> Contribution Guidelines
 Apereo requires contributors sign a contributor license agreement (CLA).
-We realize this is a hurdle. To learn why we require CLAs, see 
+We realize this is a hurdle. To learn why we require CLAs, see
 "Q5. Why does Apereo require Contributor License Agreements (CLAs)?"
 at <https://www.apereo.org/licensing>.
 
 The CLA form(s) can be found <https://www.apereo.org/licensing/agreements> along
-with the various ways to submit the form. 
+with the various ways to submit the form.
 
-Contributions will be accepted once the contributor's name appears at 
+Contributions will be accepted once the contributor's name appears at
 <http://licensing.apereo.org/completed-clas>.
 
 See <https://www.apereo.org/licensing> for details.
@@ -128,4 +129,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 See <https://www.apereo.org/licensing> for additional details.
-

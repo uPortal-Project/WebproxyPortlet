@@ -36,6 +36,10 @@ public class HeaderFooterFilterTest {
 
 	private HeaderFooterFilter filter;
 	String testContent = "<div>Hi I'm a div! And I have <a href=\"links\">links</a>!</div>";
+	String testScript = "<script language=\"JavaScript\">\n" +
+			"function helloWorld()\n" +
+			"{ alert (\"Hello from WebProxyPortlet!\"); }\n" +
+			"</script>";
 	@Mock PortletPreferences preferences;
 	@Mock RenderRequest portletRequest;
 	@Mock RenderResponse portletResponse;
@@ -91,6 +95,15 @@ public class HeaderFooterFilterTest {
 		filter.filter(document, proxyResponse, portletRequest, portletResponse);
 		
 		assertEquals(header.concat(testContent).concat(footer).replaceAll("\\s", ""), document.html().replaceAll("\\s", ""));
+	}
+
+	@Test
+	public void testScriptContentHeader(){
+		when(preferences.getValue(HeaderFooterFilter.HEADER_KEY, null)).thenReturn(testScript);
+		//when(preferences.getValue(HeaderFooterFilter.FOOTER_KEY, null)).thenReturn(testScript);
+		filter.filter(document,proxyResponse,portletRequest,portletResponse);
+
+		assertEquals(testScript.concat(testContent).replace(" ", "").replace("\n", ""),document.html().replace(" ", "").replace("\n", ""));
 	}
 	
 

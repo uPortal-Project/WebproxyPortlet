@@ -2,6 +2,7 @@
 
 # Web Proxy Portlet
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet)
 [![Linux Build Status](https://travis-ci.org/Jasig/WebproxyPortlet.svg?branch=master)](https://travis-ci.org/Jasig/WebproxyPortlet)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/w832ay3finb789ng/branch/master?svg=true)](https://ci.appveyor.com/project/ChristianMurphy/webproxyportlet/branch/master)
 [![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)

@@ -32,5 +32,5 @@ the same conventions as `mainXslt`.
 The `preInterceptors` preference is used to configure additional features
 in `httpContentService` if specified above. Interceptors provide support
 for dynamic location URL parameters and authentication.
-See [/docs/wpp_usage.md]
+See [/docs/wpp_usage.md](/docs/wpp_usage.md)
 

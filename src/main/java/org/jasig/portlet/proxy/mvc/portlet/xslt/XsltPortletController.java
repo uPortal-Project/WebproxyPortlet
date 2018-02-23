@@ -47,16 +47,16 @@ public class XsltPortletController {
     protected static final String MOBILE_XSLT_KEY = "mobileXslt";
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    
+
     private ApplicationContext applicationContext;
-    
+
     @Autowired(required = true)
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     private IViewSelector viewSelector;
-    
+
     @Autowired(required = true)
     public void setViewSelector(IViewSelector viewSelector) {
         this.viewSelector = viewSelector;
@@ -65,9 +65,9 @@ public class XsltPortletController {
     @RequestMapping
     public ModelAndView showContent(PortletRequest request) {
         final ModelAndView mv = new ModelAndView();
-        
+
         final PortletPreferences preferences = request.getPreferences();
-        
+
         // locate the content service to use to retrieve our XML
         final String contentServiceKey = preferences.getValue(CONTENT_SERVICE_KEY, null);
         final IContentService contentService = applicationContext.getBean(contentServiceKey, IContentService.class);
@@ -76,9 +76,11 @@ public class XsltPortletController {
         // retrieve the XML content
         final IContentResponse proxyResponse = contentService.getContent(proxyRequest, request);
         try {
-        	mv.addObject("xml", proxyResponse.getContent());
-        } finally {
-        	proxyResponse.close();
+            mv.addObject("xml", proxyResponse.getContent());
+            // Note that XsltView closes the stream
+        } catch (Exception e) {
+            log.error("Problem getting proxy content", e);
+            proxyResponse.close();
         }
 
         // set the appropriate view name
@@ -91,7 +93,7 @@ public class XsltPortletController {
         } else {
             xslt = mainXslt;
         }
-        
+
         // create an XSLT view using the configured source
         final XsltView view = new XsltView();
         view.setUrl(xslt);

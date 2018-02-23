@@ -25,7 +25,7 @@
   - [License](#license)
 
 ## <a name="desc"></a> Description
-This project encompasses two portlets: Web Proxy Portlet and Gateway SSO.
+This project encompasses four portlets: Web Proxy Portlet, Gateway SSO, XSLT Portlet and JSON Portlet.
 
 The Web Proxy Portlet is used to incorporate arbitrary web content as a portlet. It provides mechanisms for connecting
 to and rendering HTML with options for clipping, maintaining session information, and handling cookies. Proxied content
@@ -42,6 +42,13 @@ information over the wire, rather than a security token, but this solution does 
 CAS or another authentication system.  It is therefore nearly invisible to any external system to which uPortal would want
 to connect.
 
+XSLT Portlet takes an XML source and transforms it with an XSLT source into HTML that can be rendered as content. The XML
+can be placed in the classpath or on a web server. Similary, the XSLT source can also be a file placed on the classpath
+or on a web server.
+
+JSON Portlet is very similar to XLST Portlet except the source is JSON and the output is defined via JSP rather than
+an XLST transformation.
+
 ## <a name="features"></a> Feature Overview
 Web Proxy Portlet
   - Session handling
@@ -50,6 +57,12 @@ Web Proxy Portlet
 
 Gateway SSO
   - Log into remote services for users based on user attributes
+
+XSLT Portlet
+  - Uses XSLT to transform XML into renderable output
+
+JSON Portlet
+  - Uses JSPs to render JSON into renderable output
 
 ## <a name="usage"></a> Usage / Common Uses
 It is very common for a University with skills in PHP, Ruby, or other technologies to create small webapps/pages
@@ -60,8 +73,14 @@ be modified in the system the content is obtained from.
 
 Gateway SSO allows services to be brought into the portal that require a login form.
 
+XSLT Portlet is an excellent solution when a back-end service provides XML output via an API. This output could then
+be styled in a portlet window for user viewing.
+
+JSON Portlet is a great tool to render JSON from a back-end API to styled content for users.
+
 ## <a name="prefs"></a> User Preferences
-Web Proxy Portlet and Gateway SSO are rarely configured to allow users to modify any preferences.
+These portlets are rarely configured to allow users to modify any preferences; however, there is some support in the
+Gateway Portlet to supply user preferences for form field values.
 
 ## <a name="install"></a> Installation
 This project is published to Maven Central and can be installed with uPortal
@@ -74,11 +93,17 @@ portal administrators, and end-users. End-User configuration is addressed
 in User Preferences. Deployment and portal-wide configuration is described below.
 
 ### <a name="overlay"></a> Portal Overlay Configuration
-This project is already included with uPortal. To upgrade, simply change the version
-used in the top-level pom.xml:
+This project is already included with uPortal. To upgrade in uPortal 4.x, simply change the version
+used in the top-level `pom.xml`:
 
 ```xml
-        <WebProxyPortlet.version>2.1.2</WebProxyPortlet.version>
+        <WebProxyPortlet.version>2.3.2</WebProxyPortlet.version>
+```
+
+For uPortal 5, change the version in `gradle.properties` in uPortal-start:
+
+```properties
+webProxytPortletVersion=2.3.2
 ```
 
 ### <a name="portlet_config"></a> Portlet Instance Configuration
@@ -88,6 +113,9 @@ Web Proxy Portlet
 
 Gateway SSO
   - [Gateway Configuration](/docs/gateway_config.md)
+
+XSLT Portlet
+  - [XSLT Portlet Configuration](/docs/xslt_config.md)
 
 ## <a name="help"></a> Where to Get Help
 The <uportal-user@apereo.org> mailing list is the best place to go with

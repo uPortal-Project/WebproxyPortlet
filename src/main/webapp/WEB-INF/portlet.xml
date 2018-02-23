@@ -131,6 +131,20 @@
         <portlet-info>
             <title>Json Portlet</title>
         </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>contentService</name>
+                <value>classpathContentService</value>
+            </preference>
+            <preference>
+                <name>location</name>
+                <value>/test-content/sample.json</value>
+            </preference>
+            <preference>
+                <name>mainView</name>
+                <value>sampleJson</value>
+            </preference>
+        </portlet-preferences>
     </portlet>
 
     <portlet>

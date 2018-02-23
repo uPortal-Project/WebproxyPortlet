@@ -98,6 +98,20 @@
         <portlet-info>
             <title>Xslt Portlet</title>
         </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>contentService</name>
+                <value>httpContentService</value>
+            </preference>
+            <preference>
+                <name>location</name>
+                <value>http://localhost:8080/sample.xml</value>
+            </preference>
+            <preference>
+                <name>mainXslt</name>
+                <value>http://localhost:8080/sample.xsl</value>
+            </preference>
+        </portlet-preferences>
     </portlet>
 
     <portlet>

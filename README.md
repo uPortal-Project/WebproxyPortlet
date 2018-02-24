@@ -117,6 +117,9 @@ Gateway SSO
 XSLT Portlet
   - [XSLT Portlet Configuration](/docs/xslt_config.md)
 
+JSON Portlet
+  - [JSON Portlet Configuration](/docs/json_config.md)
+
 ## <a name="help"></a> Where to Get Help
 The <uportal-user@apereo.org> mailing list is the best place to go with
 questions related to Apereo portlets and uPortal.

@@ -38,11 +38,12 @@
         <portlet-api.version>2.0</portlet-api.version>
         <resource-server.version>1.0.44</resource-server.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <spring.version>4.1.4.RELEASE</spring.version>
+        <spring.version>4.3.25.RELEASE</spring.version>
         <logbackVersion>1.0.13</logbackVersion>
         <slf4jVersion>1.7.5</slf4jVersion>
         <mockito.version>1.9.5</mockito.version>
         <portlet.mvc.util.version>1.1.2</portlet.mvc.util.version>
+        <uportal-libs.version>5.8.0</uportal-libs.version>
     </properties>
 
     <dependencyManagement>
@@ -101,6 +102,24 @@
                 <version>${cas.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jasig.portal</groupId>
+                <artifactId>uPortal-api-search</artifactId>
+                <version>${uportal-libs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jasig.portal</groupId>
+                <artifactId>uPortal-spring</artifactId>
+                <version>${uportal-libs.version}</version>
+                <!--
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-collections</groupId>
+                        <artifactId>commons-collections</artifactId>
+                    </exclusion>
+                </exclusions>
+                -->
+            </dependency>
+            <dependency>
                 <groupId>org.jasig.resourceserver</groupId>
                 <artifactId>resource-server-content</artifactId>
                 <version>${resource-server.version}</version>
@@ -155,11 +174,6 @@
                 <groupId>taglibs</groupId>
                 <artifactId>standard</artifactId>
                 <version>${jstl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jasig.portal</groupId>
-                <artifactId>uportal-search-api</artifactId>
-                <version>4.0.10</version>
             </dependency>
 
             <!-- For sl4j/logback logging, see https://wiki.jasig.org/display/PLT/Logging+Best+Practices -->
@@ -299,7 +313,11 @@
 
         <dependency>
             <groupId>org.jasig.portal</groupId>
-            <artifactId>uportal-search-api</artifactId>
+            <artifactId>uPortal-api-search</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uPortal-spring</artifactId>
         </dependency>
 
         <dependency>
@@ -407,11 +425,11 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>1.6</version>
+                                    <version>1.8</version>
                                 </requireJavaVersion>
                                 <bannedDependencies>
                                     <excludes>
-                                        <exclude>commons-collections:commons-collections:[3.0,3.2.1],[4.0]</exclude>
+                                        <exclude>commons-collections:commons-collections:[3.2.1,4.0]</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>

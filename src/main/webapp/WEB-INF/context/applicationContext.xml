@@ -33,20 +33,53 @@
     <context:component-scan base-package="org.jasig.portlet.proxy.service"/>
     <context:annotation-config/>
 
-    <bean
-        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:configuration.properties" />
-    </bean>
 
-    <util:properties id="props" location="classpath:configuration.properties"/>
+    <!--
+     | Supports encrypted properties within the location(s) listed in this
+     | bean.  The password is the environment variable "UP_JASYPT_KEY"
+     | (see http://www.jasypt.org/).
+     +-->
+    <bean id="propertyConfigurer" class="org.springframework.context.support.PortalPropertySourcesPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:datasource.properties</value>
+                <value>classpath:configuration.properties</value>
+                <!--
+                 | The following optional files allow deployers to set or override most
+                 | configuration settings in a manner that is outside the footprint of the
+                 | build/deploy cycle and SCM.
+                 |
+                 | Reasons for choosing that may include:
+                 |   - Desire to keep sensitive information out of your Git repository
+                 |   - Ability to change some common settings without a full build and deploy cycle
+                 |   - Building a WAR/EAR that is environment-independent
+                 |
+                 | Any property defined in the above files that is referenced in the Spring context
+                 | may be overridden in one (or both) of these files.  Later files override earlier
+                 | files.
+                 |
+                 | The conventional location of ${portal.home} is ${catalina.base}/portal;  but you
+                 | can (typically) override that location using a PORTAL_HOME environment variable.
+                 | (Ultimately it depends on your setenv.sh or setenv.bat file.)
+                 |
+                 | The first file (global.properties) may contain properties that are shared with
+                 | other modules (e.g. portlets) in Tomcat.  Several Apereo portlets source
+                 | global.properties automatically.  The second file (web-proxy.properties) is
+                 | (should be) sourced by this module exclusively.
+                 +-->
+                <value>file:${portal.home}/global.properties</value>
+                <value>file:${portal.home}/web-proxy.properties</value>
+            </list>
+        </property>
+    </bean>
 
     <bean class="org.apache.http.impl.conn.PoolingClientConnectionManager"
         p:maxTotal="50" p:defaultMaxPerRoute="10"/>
-        
+
     <util:list id="replayedRequestHeaders">
         <value>user-agent</value>
     </util:list>
-    
+
     <util:list id="knownHtmlContentTypes">
         <value>.*text/html.*</value>
     </util:list>
@@ -137,14 +170,14 @@
   <!--
    | CAS PROXY AUTHENTICATION CONFIGURATION
    +-->
-    
+
     <!-- Ticket validation filter -->
     <bean id="ticketValidationFilter" 
             class="org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter"
             p:serverName="${portal.server.base.url}" p:redirectAfterValidation="false"
             p:proxyReceptorUrl="/proxy/receptor" p:ticketValidator-ref="ticketValidator"
             p:proxyGrantingTicketStorage-ref="proxyGrantingTicketStorage"/>
-    
+
     <!-- CAS proxy ticket validator -->
     <bean id="ticketValidator" 
             class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator"
@@ -153,7 +186,7 @@
             p:acceptAnyProxy="true">
             <constructor-arg index="0" value="${cas.server.base.url}" />
     </bean>
-    
+
     <bean id="proxyGrantingTicketStorage" 
             class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>
 

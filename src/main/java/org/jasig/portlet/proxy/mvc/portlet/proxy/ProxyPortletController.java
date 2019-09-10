@@ -41,8 +41,8 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.jasig.portal.search.SearchConstants;
-import org.jasig.portal.search.SearchResults;
+import org.apereo.portal.search.SearchConstants;
+import org.apereo.portal.search.SearchResults;
 import org.jasig.portlet.proxy.search.ISearchService;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;

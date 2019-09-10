@@ -27,11 +27,11 @@ import javax.portlet.EventRequest;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.jasig.portal.search.PortletUrl;
-import org.jasig.portal.search.PortletUrlParameter;
-import org.jasig.portal.search.PortletUrlType;
-import org.jasig.portal.search.SearchRequest;
-import org.jasig.portal.search.SearchResult;
+import org.apereo.portal.search.PortletUrl;
+import org.apereo.portal.search.PortletUrlParameter;
+import org.apereo.portal.search.PortletUrlType;
+import org.apereo.portal.search.SearchRequest;
+import org.apereo.portal.search.SearchResult;
 import org.jasig.portlet.proxy.search.util.SearchUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

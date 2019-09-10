@@ -22,8 +22,8 @@ import java.util.List;
 
 import javax.portlet.EventRequest;
 
-import org.jasig.portal.search.SearchRequest;
-import org.jasig.portal.search.SearchResult;
+import org.apereo.portal.search.SearchRequest;
+import org.apereo.portal.search.SearchResult;
 import org.jsoup.nodes.Document;
 
 public interface ISearchStrategy {

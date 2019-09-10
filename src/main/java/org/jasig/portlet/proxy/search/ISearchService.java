@@ -20,7 +20,7 @@ package org.jasig.portlet.proxy.search;
 
 import javax.portlet.EventRequest;
 
-import org.jasig.portal.search.SearchResults;
+import org.apereo.portal.search.SearchResults;
 import org.jsoup.nodes.Document;
 
 public interface ISearchService {

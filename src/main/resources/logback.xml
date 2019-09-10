@@ -35,6 +35,7 @@
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${catalina.base}/logs/WebProxyPortlet.log.%d</fileNamePattern>
+      <maxHistory>28</maxHistory>
     </rollingPolicy>
   </appender>
   

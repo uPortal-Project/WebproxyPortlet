@@ -58,7 +58,7 @@
         <portlet-api.version>2.0</portlet-api.version>
         <resource-server.version>1.0.44</resource-server.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <spring.version>4.3.27.RELEASE</spring.version>
+        <spring.version>4.3.28.RELEASE</spring.version>
         <logbackVersion>1.2.3</logbackVersion>
         <slf4jVersion>1.7.30</slf4jVersion>
         <mockito.version>3.4.4</mockito.version>

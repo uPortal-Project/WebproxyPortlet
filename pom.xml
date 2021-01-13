@@ -63,7 +63,7 @@
         <slf4jVersion>1.7.30</slf4jVersion>
         <mockito.version>3.6.0</mockito.version>
         <portlet.mvc.util.version>1.1.3</portlet.mvc.util.version>
-        <uportal-libs.version>5.8.2</uportal-libs.version>
+        <uportal-libs.version>5.9.0</uportal-libs.version>
     </properties>
 
     <dependencyManagement>

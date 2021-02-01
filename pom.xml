@@ -51,7 +51,7 @@
     <!-- Dependency Version Properties -->
     <properties>
         <cas.version>3.6.2</cas.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
         <jstl.version>1.1.2</jstl.version>
         <junit.version>4.13.1</junit.version>
         <commons-lang.version>2.6</commons-lang.version>

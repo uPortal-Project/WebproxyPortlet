@@ -3,11 +3,9 @@
 # Web Proxy Portlet
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet)
-[![Linux Build Status](https://travis-ci.org/Jasig/WebproxyPortlet.svg?branch=master)](https://travis-ci.org/Jasig/WebproxyPortlet)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/w832ay3finb789ng/branch/master?svg=true)](https://ci.appveyor.com/project/ChristianMurphy/webproxyportlet/branch/master)
-[![Code Climate](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
-[![codeclimate.com Issue Count](https://codeclimate.com/github/Jasig/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/Jasig/WebproxyPortlet)
-
+[![build status](https://github.com/uPortal-Project/WebproxyPortlet/workflows/CI/badge.svg?branch=master)](https://github.com/uPortal-Project/WebproxyPortlet/actions)
+[![Code Climate](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet)
+[![codeclimate.com Issue Count](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet)
 
 [Link to old documentation](https://wiki.jasig.org/display/PLT/WebProxy)
 

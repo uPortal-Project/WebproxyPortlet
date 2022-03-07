@@ -56,7 +56,7 @@
         <junit.version>4.13.2</junit.version>
         <commons-lang.version>2.6</commons-lang.version>
         <portlet-api.version>2.0</portlet-api.version>
-        <resource-server.version>1.0.44</resource-server.version>
+        <resource-server.version>1.4.1</resource-server.version>
         <servlet-api.version>2.5</servlet-api.version>
         <spring.version>4.3.30.RELEASE</spring.version>
         <logbackVersion>1.2.5</logbackVersion>

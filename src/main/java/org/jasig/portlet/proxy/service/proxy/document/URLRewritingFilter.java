@@ -122,7 +122,7 @@ public class URLRewritingFilter implements IDocumentFilter {
         final PortletPreferences preferences = request.getPreferences();
         final String[] whitelistRegexes = preferences.getValues("whitelistRegexes", new String[] {});
 
-        // If we're proxying a remote website (as opposed to a local file system 
+        // If we're proxying a remote website (as opposed to a local file system
         // resources, we'll need to transform any relative URLs.  To do this,
         // we first compute the base and relative URLs for the page.
         String baseUrl = null;
@@ -162,7 +162,7 @@ public class URLRewritingFilter implements IDocumentFilter {
                         continue;
                     }
 
-                    // if we're proxying a remote website, adjust any 
+                    // if we're proxying a remote website, adjust any
                     // relative URLs into absolute URLs
                     if (baseUrl != null) {
 
@@ -184,7 +184,7 @@ public class URLRewritingFilter implements IDocumentFilter {
 
                     }
 
-                    // if this URL matches our whitelist regex, rewrite it 
+                    // if this URL matches our whitelist regex, rewrite it
                     // to pass through this portlet
                     for (String regex : whitelistRegexes) {
 
@@ -203,13 +203,9 @@ public class URLRewritingFilter implements IDocumentFilter {
                                       element.attr("method", "POST");
                                   }
                                   attributeUrl = createFormUrl(response, isPost, attributeUrl);
-                              }
-
-                              else if (action) {
+                              } else if (action) {
                                   attributeUrl = createActionUrl(response, attributeUrl);
-                              }
-
-                              else {
+                              } else {
                                   attributeUrl = createResourceUrl(response, attributeUrl);
                               }
                           }
@@ -235,7 +231,7 @@ public class URLRewritingFilter implements IDocumentFilter {
     }
 
     protected String createActionUrl(final RenderResponse response, final String url) {
-        final PortletURL portletUrl = response.createActionURL();
+        final PortletURL portletUrl = response.createRenderURL();
         portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         return portletUrl.toString();
     }

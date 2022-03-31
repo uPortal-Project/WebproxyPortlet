@@ -19,7 +19,7 @@
 package org.jasig.portlet.proxy.service.proxy.document;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -50,17 +50,17 @@ import org.mockito.MockitoAnnotations;
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
 public class URLRewritingFilterTest {
-    
+
     URLRewritingFilter filter;
     GenericContentResponseImpl proxyResponse;
     @Mock RenderRequest request;
     @Mock RenderResponse response;
-    @Mock PortletSession session;    
+    @Mock PortletSession session;
     @Mock PortletPreferences preferences;
     @Mock PortletURL portletURL;
     @Mock Writer writer;
     @Mock ConcurrentMap<String, String> rewrittenUrls;
-    
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -71,19 +71,19 @@ public class URLRewritingFilterTest {
         when(preferences.getValues(URLRewritingFilter.WHITELIST_REGEXES_KEY, new String[]{})).thenReturn(new String[]{});
 
         filter = spy(new URLRewritingFilter());
-        
+
         proxyResponse = new GenericContentResponseImpl();
         proxyResponse.setProxiedLocation("http://external.site.com/somewhere/index.html?q=a&b=t");
-        
+
         final Map<String, Set<String>> urlAttributes = new HashMap<String, Set<String>>();
         urlAttributes.put("a", Collections.singleton("href"));
         urlAttributes.put("img", Collections.singleton("src"));
         urlAttributes.put("form", Collections.singleton("action"));
         filter.setActionElements(urlAttributes);
-        
+
         filter.setResourceElements(new HashMap<String, Set<String>>());
     }
-    
+
     @Test
     public void testRelativeUrls() {
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
@@ -92,24 +92,24 @@ public class URLRewritingFilterTest {
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);
     }
-    
+
     @Test
     public void testProxiedUrls() {
         when(preferences.getValues(URLRewritingFilter.WHITELIST_REGEXES_KEY, new String[]{})).thenReturn(new String[]{"^http://external.site.com"});
-        doReturn("portletUrl").when(filter).createActionUrl(any(RenderResponse.class), any(String.class));        
+        doReturn("portletUrl").when(filter).createActionUrl(any(RenderResponse.class), any(String.class));
         doReturn("portletUrl").when(filter).createResourceUrl(any(RenderResponse.class), any(String.class));
-        
+
         final Document document = Jsoup.parse("<div><a href=\"/link/with/slash.html\">Link</a><a href=\"link/without/slash.html\">Link</a></div>");
         filter.filter(document, proxyResponse, request, response);
         final String result = "<div><ahref=\"portletUrl\">Link</a><ahref=\"portletUrl\">Link</a></div>";
         final String expected = document.body().html().replace(" ", "").replace("\n", "");
         assertEquals(result, expected);
     }
-    
+
     @Test
     public void testGetBaseUrl() throws URISyntaxException {
         final String result = filter.getBaseServerUrl("http://somewhere.com/some/path?query=nothing");
         assertEquals(result, "http://somewhere.com");
     }
-    
+
 }

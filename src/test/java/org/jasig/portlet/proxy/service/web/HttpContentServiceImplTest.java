@@ -32,7 +32,7 @@ import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.spring.SpringELProcessor;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -44,7 +44,7 @@ public class HttpContentServiceImplTest {
 	@Mock PortletRequest request;
 	@Mock PortletPreferences preferences;
 	@Mock SpringELProcessor processor;
-    
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
@@ -54,36 +54,36 @@ public class HttpContentServiceImplTest {
   		when(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, null)).thenReturn("http://somewhere.com/path/page.html");
 
 	}
-	
-	
+
+
 	@Test
 	public void testPostFormNoParams() {
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("POST");
 		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
-		
+
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("POST", httpRequest.getMethod());
 		assertEquals("http://somewhere.com/path/page.html", httpRequest.getURI().toString());
-		
+
 	}
 
 	@Test
 	public void testGetForm() {
-		
+
 		params.put("param1", new String[]{"value1"});
 		params.put("param2", new String[]{"value3", "value4"});
-		
+
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
 		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
-		
+
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());
 		assertEquals("http://somewhere.com/path/page.html?param1=value1&param2=value3&param2=value4", httpRequest.getURI().toString());
-		
+
 	}
 
 	@Test
@@ -92,25 +92,25 @@ public class HttpContentServiceImplTest {
 		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
 		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
-		
+
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());
 		assertEquals("http://somewhere.com/path/page.html", httpRequest.getURI().toString());
-		
+
 	}
 
 
 	@Test
 	public void testNonForm() {
-		
+
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("false");
 		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
-		
+
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
 		assertEquals("GET", httpRequest.getMethod());
 		assertEquals("http://somewhere.com/path/page.html", httpRequest.getURI().toString());
-		
+
 	}
 
 

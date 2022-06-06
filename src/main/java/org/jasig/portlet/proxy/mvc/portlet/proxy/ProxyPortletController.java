@@ -103,8 +103,12 @@ public class ProxyPortletController {
     public void showContent(final RenderRequest request, final RenderResponse response) {
         IContentResponse proxyResponse = null;
         try {
-            // retrieve the HTML content
-            proxyResponse = invokeProxy(request);
+            // From action phase?
+            proxyResponse = (IContentResponse) request.getAttribute("proxyResponse");
+            if (proxyResponse == null) {
+                // retrieve the HTML content
+                proxyResponse = invokeProxy(request);
+            }
             final List<IDocumentFilter> filters = prepareFilters(request);
             final Document document = parseDocument(request, proxyResponse);
 
@@ -139,8 +143,12 @@ public class ProxyPortletController {
     public void showProxyContent(final RenderRequest request, final RenderResponse response) {
         IContentResponse proxyResponse = null;
         try {
-            // retrieve the HTML content
-            proxyResponse = invokeProxy(request);
+            // From action phase?
+            proxyResponse = (IContentResponse) request.getAttribute("proxyResponse");
+            if (proxyResponse == null) {
+                // retrieve the HTML content
+                proxyResponse = invokeProxy(request);
+            }
             final List<IDocumentFilter> filters = prepareFilters(request);
             final Document document = parseDocument(request, proxyResponse);
 
@@ -177,6 +185,7 @@ public class ProxyPortletController {
         IContentResponse proxyResponse = null;
         try {
             proxyResponse = invokeProxy(request);
+            request.setAttribute("proxyResponse", proxyResponse);
 
             // TODO: this probably can only be an HTTP content type
             if (proxyResponse instanceof HttpContentResponseImpl) {
@@ -201,9 +210,12 @@ public class ProxyPortletController {
             @SuppressWarnings("unchecked") final ConcurrentMap<String, String> rewrittenUrls = (ConcurrentMap<String, String>) session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY);
             response.sendRedirect(rewrittenUrls.get(url));
         } finally {
+            // closed in Render phase
+            /*
             if (proxyResponse != null) {
                 proxyResponse.close();
             }
+             */
         }
     }
 

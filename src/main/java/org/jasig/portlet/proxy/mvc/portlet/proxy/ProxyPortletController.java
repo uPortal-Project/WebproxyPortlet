@@ -80,15 +80,12 @@ public class ProxyPortletController {
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     protected static final String FILTER_LIST_KEY = "filters";
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final String PROXY_RESPONSE_KEY = "proxyResponse";
+    @Autowired
     private ApplicationContext applicationContext;
     private final List<Pattern> knownHtmlContentTypes = new ArrayList<Pattern>();
     @Resource(name = "contentSearchProvider")
     private ISearchService searchService;
-
-    @Autowired(required = true)
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     @Required
     @Resource(name = "knownHtmlContentTypes")
@@ -101,13 +98,18 @@ public class ProxyPortletController {
 
     @RenderMapping
     public void showContent(final RenderRequest request, final RenderResponse response) {
+        log.debug("Entering render mapping");
         IContentResponse proxyResponse = null;
         try {
             // From action phase?
-            proxyResponse = (IContentResponse) request.getAttribute("proxyResponse");
+            proxyResponse = (IContentResponse) request.getPortletSession().getAttribute(PROXY_RESPONSE_KEY);
             if (proxyResponse == null) {
                 // retrieve the HTML content
+                log.debug("proxyResponse not found in request attribute proxyResponse -- invoking proxy method");
                 proxyResponse = invokeProxy(request);
+            } else {
+                log.debug("proxyResponse found(!) in request attribute proxyResponse -- using it on this render and removing it from session");
+                request.getPortletSession().removeAttribute(PROXY_RESPONSE_KEY);
             }
             final List<IDocumentFilter> filters = prepareFilters(request);
             final Document document = parseDocument(request, proxyResponse);
@@ -124,47 +126,7 @@ public class ProxyPortletController {
                 IOUtils.write(document.html(), out);
                 out.flush();
             } catch (IOException e) {
-                log.error("Exception writing proxied content", e);
-            } finally {
-                IOUtils.closeQuietly(out);
-            }
-
-        } catch (IOException e) {
-            log.error("Error parsing HTML content", e);
-        } finally {
-            if (proxyResponse != null) {
-                proxyResponse.close();
-            }
-        }
-
-    }
-
-    @RenderMapping("proxy.url")
-    public void showProxyContent(final RenderRequest request, final RenderResponse response) {
-        IContentResponse proxyResponse = null;
-        try {
-            // From action phase?
-            proxyResponse = (IContentResponse) request.getAttribute("proxyResponse");
-            if (proxyResponse == null) {
-                // retrieve the HTML content
-                proxyResponse = invokeProxy(request);
-            }
-            final List<IDocumentFilter> filters = prepareFilters(request);
-            final Document document = parseDocument(request, proxyResponse);
-
-            // apply each of the document filters in order
-            for (final IDocumentFilter filter : filters) {
-                filter.filter(document, proxyResponse, request, response);
-            }
-
-            // write out the final content
-            OutputStream out = null;
-            try {
-                out = response.getPortletOutputStream();
-                IOUtils.write(document.html(), out);
-                out.flush();
-            } catch (IOException e) {
-                log.error("Exception writing proxied content", e);
+                log.error("Exception writing proxy content", e);
             } finally {
                 IOUtils.closeQuietly(out);
             }
@@ -182,10 +144,12 @@ public class ProxyPortletController {
     @ActionMapping
     public void proxyTarget(final @RequestParam("proxy.url") String url, final ActionRequest request,
                             final ActionResponse response) throws IOException {
+        log.debug("Entering action mapping");
         IContentResponse proxyResponse = null;
         try {
             proxyResponse = invokeProxy(request);
-            request.setAttribute("proxyResponse", proxyResponse);
+            assert proxyResponse != null;
+            request.getPortletSession().setAttribute(PROXY_RESPONSE_KEY, proxyResponse);
 
             // TODO: this probably can only be an HTTP content type
             if (proxyResponse instanceof HttpContentResponseImpl) {
@@ -194,10 +158,12 @@ public class ProxyPortletController {
                 // not an HTML type, we need to construct a resource URL instead
                 final HttpContentResponseImpl httpContentResponse = (HttpContentResponseImpl) proxyResponse;
                 final String responseContentType = httpContentResponse.getHeaders().get("Content-Type");
+                log.debug("content-type: {}", responseContentType);
                 for (Pattern contentType : knownHtmlContentTypes) {
                     if (responseContentType != null && contentType.matcher(responseContentType).matches()) {
                         final Map<String, String[]> params = request.getParameterMap();
                         response.setRenderParameters(params);
+                        log.debug("found an HTML content type match, so leaving action mapping now");
                         return;
                     }
                 }
@@ -206,6 +172,7 @@ public class ProxyPortletController {
 
             // if this is not an HTML content type, use the corresponding resource
             // URL in the session
+            log.warn("We should not reach this code unless the TODO note is wrong");
             final PortletSession session = request.getPortletSession();
             @SuppressWarnings("unchecked") final ConcurrentMap<String, String> rewrittenUrls = (ConcurrentMap<String, String>) session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY);
             response.sendRedirect(rewrittenUrls.get(url));
@@ -221,6 +188,7 @@ public class ProxyPortletController {
 
     @ResourceMapping
     public void proxyResourceTarget(final @RequestParam("proxy.url") String url, final ResourceRequest request, final ResourceResponse response) {
+        log.debug("Entering resource mapping");
         IContentResponse proxyResponse = null;
         OutputStream out = null;
 
@@ -286,7 +254,7 @@ public class ProxyPortletController {
     }
 
     private IContentResponse invokeProxy(final PortletRequest req) {
-
+        log.debug("Entering invokeProxy()");
         // locate the content service to use to retrieve our HTML content
         final IContentService<IContentRequest, IContentResponse> contentService = selectContentService(req);
 
@@ -305,25 +273,31 @@ public class ProxyPortletController {
             throw new RuntimeException("Failed to proxy content", e);
         }
 
+        log.debug("Leaving invokeProxy()");
         return rslt;
     }
 
     private List<IDocumentFilter> prepareFilters(final PortletRequest req) {
         final PortletPreferences preferences = req.getPreferences();
-        final List<IDocumentFilter> rslt = new ArrayList<IDocumentFilter>();
+        final List<IDocumentFilter> filters = new ArrayList<IDocumentFilter>();
         final String[] filterKeys = preferences.getValues(FILTER_LIST_KEY, new String[]{});
         for (final String filterKey : filterKeys) {
             final IDocumentFilter filter = applicationContext.getBean(filterKey, IDocumentFilter.class);
-            rslt.add(filter);
+            filters.add(filter);
         }
-        return rslt;
+        return filters;
     }
 
     private Document parseDocument(final PortletRequest req, final IContentResponse proxyResponse) throws IOException {
+        log.debug("Entering parseDocument()");
         final PortletPreferences preferences = req.getPreferences();
         String sourceEncodingFormat = preferences.getValue(PREF_CHARACTER_ENCODING, CHARACTER_ENCODING_DEFAULT);
+        log.debug("encoding format: {}", sourceEncodingFormat);
+        log.debug("proxyResponse content: {}", proxyResponse.getContent().toString());
+        log.debug("proxyResponse location: {}", proxyResponse.getProxiedLocation());
         final Document rslt = Jsoup.parse(proxyResponse.getContent(), sourceEncodingFormat,
                 proxyResponse.getProxiedLocation());
+        log.debug("Leaving parseDocument()");
         return rslt;
     }
 

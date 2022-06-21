@@ -57,7 +57,6 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 		proxyRequest = new HttpContentRequestImpl();
 		proxyRequest.setParameters(parameters);
 		proxyRequest.setProxiedLocation("http://somewhere.com/rest/test/id");
-		
 	}
 
 	@Test
@@ -74,19 +73,52 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 	public void testReplacePathElement() {
 		proxyRequest.setProxiedLocation("http://somewhere.com/rest/{test}/id");
 		preprocessor.intercept(proxyRequest, portletRequest);
-		
-		assertEquals("http://somewhere.com/rest/somevalue/id", proxyRequest.getProxiedLocation());
 
+		assertEquals("http://somewhere.com/rest/somevalue/id", proxyRequest.getProxiedLocation());
 	}
-	
+
 	@Test
-	public void testReplaceParamter() {
+	public void testNonReplacePathElement() {
+		proxyRequest.setProxiedLocation("http://somewhere.com/rest/{unknown_attr}/id");
+		preprocessor.intercept(proxyRequest, portletRequest);
+		
+		assertEquals("http://somewhere.com/rest/id", proxyRequest.getProxiedLocation());
+	}
+
+	@Test
+	public void testReplaceParam() {
+		proxyRequest.setProxiedLocation("http://somewhere.com/rest/id?param={test}");
+		preprocessor.intercept(proxyRequest, portletRequest);
+
+		assertEquals("http://somewhere.com/rest/id?param=somevalue", proxyRequest.getProxiedLocation());
+	}
+
+	@Test
+	public void testNonReplaceParam() {
+		proxyRequest.setProxiedLocation("http://somewhere.com/rest/id?param={missing_attr}");
+		preprocessor.intercept(proxyRequest, portletRequest);
+
+		assertEquals("http://somewhere.com/rest/id?param=", proxyRequest.getProxiedLocation());
+	}
+
+	@Test
+	public void testReplaceParameter() {
 		IFormField formField = new FormFieldImpl("param", new String[]{"val1", "{test}"});
+		parameters.put("param", formField);
+		preprocessor.intercept(proxyRequest, portletRequest);
+
+		assertEquals("val1", proxyRequest.getParameters().get("param").getValues()[0]);
+		assertEquals("somevalue", proxyRequest.getParameters().get("param").getValues()[1]);
+	}
+
+	@Test
+	public void testNonReplaceParameter() {
+		IFormField formField = new FormFieldImpl("param", new String[]{"val1", "{missing_attr}"});
 		parameters.put("param", formField);
 		preprocessor.intercept(proxyRequest, portletRequest);
 		
 		assertEquals("val1", proxyRequest.getParameters().get("param").getValues()[0]);
-		assertEquals("somevalue", proxyRequest.getParameters().get("param").getValues()[1]);
+		assertEquals("{missing_attr}", proxyRequest.getParameters().get("param").getValues()[1]);
 	}
 
 }

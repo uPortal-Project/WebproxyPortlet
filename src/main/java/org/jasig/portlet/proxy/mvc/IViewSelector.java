@@ -20,8 +20,20 @@ package org.jasig.portlet.proxy.mvc;
 
 import javax.portlet.PortletRequest;
 
+/**
+ * <p>IViewSelector interface.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public interface IViewSelector {
 
+    /**
+     * <p>isMobile.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a boolean
+     */
     public boolean isMobile(PortletRequest request);
 
 }

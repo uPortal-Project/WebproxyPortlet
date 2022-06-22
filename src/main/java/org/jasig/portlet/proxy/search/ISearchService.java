@@ -23,12 +23,35 @@ import javax.portlet.EventRequest;
 import org.apereo.portal.search.SearchResults;
 import org.jsoup.nodes.Document;
 
+/**
+ * <p>ISearchService interface.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public interface ISearchService {
 
+    /**
+     * <p>addSearchStrategy.</p>
+     *
+     * @param strategy a {@link org.jasig.portlet.proxy.search.ISearchStrategy} object
+     */
     void addSearchStrategy(ISearchStrategy strategy);
 
+    /**
+     * <p>getStrategyNames.</p>
+     *
+     * @return an array of {@link java.lang.String} objects
+     */
     String[] getStrategyNames();
 
+    /**
+     * <p>search.</p>
+     *
+     * @param request a {@link javax.portlet.EventRequest} object
+     * @param document a {@link org.jsoup.nodes.Document} object
+     * @return a {@link org.apereo.portal.search.SearchResults} object
+     */
     SearchResults search(EventRequest request, Document document);
 
 }

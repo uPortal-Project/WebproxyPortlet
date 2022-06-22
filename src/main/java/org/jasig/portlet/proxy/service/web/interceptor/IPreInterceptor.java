@@ -28,25 +28,26 @@ import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
  * such as the target URL, headers, etc. and may modify these resources to perform
  * authentication, add request headers from the original request, or perform other
  * desired pre-processing tasks.
- * 
+ *
  * @author Bill Smith (wsmith@unicon.net)
+ * @version $Id: $Id
  */
 public interface IPreInterceptor {
 
-	/**
-	 * Intercept a content request before it is executed.
-	 * 
-	 * @param proxyRequest
-	 * @param portletRequest
-	 */
+    /**
+     * Intercept a content request before it is executed.
+     *
+     * @param proxyRequest a {@link org.jasig.portlet.proxy.service.web.HttpContentRequestImpl} object
+     * @param portletRequest a {@link javax.portlet.PortletRequest} object
+     */
     public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest);
     
     /**
      * Confirm that the proxyRequest has all of the information required to execute.  Refer to the
      * specific implementation for details.
-     * 
-     * @param proxyRequest
-     * @param portletRequest
+     *
+     * @param proxyRequest a {@link org.jasig.portlet.proxy.service.web.HttpContentRequestImpl} object
+     * @param portletRequest a {@link javax.portlet.PortletRequest} object
      * @return true if the proxyRequest has all of the necessary information to be successfully run,
      * otherwise false
      */

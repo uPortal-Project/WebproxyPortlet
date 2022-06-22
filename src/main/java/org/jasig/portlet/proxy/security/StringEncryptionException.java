@@ -25,19 +25,36 @@ package org.jasig.portlet.proxy.security;
  *
  * @author Misagh Moayyed
  * @see IStringEncryptionService
+ * @version $Id: $Id
  */
 public class StringEncryptionException extends RuntimeException {
 
     private static final long serialVersionUID = 1l;
     
+    /**
+     * <p>Constructor for StringEncryptionException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object
+     */
     public StringEncryptionException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * <p>Constructor for StringEncryptionException.</p>
+     *
+     * @param message a {@link java.lang.String} object
+     * @param cause a {@link java.lang.Throwable} object
+     */
     public StringEncryptionException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * <p>Constructor for StringEncryptionException.</p>
+     *
+     * @param message a {@link java.lang.String} object
+     */
     public StringEncryptionException(String message) {
         super(message);
     }

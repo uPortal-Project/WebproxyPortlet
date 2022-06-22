@@ -19,70 +19,80 @@
 package org.jasig.portlet.proxy.service;
 
 /**
- * IFormField is an interface used to store form field information within an IContentRequest object.  
+ * IFormField is an interface used to store form field information within an IContentRequest object.
  * The name getter/setter refer to the HTML input field name.
  * The value getter/setter refer to the value of the HTML input field name.  The value
  * can contain either a static value or a value that will be substituted through a properly
  * configured IPreInterceptor class.
  * The secured getter/setter refers to whether the field needs to be encrypted in the database
  * and displayed as a password instead of a text html input field.
- * 
- * @author mgillian
  *
+ * @author mgillian
+ * @version $Id: $Id
  */
 public interface IFormField {
 	
 	/**
 	 * setName() sets the name of the field (name used in form submission)
-	 * @param name
+	 *
+	 * @param name a {@link java.lang.String} object
 	 */
 	public void setName(String name);
 	
 	/**
 	 * getName() gets the name of the field (name used in form submission)
-	 * @return
+	 *
+	 * @return a {@link java.lang.String} object
 	 */
 	public String getName();
 	
 	/**
 	 * setValue() sets the first value of the field
-	 * @param value
+	 *
+	 * @param value a {@link java.lang.String} object
 	 */
 	public void setValue(String value);
 	
 	/**
 	 * setValues() sets the values of the field
-	 * @param values
+	 *
+	 * @param values an array of {@link java.lang.String} objects
 	 */
 	public void setValues(String[] values);
 	
 	/**
 	 * getValue() returns the first value associated with the Field
-	 * @return
+	 *
+	 * @return a {@link java.lang.String} object
 	 */
 	public String getValue();
 	
 	/**
 	 * getValues() gets the values of the field
-	 * @return
+	 *
+	 * @return an array of {@link java.lang.String} objects
 	 */
 	public String[] getValues();
 	
 	/**
 	 * getSecured() returns whether the field is encrypted and should be displayed obscured
 	 * to the user
+	 *
 	 * @return true if field should be encrypted and secured, false otherwise
 	 */
 	public boolean getSecured();
 	
 	/**
 	 * setSecured(boolean) changes whether the field should be encrypted and obscured
-	 * @param isSecured
+	 *
+	 * @param isSecured a boolean
 	 */
 	public void setSecured(boolean isSecured);
 	
 	/**
 	 * duplicate() copies the data from the current IFormField into the passed-in parameter
+	 *
+	 * @return a {@link org.jasig.portlet.proxy.service.IFormField} object
 	 */
 	public IFormField duplicate();
 }

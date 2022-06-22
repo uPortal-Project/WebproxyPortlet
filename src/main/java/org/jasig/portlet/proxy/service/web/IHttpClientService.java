@@ -22,7 +22,19 @@ import javax.portlet.PortletRequest;
 
 import org.apache.http.client.HttpClient;
 
+/**
+ * <p>IHttpClientService interface.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public interface IHttpClientService {
 	
+	/**
+	 * <p>getHttpClient.</p>
+	 *
+	 * @param portletRequest a {@link javax.portlet.PortletRequest} object
+	 * @return a {@link org.apache.http.client.HttpClient} object
+	 */
 	HttpClient getHttpClient(PortletRequest portletRequest);
 }

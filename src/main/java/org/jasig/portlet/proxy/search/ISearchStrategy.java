@@ -26,10 +26,29 @@ import org.apereo.portal.search.SearchRequest;
 import org.apereo.portal.search.SearchResult;
 import org.jsoup.nodes.Document;
 
+/**
+ * <p>ISearchStrategy interface.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public interface ISearchStrategy {
 
+    /**
+     * <p>getStrategyName.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getStrategyName();
     
+    /**
+     * <p>search.</p>
+     *
+     * @param searchQuery a {@link org.apereo.portal.search.SearchRequest} object
+     * @param request a {@link javax.portlet.EventRequest} object
+     * @param document a {@link org.jsoup.nodes.Document} object
+     * @return a {@link java.util.List} object
+     */
     public List<SearchResult> search(SearchRequest searchQuery, EventRequest request, Document document);
 
 }

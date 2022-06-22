@@ -31,15 +31,20 @@ import org.springframework.stereotype.Service;
  * preferences.
  *
  * @author drewwills
+ * @version $Id: $Id
  */
 @Service(PortletPreferencesBasicAuthenticationPreInterceptor.BEAN_ID)
 public class PortletPreferencesBasicAuthenticationPreInterceptor extends AbstractBasicAuthenticationPreInterceptor {
 
+    /** Constant <code>BEAN_ID="portletPreferencesBasicAuthenticationPr"{trunked}</code> */
     public static final String BEAN_ID = "portletPreferencesBasicAuthenticationPreInterceptor";
 
+    /** Constant <code>USERNAME_PREFERENCE="PortletPreferencesBasicAuthenticationPr"{trunked}</code> */
     public static final String USERNAME_PREFERENCE = PortletPreferencesBasicAuthenticationPreInterceptor.class.getName() + ".username";
+    /** Constant <code>PASSWORD_PREFERENCE="PortletPreferencesBasicAuthenticationPr"{trunked}</code> */
     public static final String PASSWORD_PREFERENCE = PortletPreferencesBasicAuthenticationPreInterceptor.class.getName() + ".password";
 
+    /** {@inheritDoc} */
     @Override
     protected UsernamePasswordCredentials getCredentials(PortletRequest portletRequest) {
 

@@ -33,8 +33,9 @@ import org.jasig.portlet.proxy.service.web.interceptor.UserPreferencesPreInterce
 
 /**
  * GatewayEntry represents a user-facing link in the Gateway SSO portlet.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public class GatewayEntry {
 
@@ -49,8 +50,8 @@ public class GatewayEntry {
 
     /**
      * Get the display text for this link (user-friendly system name)
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.String} object
      */
     public String getName() {
         return name;
@@ -58,8 +59,8 @@ public class GatewayEntry {
 
     /**
      * Set the display text (user-friendly system name) for this link.
-     * 
-     * @param name
+     *
+     * @param name a {@link java.lang.String} object
      */
     @Required
     public void setName(String name) {
@@ -68,8 +69,8 @@ public class GatewayEntry {
 
     /**
      * Get the icon for this link.
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.String} object
      */
     public String getIconUrl() {
         return iconUrl;
@@ -77,33 +78,53 @@ public class GatewayEntry {
 
     /**
      * Set an icon for this link.
-     * 
-     * @param iconUrl
+     *
+     * @param iconUrl a {@link java.lang.String} object
      */
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
     }
 
+    /**
+     * <p>Getter for the field <code>javascriptFile</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getJavascriptFile() {
         return javascriptFile;
     }
 
+    /**
+     * <p>Setter for the field <code>javascriptFile</code>.</p>
+     *
+     * @param javascriptFile a {@link java.lang.String} object
+     */
     public void setJavascriptFile(String javascriptFile) {
         this.javascriptFile = javascriptFile;
     }
 
+    /**
+     * <p>Getter for the field <code>roleWhitelist</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<String> getRoleWhitelist() {
         return roleWhitelist;
     }
 
+    /**
+     * <p>Setter for the field <code>roleWhitelist</code>.</p>
+     *
+     * @param roleWhitelist a {@link java.util.List} object
+     */
     public void setRoleWhitelist(List<String> roleWhitelist) {
         this.roleWhitelist = roleWhitelist;
     }
 
     /**
      * Get a map of content requests to be executed for this link.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.LinkedHashMap} object
      */
     public LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>> getContentRequests() {
         return contentRequests;
@@ -114,29 +135,54 @@ public class GatewayEntry {
      * entry should have a key consisting of the desired configured content
      * request pointing to a list of interceptor keys.  Each request will be
      * executed in the given order after being processed by any interceptors.
-     * 
-     * @param contentRequests
+     *
+     * @param contentRequests a {@link java.util.LinkedHashMap} object
      */
     public void setContentRequests(LinkedHashMap<HttpContentRequestImpl, List<IPreInterceptor>> contentRequests) {
         this.contentRequests = contentRequests;
     }
 
+    /**
+     * <p>Getter for the field <code>authenticationFormModifier</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<IAuthenticationFormModifier> getAuthenticationFormModifier() {
         return this.authenticationFormModifier;
     }
 
+    /**
+     * <p>Setter for the field <code>authenticationFormModifier</code>.</p>
+     *
+     * @param authenticationFormModifier a {@link java.util.List} object
+     */
     public void setAuthenticationFormModifier(List<IAuthenticationFormModifier> authenticationFormModifier) {
         this.authenticationFormModifier = authenticationFormModifier;
     }
 
+    /**
+     * <p>isRequireSecure.</p>
+     *
+     * @return a boolean
+     */
     public boolean isRequireSecure() {
         return requireSecure;
     }
 
+    /**
+     * <p>Setter for the field <code>requireSecure</code>.</p>
+     *
+     * @param requireSecure a boolean
+     */
     public void setRequireSecure(boolean requireSecure) {
         this.requireSecure = requireSecure;
     }
 
+    /**
+     * <p>Getter for the field <code>operations</code>.</p>
+     *
+     * @return a {@link org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry.GatewayEntryOperations} object
+     */
     public GatewayEntryOperations getOperations() {
         return operations;
     }
@@ -144,6 +190,7 @@ public class GatewayEntry {
     /**
      * Returns true if the entry is accessible to the user.  An entry is accessible if there are no whitelist roles
      * defined, or if the user has at least one of the roles in the whitelist.
+     *
      * @param request PortletRequest
      * @return true if the entry is accessible to the user.
      */
@@ -160,8 +207,9 @@ public class GatewayEntry {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return a hashcode of the name.
-     * @return Hashcode value.
      */
     @Override
     public int hashCode() {
@@ -169,9 +217,9 @@ public class GatewayEntry {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Entries are equal if the names are equal
-     * @param obj 2nd object to test
-     * @return true if entries are equal
      */
     @Override
     public boolean equals(Object obj) {

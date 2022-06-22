@@ -29,17 +29,20 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 /**
- * ContentClippingFilter limits the produced response to a subset of the 
+ * ContentClippingFilter limits the produced response to a subset of the
  * retrieved document using a jQuery-style selector.  This filter can be used
  * to return a portion of a page, for example excluding the header and footer.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service("contentClippingFilter")
 public class ContentClippingFilter implements IDocumentFilter {
 
+    /** Constant <code>SELECTOR_KEY="clippingSelector"</code> */
     public static final String SELECTOR_KEY = "clippingSelector";
     
+    /** {@inheritDoc} */
     @Override
     public void filter(final Document document,
             final IContentResponse proxyResponse, final RenderRequest request,

@@ -22,8 +22,9 @@ package org.jasig.portlet.proxy.service;
  * IContentRequest provides an interface for representing requests to content
  * services.  A request may contain information about where content is stored,
  * how to access it, authentication information, etc.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public interface IContentRequest {
 

@@ -21,42 +21,46 @@ package org.jasig.portlet.proxy.service;
 import javax.portlet.PortletRequest;
 
 /**
- * IContentService represents a service for providing content.  Content might 
+ * IContentService represents a service for providing content.  Content might
  * be retrieved from remote locations, the filesystem, a database, etc.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public interface IContentService<T extends IContentRequest, S extends IContentResponse> {
 
 	/**
-	 * Get an appropriate default content request for the current portlet 
+	 * Get an appropriate default content request for the current portlet
 	 * request.
-	 * 
-	 * @param request
-	 * @return
+	 *
+	 * @param request a {@link javax.portlet.PortletRequest} object
+	 * @return a T object
 	 */
 	public T getRequest(PortletRequest request);
 
     /**
      * Execute any necessary logic prior to retrieving the content
-     * @param contentRequest
-     * @param request
+     *
+     * @param contentRequest a T object
+     * @param request a {@link javax.portlet.PortletRequest} object
      */
     public void beforeGetContent(T contentRequest, PortletRequest request);
 
-	/**
-	 * Retrieve content for the given content request and portlet request.
-	 * 
-	 * @param proxyRequest
-	 * @param request
-	 * @return
-	 */
+    /**
+     * Retrieve content for the given content request and portlet request.
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param contentRequest a T object
+     * @return a S object
+     */
     public S getContent(T contentRequest, PortletRequest request);
 
     /**
      * Execute any necessary logic after retrieving the content
-     * @param contentRequest
-     * @param request
+     *
+     * @param contentRequest a T object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param proxyResponse a S object
      */
     public void afterGetContent(T contentRequest, PortletRequest request, S proxyResponse);
 }

@@ -29,17 +29,20 @@ import org.apache.http.protocol.HttpContext;
 /**
  * RedirectTrackingResponseInterceptor tracks any redirects that occur during
  * retrieval of the target content.  The final URL is set as a context attribute
- * on the HttpResponse for later retrieval.  This interceptor ensures that 
+ * on the HttpResponse for later retrieval.  This interceptor ensures that
  * any relative URL calculations performed while processing the response are made
  * absolute using the correct final URL.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public class RedirectTrackingResponseInterceptor implements
 		HttpResponseInterceptor {
 
+	/** Constant <code>FINAL_URL_KEY="finalUrl"</code> */
 	public static final String FINAL_URL_KEY = "finalUrl";
 	
+	/** {@inheritDoc} */
 	@Override
 	public void process(HttpResponse response, HttpContext context)
 			throws HttpException, IOException {

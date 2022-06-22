@@ -30,20 +30,44 @@ import org.springframework.stereotype.Component;
  * javax.portlet.actionScopedRequestAttributes.
  *
  * @author James Wennmacher, jwennmacher@unicon.net
+ * @version $Id: $Id
  */
 
 @Component
 public class ActionScopedRequestAttributeManager {
+    /** Constant <code>ACTION_SCOPED_REQUEST_PREFIX="actionScopedRequestAttributePrefix.WebP"{trunked}</code> */
     public static final String ACTION_SCOPED_REQUEST_PREFIX = "actionScopedRequestAttributePrefix.WebProxyPortlet";
 
+    /**
+     * <p>storeItem.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param key a {@link java.lang.String} object
+     * @param item a {@link java.lang.Object} object
+     */
     public void storeItem (PortletRequest request, String key, Object item) {
         request.getPortletSession().setAttribute(ACTION_SCOPED_REQUEST_PREFIX + key, item);
     }
 
+    /**
+     * <p>propogateAndReturnItem.</p>
+     *
+     * @param request a {@link javax.portlet.RenderRequest} object
+     * @param key a {@link java.lang.String} object
+     * @return a {@link java.lang.Object} object
+     */
     public Object propogateAndReturnItem (RenderRequest request, String key) {
         return propogateAndReturnItem(request, key, true);
     }
 
+    /**
+     * <p>propogateAndReturnItem.</p>
+     *
+     * @param request a {@link javax.portlet.RenderRequest} object
+     * @param key a {@link java.lang.String} object
+     * @param clearItem a boolean
+     * @return a {@link java.lang.Object} object
+     */
     public Object propogateAndReturnItem (RenderRequest request, String key, boolean clearItem) {
         Object item = request.getPortletSession().getAttribute(ACTION_SCOPED_REQUEST_PREFIX + key);
         // If an item was present, store the item in the request and clear the session key to reduce session storage
@@ -56,6 +80,11 @@ public class ActionScopedRequestAttributeManager {
         return item;
     }
 
+    /**
+     * <p>clearAttributes.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     */
     public void clearAttributes(PortletRequest request) {
         Enumeration<String> attributeNames = request.getPortletSession().getAttributeNames();
         while (attributeNames.hasMoreElements()) {

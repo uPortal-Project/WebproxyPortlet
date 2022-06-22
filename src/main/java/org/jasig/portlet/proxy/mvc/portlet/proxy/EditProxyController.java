@@ -55,6 +55,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * ProxyConfigController
  *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Controller
 @RequestMapping("CONFIG")
@@ -64,23 +65,45 @@ public class EditProxyController {
 
     private Map<String,String> pageCharacterEncodings;
 
+    /**
+     * <p>Setter for the field <code>pageCharacterEncodings</code>.</p>
+     *
+     * @param pageCharacterEncodings a {@link java.util.Map} object
+     */
     @Resource(name = "pageCharacterEncodings")
     public void setPageCharacterEncodings(Map<String, String> pageCharacterEncodings) {
         this.pageCharacterEncodings = pageCharacterEncodings;
     }
 
+    /**
+     * <p>Getter for the field <code>pageCharacterEncodings</code>.</p>
+     *
+     * @return a {@link java.util.Map} object
+     */
     @ModelAttribute("pageCharacterEncodings")
     public Map<String,String> getPageCharacterEncodings() {
         return pageCharacterEncodings;
     }
 
     private ISearchService searchService;
+    /**
+     * <p>Setter for the field <code>searchService</code>.</p>
+     *
+     * @param searchService a {@link org.jasig.portlet.proxy.search.ISearchService} object
+     */
     @Required
     @Resource(name="contentSearchProvider")
     public void setSearchService(ISearchService searchService) {
         this.searchService = searchService;
     }
 
+    /**
+     * <p>getEditView.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @RenderMapping
     public String getEditView(PortletRequest request, Model model) {
         model.addAttribute("form", getForm(request));
@@ -88,6 +111,15 @@ public class EditProxyController {
         return "editProxyPortlet";
     }
 
+    /**
+     * <p>updatePortlet.</p>
+     *
+     * @param form a {@link org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletForm} object
+     * @param request a {@link javax.portlet.ActionRequest} object
+     * @param response a {@link javax.portlet.ActionResponse} object
+     * @param save a {@link java.lang.String} object
+     * @throws javax.portlet.PortletModeException if any.
+     */
     @ActionMapping
     public void updatePortlet(@ModelAttribute("form") ProxyPortletForm form, ActionRequest request,
                               ActionResponse response, @RequestParam(value="Save", required=false) String save)
@@ -178,6 +210,12 @@ public class EditProxyController {
     // Cancel, then access Configure menu again for some reason this method is not invoked and the previous, modified
     // form is displayed which is very confusing because it looks like the form data was saved to portlet preferences
     // but it wasn't.
+    /**
+     * <p>getForm.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a {@link org.jasig.portlet.proxy.mvc.portlet.proxy.ProxyPortletForm} object
+     */
     public ProxyPortletForm getForm(PortletRequest request) {
         final PortletPreferences preferences = request.getPreferences();
         final ProxyPortletForm form = new ProxyPortletForm();

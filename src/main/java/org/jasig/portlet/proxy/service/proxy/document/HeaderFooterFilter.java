@@ -28,17 +28,21 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 /**
- * HeaderFooterFilter can add static HTML header and footer content to any 
+ * HeaderFooterFilter can add static HTML header and footer content to any
  * proxied content.
- * 
+ *
  * @author Jen Bourey
+ * @version $Id: $Id
  */
 @Service("headerFooterFilter")
 public class HeaderFooterFilter implements IDocumentFilter {
 
+    /** Constant <code>HEADER_KEY="headerHtml"</code> */
     public static final String HEADER_KEY = "headerHtml";
+    /** Constant <code>FOOTER_KEY="footerHtml"</code> */
     public static final String FOOTER_KEY = "footerHtml";
 
+	/** {@inheritDoc} */
 	@Override
 	public void filter(Document document, IContentResponse proxyResponse,
 			RenderRequest portletRequest, RenderResponse portletResponse) {

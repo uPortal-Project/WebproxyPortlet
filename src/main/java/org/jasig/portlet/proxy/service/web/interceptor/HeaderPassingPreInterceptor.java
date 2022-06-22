@@ -32,15 +32,21 @@ import org.springframework.stereotype.Service;
 /**
  * HeaderPassingPreInterceptor allows content requests to include
  * pass along header attributes to proxied content
+ *
+ * @author bjagg
+ * @version $Id: $Id
  */
 @Service("headerPassingPreInterceptor")
 public class HeaderPassingPreInterceptor implements IPreInterceptor {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /** Constant <code>HEADER_PREFERENCE_NAMES="headerNames"</code> */
     public static final String HEADER_PREFERENCE_NAMES = "headerNames";
+    /** Constant <code>HEADER_PREFERENCE_VALUES="headerValues"</code> */
     public static final String HEADER_PREFERENCE_VALUES = "headerValues";
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void intercept(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest) {
@@ -61,6 +67,7 @@ public class HeaderPassingPreInterceptor implements IPreInterceptor {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean validate(HttpContentRequestImpl proxyRequest,
             PortletRequest portletRequest) {

@@ -23,6 +23,12 @@ import javax.portlet.PortletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>ThemeNameViewSelectorImpl class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class ThemeNameViewSelectorImpl implements IViewSelector {
     
     private static final String THEME_NAME_PROPERTY = "themeName";
@@ -31,6 +37,7 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     
+    /** {@inheritDoc} */
     public boolean isMobile(PortletRequest request) {
         
         String[] mobileThemes = request.getPreferences().getValues(MOBILE_THEMES_KEY, mobileThemesDefault);
@@ -56,10 +63,20 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
         return false;
     }
 
+    /**
+     * <p>Getter for the field <code>mobileThemesDefault</code>.</p>
+     *
+     * @return an array of {@link java.lang.String} objects
+     */
     public String[] getMobileThemesDefault() {
         return mobileThemesDefault;
     }
 
+    /**
+     * <p>Setter for the field <code>mobileThemesDefault</code>.</p>
+     *
+     * @param mobileThemesDefault an array of {@link java.lang.String} objects
+     */
     public void setMobileThemesDefault(String[] mobileThemesDefault) {
         this.mobileThemesDefault = mobileThemesDefault;
     }

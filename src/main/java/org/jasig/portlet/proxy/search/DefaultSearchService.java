@@ -32,22 +32,36 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>DefaultSearchService class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class DefaultSearchService implements ISearchService {
 
+    /** Constant <code>SEARCH_STRATEGIES_PREFERENCE="searchStrategies"</code> */
     public static final String SEARCH_STRATEGIES_PREFERENCE = "searchStrategies";
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, ISearchStrategy> strategies = new HashMap<String, ISearchStrategy>();
+    /** {@inheritDoc} */
     @Override
     public void addSearchStrategy(ISearchStrategy strategy) {
         strategies.put(strategy.getStrategyName(), strategy);
     }
 
+    /**
+     * <p>getStrategyNames.</p>
+     *
+     * @return an array of {@link java.lang.String} objects
+     */
     public String[] getStrategyNames() {
         return (String[]) strategies.keySet().toArray(new String[]{});
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchResults search(final EventRequest request, final Document document) {
 

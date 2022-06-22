@@ -26,10 +26,12 @@ import org.springframework.stereotype.Component;
  * Custom property editor registrar for proxy authentication type
  *
  * @author James Wennmacher, jwennmacher@unicon.net
+ * @version $Id: $Id
  */
 
 @Component
 public final class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
+    /** {@inheritDoc} */
     public void registerCustomEditors(PropertyEditorRegistry registry) {
 
         // it is expected that new PropertyEditor instances are created

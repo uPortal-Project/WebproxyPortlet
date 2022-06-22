@@ -29,17 +29,22 @@ import org.springframework.stereotype.Service;
 /**
  * UserInfoBasicAuthencitationPreInterceptor applies BASIC authentication using
  * username and password tokens available in the UserInfo map.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service(UserInfoBasicAuthenticationPreInterceptor.BEAN_ID)
 public class UserInfoBasicAuthenticationPreInterceptor extends AbstractBasicAuthenticationPreInterceptor {
 
+    /** Constant <code>BEAN_ID="userInfoBasicAuthenticationPreIntercept"{trunked}</code> */
     public static final String  BEAN_ID = "userInfoBasicAuthenticationPreInterceptor";
 
+    /** Constant <code>USERNAME_KEY="usernameKey"</code> */
     public static final String  USERNAME_KEY = "usernameKey";
+    /** Constant <code>PASSWORD_KEY="passwordKey"</code> */
     public static final String  PASSWORD_KEY = "passwordKey";
 
+	/** {@inheritDoc} */
 	@Override
 	protected UsernamePasswordCredentials getCredentials(PortletRequest portletRequest) {
 

@@ -32,16 +32,16 @@ import java.io.IOException;
  *
  * @author mgillian
  * @see org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayPortletController#showTarget(javax.portlet.ResourceRequest, javax.portlet.ResourceResponse, int)
- *
+ * @version $Id: $Id
  */
 public interface IAuthenticationFormModifier {
 
 	/**
 	 * Modifies the ContentRequest as needed for custom logic.  May add fields, modify the url, etc.
 	 *
-     * @param contentRequest <code>ContentRequest</code> to modify
-     * @param preferences PortletPreferences that may be useful when calculating form field values
-	 * @throws IOException
+	 * @param contentRequest <code>ContentRequest</code> to modify
+	 * @param preferences PortletPreferences that may be useful when calculating form field values
+	 * @throws java.io.IOException
 	 */
 	public void modifyHttpContentRequest(HttpContentRequestImpl contentRequest, PortletPreferences preferences)
             throws IOException;

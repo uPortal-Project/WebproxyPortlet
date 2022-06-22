@@ -50,12 +50,22 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
+/**
+ * <p>GatewayPortletEditController class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 @Controller
 @RequestMapping("EDIT")
 public class GatewayPortletEditController extends BaseGatewayPortletController {
+    /** Constant <code>INCONSISTENT_FIELD_VALUES="edit.proxy.error.message.inconsistent.f"{trunked}</code> */
     public static final String INCONSISTENT_FIELD_VALUES = "edit.proxy.error.message.inconsistent.field.values";
+    /** Constant <code>GATEWAY_ENTRY_PREFERENCES="gatewayPreferences"</code> */
     public static final String GATEWAY_ENTRY_PREFERENCES = "gatewayPreferences";
+    /** Constant <code>ERROR_KEY="error"</code> */
     public static final String ERROR_KEY = "error";
+    /** Constant <code>GATEWAY_ENTRY="gatewayEntry"</code> */
     public static final String GATEWAY_ENTRY = "gatewayEntry";
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -67,6 +77,11 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
     @Autowired
     ActionScopedRequestAttributeManager actionScopedRequestAttributeManager;
 
+    /**
+     * <p>Setter for the field <code>preferencesRegex</code>.</p>
+     *
+     * @param preferencesRegex a {@link java.lang.String} object
+     */
     @Value("${login.preferences.regex}")
     public void setPreferencesRegex(String preferencesRegex) {
         this.preferencesRegex = preferencesRegex;
@@ -74,6 +89,11 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
 
     private IStringEncryptionService stringEncryptionService;
 
+    /**
+     * <p>Setter for the field <code>stringEncryptionService</code>.</p>
+     *
+     * @param stringEncryptionService a {@link org.jasig.portlet.proxy.security.IStringEncryptionService} object
+     */
     @Autowired(required=false)
     public void setStringEncryptionService(IStringEncryptionService stringEncryptionService) {
         this.stringEncryptionService = stringEncryptionService;
@@ -88,6 +108,13 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
     @Autowired(required=true)
     private IViewSelector viewSelector;
 
+    /**
+     * <p>displayEditView.</p>
+     *
+     * @param request a {@link javax.portlet.RenderRequest} object
+     * @param entryName a {@link java.lang.String} object
+     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     */
     @RenderMapping
     public ModelAndView displayEditView(RenderRequest request, @RequestParam(required=false) String entryName) {
         final ModelAndView mv = new ModelAndView();
@@ -113,6 +140,14 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
         return mv;
     }
 
+    /**
+     * <p>savePreferences.</p>
+     *
+     * @param request a {@link javax.portlet.ActionRequest} object
+     * @param response a {@link javax.portlet.ActionResponse} object
+     * @param entryName a {@link java.lang.String} object
+     * @throws java.lang.Exception if any.
+     */
     @ActionMapping(params = {"action=savePreferences"})
     public void savePreferences(ActionRequest request, ActionResponse response,
                                 @RequestParam String entryName) throws Exception {
@@ -162,6 +197,14 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
         }
     }
 
+    /**
+     * <p>clearPreferences.</p>
+     *
+     * @param request a {@link javax.portlet.ActionRequest} object
+     * @param response a {@link javax.portlet.ActionResponse} object
+     * @param entryName a {@link java.lang.String} object
+     * @throws java.lang.Exception if any.
+     */
     @ActionMapping(params = {"action=clearPreferences"})
     public void clearPreferences(ActionRequest request, ActionResponse response,
                                  @RequestParam String entryName) throws Exception {

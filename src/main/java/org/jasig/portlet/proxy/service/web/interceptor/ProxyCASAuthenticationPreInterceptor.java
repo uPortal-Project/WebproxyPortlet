@@ -36,22 +36,24 @@ import org.springframework.stereotype.Service;
  * ProxyCASAuthenticationPreInterceptor provides CAS authentication for HTTP
  * requests.  This implementation requests a CAS proxy ticket from the portal, then
  * uses this to obtain a proxy ticket for the target URL.  The URL is then
- * modified to contain the CAS ticket.  The ticket is only added when the 
+ * modified to contain the CAS ticket.  The ticket is only added when the
  * base class believes no session exists on the target.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service(ProxyCASAuthenticationPreInterceptor.BEAN_ID)
 public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
 
+    /** Constant <code>BEAN_ID="proxyCASAuthenticationPreInterceptor"</code> */
     public static final String BEAN_ID = "proxyCASAuthenticationPreInterceptor";
 
     private String      serviceUrl;
 
     /**
      * Set the base URL of the CAS server
-     * 
-     * @param serviceUrl
+     *
+     * @param serviceUrl a {@link java.lang.String} object
      */
     @Value("${portal.server.base.url}/${portlet.context}")
     public void setServiceUrl(String serviceUrl) {
@@ -62,14 +64,15 @@ public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInter
 
     /**
      * Set the ticket validator
-     * 
-     * @param ticketValidator
+     *
+     * @param ticketValidator a {@link org.jasig.cas.client.validation.TicketValidator} object
      */
     @Autowired(required = true)
     public void setTicketValidator(TicketValidator ticketValidator) {
         this.ticketValidator = ticketValidator;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void prepareAuthentication(HttpContentRequestImpl contentRequest, PortletRequest portletRequest) {
 
@@ -117,6 +120,7 @@ public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInter
 
     }
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean validate(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {

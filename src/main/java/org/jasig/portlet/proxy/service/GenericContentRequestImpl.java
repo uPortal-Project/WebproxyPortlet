@@ -27,6 +27,7 @@ import javax.portlet.WindowState;
  * simply of a target location.
  *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public class GenericContentRequestImpl implements IContentRequest {
 
@@ -36,15 +37,19 @@ public class GenericContentRequestImpl implements IContentRequest {
      * Standard key for storing a content location in the portlet preferences.
      */
     public static final String CONTENT_LOCATION_PREFERENCE = "location";
+    /** Constant <code>CONTENT_LOCATION_MAXIMIZED_PREFERENCE="location.MAXIMIZED"</code> */
     public static final String CONTENT_LOCATION_MAXIMIZED_PREFERENCE = "location.MAXIMIZED";
 
+    /**
+     * <p>Constructor for GenericContentRequestImpl.</p>
+     */
     public GenericContentRequestImpl() { }
 
     /**
      * Construct a new content request, populating the location from the
      * portlet preferences.
      *
-     * @param portletRequest
+     * @param portletRequest a {@link javax.portlet.PortletRequest} object
      */
     public GenericContentRequestImpl(final PortletRequest portletRequest) {
         final PortletPreferences preferences = portletRequest.getPreferences();
@@ -57,6 +62,8 @@ public class GenericContentRequestImpl implements IContentRequest {
     }
 
     /**
+     * <p>Getter for the field <code>proxiedLocation</code>.</p>
+     *
      * @return Get the target location.
      */
     public String getProxiedLocation() {
@@ -66,7 +73,7 @@ public class GenericContentRequestImpl implements IContentRequest {
     /**
      * Set the target location.
      *
-     * @param proxiedLocation
+     * @param proxiedLocation a {@link java.lang.String} object
      */
     public void setProxiedLocation(String proxiedLocation) {
         this.proxiedLocation = proxiedLocation;

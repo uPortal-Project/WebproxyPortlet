@@ -27,19 +27,20 @@ import org.jsoup.nodes.Document;
 /**
  * IDocumentFilter provides an interface for modifying a retrieved document
  * prior to displaying it to an end user.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public interface IDocumentFilter {
 
-	/**
-	 * Filter a provided document.
-	 * 
-	 * @param document
-	 * @param proxyResponse
-	 * @param portletRequest
-	 * @param portletResponse
-	 */
+    /**
+     * Filter a provided document.
+     *
+     * @param document a {@link org.jsoup.nodes.Document} object
+     * @param proxyResponse a {@link org.jasig.portlet.proxy.service.IContentResponse} object
+     * @param portletRequest a {@link javax.portlet.RenderRequest} object
+     * @param portletResponse a {@link javax.portlet.RenderResponse} object
+     */
     public void filter(Document document, IContentResponse proxyResponse, RenderRequest portletRequest,
             RenderResponse portletResponse);
     

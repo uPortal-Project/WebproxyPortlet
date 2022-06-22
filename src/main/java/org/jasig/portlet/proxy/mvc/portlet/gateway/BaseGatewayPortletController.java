@@ -27,9 +27,16 @@ import java.util.List;
  * replaced with Spring Security SpEL annotations when time permits.
  *
  * @author James Wennmacher, jwennmacher@unicon.net
+ * @version $Id: $Id
  */
-
 public class BaseGatewayPortletController {
+    /**
+     * <p>removeInaccessibleEntries.</p>
+     *
+     * @param entries a {@link java.util.List} object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a {@link java.util.List} object
+     */
     protected List<GatewayEntry> removeInaccessibleEntries(List<GatewayEntry> entries, PortletRequest request) {
         List<GatewayEntry> accessibleEntries = new ArrayList<GatewayEntry>();
         for (GatewayEntry entry : entries) {
@@ -40,6 +47,14 @@ public class BaseGatewayPortletController {
         return accessibleEntries;
     }
 
+    /**
+     * <p>getAccessibleEntry.</p>
+     *
+     * @param entries a {@link java.util.List} object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param beanName a {@link java.lang.String} object
+     * @return a {@link org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry} object
+     */
     protected GatewayEntry getAccessibleEntry(List<GatewayEntry> entries, PortletRequest request, String beanName) {
         for (GatewayEntry entry : entries) {
             if (entry.getName().equals(beanName)) {

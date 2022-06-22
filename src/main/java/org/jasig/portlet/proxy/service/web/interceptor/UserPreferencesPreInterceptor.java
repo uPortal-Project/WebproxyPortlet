@@ -33,12 +33,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * <p>UserPreferencesPreInterceptor class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 @Service("UserPreferencesPreInterceptor")
 public class UserPreferencesPreInterceptor implements IPreInterceptor {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String preferencesRegex;
     
+    /**
+     * <p>Setter for the field <code>preferencesRegex</code>.</p>
+     *
+     * @param preferencesRegex a {@link java.lang.String} object
+     */
     @Value("${login.preferences.regex}")
     public void setPreferencesRegex(String preferencesRegex) {
         this.preferencesRegex = preferencesRegex;
@@ -48,6 +59,7 @@ public class UserPreferencesPreInterceptor implements IPreInterceptor {
     private IStringEncryptionService stringEncryptionService;
     
 
+	/** {@inheritDoc} */
 	@Override
 	public void intercept(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {
@@ -75,13 +87,12 @@ public class UserPreferencesPreInterceptor implements IPreInterceptor {
 
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * validate() checks portlet preferences and confirms that all of the needed
-	 * preferences have been set.  The preferences could be set incorrectly, which 
-	 * will not be detected until the gateway entry is tried.  This simply validates 
+	 * preferences have been set.  The preferences could be set incorrectly, which
+	 * will not be detected until the gateway entry is tried.  This simply validates
 	 * that the preferences have been created and saved by the user.
-	 * @param proxyRequest 
-	 * @param portletRequest 
-	 * @return true if all portlet preferences have been set (are not blank), false if all have not been set.
 	 */
 	@Override
 	public boolean validate(HttpContentRequestImpl proxyRequest, PortletRequest portletRequest) {

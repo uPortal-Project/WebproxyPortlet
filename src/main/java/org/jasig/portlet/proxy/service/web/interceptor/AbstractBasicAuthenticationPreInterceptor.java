@@ -30,20 +30,27 @@ import org.jasig.portlet.proxy.service.web.IHttpClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * AbstractBasicAuthenticationPreInterceptor provides common logic for any 
+ * AbstractBasicAuthenticationPreInterceptor provides common logic for any
  * authentication implementations using BASIC auth.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public abstract class AbstractBasicAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
 
 	private IHttpClientService httpClientService;
 	
+	/**
+	 * <p>Setter for the field <code>httpClientService</code>.</p>
+	 *
+	 * @param httpClientService a {@link org.jasig.portlet.proxy.service.web.IHttpClientService} object
+	 */
 	@Autowired(required = true)
 	public void setHttpClientService(IHttpClientService httpClientService) {
 		this.httpClientService = httpClientService;
 	}
 
+    /** {@inheritDoc} */
     @Override
     public boolean validate(HttpContentRequestImpl proxyRequest,
             PortletRequest portletRequest) {
@@ -51,6 +58,8 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
     }
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Add BASIC authentication credentials to the user's HttpClientService.
 	 */
 	@Override
@@ -74,9 +83,9 @@ public abstract class AbstractBasicAuthenticationPreInterceptor extends Authenti
 
 	/**
 	 * Provide credentials for the current user for this target service.
-	 * 
-	 * @param portletRequest
-	 * @return
+	 *
+	 * @param portletRequest a {@link javax.portlet.PortletRequest} object
+	 * @return a {@link org.apache.http.auth.Credentials} object
 	 */
 	protected abstract Credentials getCredentials(PortletRequest portletRequest);
 

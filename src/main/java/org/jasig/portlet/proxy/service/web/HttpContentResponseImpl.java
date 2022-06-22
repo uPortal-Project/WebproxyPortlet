@@ -26,6 +26,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
 
+/**
+ * <p>HttpContentResponseImpl class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class HttpContentResponseImpl extends GenericContentResponseImpl implements Serializable {
 
     private static final long serialVersionUID = 1L;  // To get rid of FindBugs complaints
@@ -34,19 +40,35 @@ public class HttpContentResponseImpl extends GenericContentResponseImpl implemen
 
 	private transient HttpEntity entity;
 	
+	/**
+	 * <p>Constructor for HttpContentResponseImpl.</p>
+	 *
+	 * @param entity a {@link org.apache.http.HttpEntity} object
+	 */
 	public HttpContentResponseImpl(HttpEntity entity) {
 		this.entity = entity;
 		this.headers = new HashMap<String, String>();
 	}
 
+	/**
+	 * <p>Getter for the field <code>headers</code>.</p>
+	 *
+	 * @return a {@link java.util.Map} object
+	 */
 	public Map<String, String> getHeaders() {
 		return headers;
 	}
 
+	/**
+	 * <p>Setter for the field <code>headers</code>.</p>
+	 *
+	 * @param headers a {@link java.util.Map} object
+	 */
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void close() {
 		EntityUtils.consumeQuietly(entity);

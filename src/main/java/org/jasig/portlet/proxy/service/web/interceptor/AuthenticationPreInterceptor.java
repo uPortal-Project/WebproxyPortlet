@@ -29,19 +29,23 @@ import org.springframework.web.portlet.util.PortletUtils;
 
 /**
  * AuthenticationPreInterceptor provides a base class for implementing authentication
- * to remote web content.  This interceptor determines if a current session is 
- * already available for the remote site using a configured timeout.  If one 
+ * to remote web content.  This interceptor determines if a current session is
+ * already available for the remote site using a configured timeout.  If one
  * does not exist, the interceptor performs any implemented authentication logic.
- * 
+ *
  * @author Jen Bourey
+ * @version $Id: $Id
  */
 public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
     
+	/** Constant <code>AUTHENTICATION_TIMEOUT_KEY="authenticationTimeout"</code> */
 	public static final String AUTHENTICATION_TIMEOUT_KEY = "authenticationTimeout";
+	/** Constant <code>AUTHENTICATION_TIMESTAMP_KEY="authenticationTimestamp"</code> */
 	public static final String AUTHENTICATION_TIMESTAMP_KEY = "authenticationTimestamp";
 	
+	/** {@inheritDoc} */
 	@Override
 	public void intercept(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {
@@ -59,11 +63,11 @@ public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 	}
 
 	/**
-	 * Use the configured timeout to determine if the user is already 
+	 * Use the configured timeout to determine if the user is already
 	 * authenticated to the remote site.
-	 * 
-	 * @param request
-	 * @return
+	 *
+	 * @param request a {@link javax.portlet.PortletRequest} object
+	 * @return a boolean
 	 */
 	protected boolean isAlreadyAuthenticated(PortletRequest request) {
 		
@@ -82,9 +86,9 @@ public abstract class AuthenticationPreInterceptor implements IPreInterceptor {
 	/**
 	 * Perform authentication or prepare the content request to include
 	 * authentication parameters.
-	 * 
-	 * @param contentRequest
-	 * @param portletRequest
+	 *
+	 * @param contentRequest a {@link org.jasig.portlet.proxy.service.web.HttpContentRequestImpl} object
+	 * @param portletRequest a {@link javax.portlet.PortletRequest} object
 	 */
 	protected abstract void prepareAuthentication(HttpContentRequestImpl contentRequest, PortletRequest portletRequest);
 

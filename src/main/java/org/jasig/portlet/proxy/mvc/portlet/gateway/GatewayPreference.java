@@ -22,8 +22,8 @@ package org.jasig.portlet.proxy.mvc.portlet.gateway;
  * Simple DTO to hold a gateway preference editable by the user.
  *
  * @author James Wennmacher, jwennmacher@unicon.net
+ * @version $Id: $Id
  */
-
 public class GatewayPreference {
     String system;
     String logicalFieldName;
@@ -31,6 +31,15 @@ public class GatewayPreference {
     String fieldValue;
     boolean secured;
 
+    /**
+     * <p>Constructor for GatewayPreference.</p>
+     *
+     * @param system a {@link java.lang.String} object
+     * @param logicalFieldName a {@link java.lang.String} object
+     * @param preferenceName a {@link java.lang.String} object
+     * @param fieldValue a {@link java.lang.String} object
+     * @param secured a boolean
+     */
     public GatewayPreference(String system, String logicalFieldName, String preferenceName, String fieldValue, boolean secured) {
         this.system = system;
         this.logicalFieldName = logicalFieldName;
@@ -39,46 +48,97 @@ public class GatewayPreference {
         this.secured = secured;
     }
 
+    /**
+     * <p>Getter for the field <code>system</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getSystem() {
         return system;
     }
 
+    /**
+     * <p>Setter for the field <code>system</code>.</p>
+     *
+     * @param system a {@link java.lang.String} object
+     */
     public void setSystem(String system) {
         this.system = system;
     }
 
+    /**
+     * <p>Getter for the field <code>logicalFieldName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getLogicalFieldName() {
         return logicalFieldName;
     }
 
+    /**
+     * <p>Setter for the field <code>logicalFieldName</code>.</p>
+     *
+     * @param logicalFieldName a {@link java.lang.String} object
+     */
     public void setLogicalFieldName(String logicalFieldName) {
         this.logicalFieldName = logicalFieldName;
     }
 
+    /**
+     * <p>Getter for the field <code>preferenceName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getPreferenceName() {
         return preferenceName;
     }
 
+    /**
+     * <p>Setter for the field <code>preferenceName</code>.</p>
+     *
+     * @param preferenceName a {@link java.lang.String} object
+     */
     public void setPreferenceName(String preferenceName) {
         this.preferenceName = preferenceName;
     }
 
+    /**
+     * <p>Getter for the field <code>fieldValue</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getFieldValue() {
         return fieldValue;
     }
 
+    /**
+     * <p>Setter for the field <code>fieldValue</code>.</p>
+     *
+     * @param fieldValue a {@link java.lang.String} object
+     */
     public void setFieldValue(String fieldValue) {
         this.fieldValue = fieldValue;
     }
 
+    /**
+     * <p>isSecured.</p>
+     *
+     * @return a boolean
+     */
     public boolean isSecured() {
         return secured;
     }
 
+    /**
+     * <p>Setter for the field <code>secured</code>.</p>
+     *
+     * @param secured a boolean
+     */
     public void setSecured(boolean secured) {
         this.secured = secured;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -95,6 +155,7 @@ public class GatewayPreference {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

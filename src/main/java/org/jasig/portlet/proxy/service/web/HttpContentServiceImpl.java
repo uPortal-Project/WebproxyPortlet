@@ -55,22 +55,35 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
+ * <p>HttpContentServiceImpl class.</p>
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service("httpContentService")
 public class HttpContentServiceImpl implements IContentService<HttpContentRequestImpl, GenericContentResponseImpl> {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /** Constant <code>PROXY_PORTLET_PARAM_PREFIX="proxy."</code> */
     public final static String PROXY_PORTLET_PARAM_PREFIX = "proxy.";
+    /** Constant <code>URL_PARAM="PROXY_PORTLET_PARAM_PREFIX.concat(url)"</code> */
     public final static String URL_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("url");
+    /** Constant <code>IS_FORM_PARAM="PROXY_PORTLET_PARAM_PREFIX.concat(isFor"{trunked}</code> */
     public final static String IS_FORM_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("isForm");
+    /** Constant <code>FORM_METHOD_PARAM="PROXY_PORTLET_PARAM_PREFIX.concat(formM"{trunked}</code> */
     public final static String FORM_METHOD_PARAM = PROXY_PORTLET_PARAM_PREFIX.concat("formMethod");
 
+    /** Constant <code>PREINTERCEPTOR_LIST_KEY="preInterceptors"</code> */
     public static final String PREINTERCEPTOR_LIST_KEY = "preInterceptors";
 
     private ApplicationContext applicationContext;
 
+    /**
+     * <p>Setter for the field <code>applicationContext</code>.</p>
+     *
+     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
+     */
     @Autowired(required = true)
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -78,6 +91,11 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
 
     private IHttpClientService httpClientService;
 
+    /**
+     * <p>Setter for the field <code>httpClientService</code>.</p>
+     *
+     * @param httpClientService a {@link org.jasig.portlet.proxy.service.web.IHttpClientService} object
+     */
     @Autowired(required = true)
     public void setHttpClientService(IHttpClientService httpClientService) {
         this.httpClientService = httpClientService;
@@ -85,6 +103,11 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
 
     private List<String> replayedRequestHeaders;
 
+    /**
+     * <p>Setter for the field <code>replayedRequestHeaders</code>.</p>
+     *
+     * @param replayedRequestHeaders a {@link java.util.List} object
+     */
     @Required
     @Resource(name = "replayedRequestHeaders")
     public void setReplayedRequestHeaders(List<String> replayedRequestHeaders) {
@@ -94,6 +117,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
     @Autowired(required = true)
     private IExpressionProcessor expressionParser;
 
+    /** {@inheritDoc} */
     @Override
     public HttpContentRequestImpl getRequest(PortletRequest request) {
         final HttpContentRequestImpl contentRequest = new HttpContentRequestImpl(request, expressionParser);
@@ -108,6 +132,7 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         return contentRequest;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void beforeGetContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         // locate all pre-processing filters configured for this portlet
@@ -120,12 +145,21 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         beforeGetContent(proxyRequest, request);
         return getContent(proxyRequest, request, true);
     }
 
+    /**
+     * <p>getContent.</p>
+     *
+     * @param proxyRequest a {@link org.jasig.portlet.proxy.service.web.HttpContentRequestImpl} object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param runWrapperMethods a boolean
+     * @return a {@link org.jasig.portlet.proxy.service.GenericContentResponseImpl} object
+     */
     public GenericContentResponseImpl getContent(HttpContentRequestImpl proxyRequest, PortletRequest request, boolean runWrapperMethods) {
         try {
 
@@ -170,10 +204,18 @@ public class HttpContentServiceImpl implements IContentService<HttpContentReques
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void afterGetContent(HttpContentRequestImpl proxyRequest, PortletRequest request, GenericContentResponseImpl proxyResponse) {
     }
 
+    /**
+     * <p>getHttpRequest.</p>
+     *
+     * @param proxyRequest a {@link org.jasig.portlet.proxy.service.web.HttpContentRequestImpl} object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a {@link org.apache.http.client.methods.HttpUriRequest} object
+     */
     protected HttpUriRequest getHttpRequest(HttpContentRequestImpl proxyRequest, PortletRequest request) {
         final HttpUriRequest httpRequest;
 

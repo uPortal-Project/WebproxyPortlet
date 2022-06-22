@@ -31,19 +31,22 @@ import org.springframework.stereotype.Service;
 /**
  * ClasspathResourceContentService retrieves content from a document in the
  * portlet classpath.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service("classpathContentService")
 public class ClasspathResourceContentService implements IContentService<GenericContentRequestImpl, GenericContentResponseImpl> {
     
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /** {@inheritDoc} */
     @Override
     public GenericContentRequestImpl getRequest(final PortletRequest request) {
     	return new GenericContentRequestImpl(request);
     }
 
+    /** {@inheritDoc} */
     @Override
     public GenericContentResponseImpl getContent(final GenericContentRequestImpl proxyRequest, final PortletRequest request) {
         
@@ -61,10 +64,12 @@ public class ClasspathResourceContentService implements IContentService<GenericC
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void beforeGetContent(GenericContentRequestImpl contentRequest, PortletRequest request) {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void afterGetContent(GenericContentRequestImpl contentRequest, PortletRequest request, GenericContentResponseImpl proxyResponse) {
     }

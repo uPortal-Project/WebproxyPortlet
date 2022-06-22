@@ -70,14 +70,19 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
  * ProxyPortletController is the main view controller for web proxy portlets.
  *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Controller
 @RequestMapping("VIEW")
 public class ProxyPortletController {
 
+    /** Constant <code>PREF_CHARACTER_ENCODING="sourcePageCharacterEncoding"</code> */
     public static final String PREF_CHARACTER_ENCODING = "sourcePageCharacterEncoding";
+    /** Constant <code>CHARACTER_ENCODING_DEFAULT="UTF-8"</code> */
     public static final String CHARACTER_ENCODING_DEFAULT = "UTF-8";
+    /** Constant <code>CONTENT_SERVICE_KEY="contentService"</code> */
     protected static final String CONTENT_SERVICE_KEY = "contentService";
+    /** Constant <code>FILTER_LIST_KEY="filters"</code> */
     protected static final String FILTER_LIST_KEY = "filters";
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String PROXY_RESPONSE_KEY = "proxyResponse";
@@ -87,6 +92,11 @@ public class ProxyPortletController {
     @Resource(name = "contentSearchProvider")
     private ISearchService searchService;
 
+    /**
+     * <p>Setter for the field <code>knownHtmlContentTypes</code>.</p>
+     *
+     * @param contentTypes a {@link java.util.List} object
+     */
     @Required
     @Resource(name = "knownHtmlContentTypes")
     public void setKnownHtmlContentTypes(List<String> contentTypes) {
@@ -96,6 +106,12 @@ public class ProxyPortletController {
         }
     }
 
+    /**
+     * <p>showContent.</p>
+     *
+     * @param request a {@link javax.portlet.RenderRequest} object
+     * @param response a {@link javax.portlet.RenderResponse} object
+     */
     @RenderMapping
     public void showContent(final RenderRequest request, final RenderResponse response) {
         log.debug("Entering render mapping");
@@ -141,6 +157,14 @@ public class ProxyPortletController {
 
     }
 
+    /**
+     * <p>proxyTarget.</p>
+     *
+     * @param url a {@link java.lang.String} object
+     * @param request a {@link javax.portlet.ActionRequest} object
+     * @param response a {@link javax.portlet.ActionResponse} object
+     * @throws java.io.IOException if any.
+     */
     @ActionMapping
     public void proxyTarget(final @RequestParam("proxy.url") String url, final ActionRequest request,
                             final ActionResponse response) throws IOException {
@@ -186,6 +210,13 @@ public class ProxyPortletController {
         }
     }
 
+    /**
+     * <p>proxyResourceTarget.</p>
+     *
+     * @param url a {@link java.lang.String} object
+     * @param request a {@link javax.portlet.ResourceRequest} object
+     * @param response a {@link javax.portlet.ResourceResponse} object
+     */
     @ResourceMapping
     public void proxyResourceTarget(final @RequestParam("proxy.url") String url, final ResourceRequest request, final ResourceResponse response) {
         log.debug("Entering resource mapping");
@@ -222,6 +253,12 @@ public class ProxyPortletController {
 
     }
 
+    /**
+     * <p>searchRequest.</p>
+     *
+     * @param request a {@link javax.portlet.EventRequest} object
+     * @param response a {@link javax.portlet.EventResponse} object
+     */
     @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING)
     public void searchRequest(EventRequest request, EventResponse response) {
         log.debug("EVENT HANDLER -- START");

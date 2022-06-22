@@ -22,19 +22,24 @@ import java.io.InputStream;
 
 /**
  * IContentResponse represents the response from a content service.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 public interface IContentResponse {
 	
 	/**
 	 * Get the proxied location.  This string should reflect the final location
 	 * and may differ from that originally provided to the content service.
+	 *
+	 * @return a {@link java.lang.String} object
 	 */
 	public String getProxiedLocation();
 	
 	/**
 	 * Get a stream of retrieved content.
+	 *
+	 * @return a {@link java.io.InputStream} object
 	 */
 	public InputStream getContent();
 	

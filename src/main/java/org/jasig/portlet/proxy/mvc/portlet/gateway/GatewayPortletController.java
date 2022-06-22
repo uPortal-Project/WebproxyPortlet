@@ -48,6 +48,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>GatewayPortletController class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 @Controller
 @RequestMapping("VIEW")
 public class GatewayPortletController extends BaseGatewayPortletController {
@@ -78,6 +84,12 @@ public class GatewayPortletController extends BaseGatewayPortletController {
         }
     }
 
+	/**
+	 * <p>getView.</p>
+	 *
+	 * @param request a {@link javax.portlet.RenderRequest} object
+	 * @return a {@link org.springframework.web.portlet.ModelAndView} object
+	 */
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
 		final ModelAndView mv = new ModelAndView();
@@ -106,12 +118,32 @@ public class GatewayPortletController extends BaseGatewayPortletController {
 		return mv;
 	}
 
+    /**
+     * <p>showTarget.</p>
+     *
+     * @param portletRequest a {@link javax.portlet.ResourceRequest} object
+     * @param portletResponse a {@link javax.portlet.ResourceResponse} object
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param beanName a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     * @throws java.io.IOException if any.
+     */
     @ResourceMapping()
 	public String showTarget(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model, @RequestParam("index") String beanName) throws IOException {
         prepareGatewayResponse(portletRequest, portletResponse, beanName, model);
         return "json";
     }
 
+    /**
+     * <p>showTargetInNewWindow.</p>
+     *
+     * @param portletRequest a {@link javax.portlet.ResourceRequest} object
+     * @param portletResponse a {@link javax.portlet.ResourceResponse} object
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param beanName a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     * @throws java.io.IOException if any.
+     */
     @ResourceMapping(value = "showTargetInNewWindow")
     public String showTargetInNewWindow(ResourceRequest portletRequest, ResourceResponse portletResponse, Model model,
                                         @RequestParam("index") String beanName) throws IOException {

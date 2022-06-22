@@ -26,19 +26,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * <p>ExampleCustomFormModifier class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class ExampleCustomFormModifier implements IAuthenticationFormModifier {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
+     * {@inheritDoc}
+     *
      * Example of modifications to a login form that invokes the system to gateway to in order to obtain a token
      * from that system that must be submitted with the login form and inserts the token into the url to submit.
      * Also demonstrates that you can modify the url to submit to.
-     *
-     * @param contentRequest ContentRequest to modify
-     * @param preferences PortletPreferences that may be useful when calculating the return result
-     * @return value of the form field
-     * @throws IOException
      */
 	@Override
     public void modifyHttpContentRequest(HttpContentRequestImpl contentRequest, PortletPreferences preferences) throws IOException {

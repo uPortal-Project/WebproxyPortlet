@@ -24,8 +24,15 @@ import javax.portlet.WindowState;
 
 import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
+/**
+ * <p>MinimizedStateHandlerInterceptor class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class MinimizedStateHandlerInterceptor extends HandlerInterceptorAdapter {
 
+    /** {@inheritDoc} */
     @Override
     public boolean preHandleRender(RenderRequest request, RenderResponse response, Object handler) throws Exception {
         if (WindowState.MINIMIZED.equals(request.getWindowState())) {

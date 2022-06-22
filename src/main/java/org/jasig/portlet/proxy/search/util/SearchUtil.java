@@ -30,9 +30,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.portlet.util.PortletUtils;
 
+/**
+ * <p>SearchUtil class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class SearchUtil {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * <p>updateUrls.</p>
+     *
+     * @param searchResultUrl a {@link java.lang.String} object
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param whitelistRegexes an array of {@link java.lang.String} objects
+     */
     public void updateUrls(final String searchResultUrl,
             final PortletRequest request, String[] whitelistRegexes) {
         final String REWRITTEN_URLS_KEY = "rewrittenUrls";

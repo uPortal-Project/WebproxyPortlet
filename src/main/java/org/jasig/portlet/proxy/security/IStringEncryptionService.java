@@ -22,31 +22,33 @@ package org.jasig.portlet.proxy.security;
  * IStringEncryptionService is a small interface for string encryption/decryption.
  * It is expected that this service will generally consist of a small wrapper
  * for some other encryption API.
- * 
+ *
  * @author bourey
+ * @version $Id: $Id
  */
 public interface IStringEncryptionService {
     
     /**
      * Encrypt a string
-     * 
-     * @param plaintext
+     *
+     * @param plaintext a {@link java.lang.String} object
      * @return encrypted version of the plaintext
-     * @throws StringEncryptionException
+     * @throws org.jasig.portlet.proxy.security.StringEncryptionException
      */
     public String encrypt(String plaintext);
     
     /**
      * Decrypt a string
-     * 
-     * @param cryptotext
+     *
+     * @param cryptotext a {@link java.lang.String} object
      * @return decrypted version of the cryptotext
-     * @throws StringEncryptionException
+     * @throws org.jasig.portlet.proxy.security.StringEncryptionException
      */
     public String decrypt(String cryptotext);
 
     /**
      * Returns true if the encryptor is configured to use the default encryption key.
+     *
      * @return true if encryption key is default value
      */
     public boolean usingDefaultEncryptionKey();

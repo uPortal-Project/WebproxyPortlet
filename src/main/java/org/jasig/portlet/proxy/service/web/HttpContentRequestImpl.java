@@ -38,6 +38,12 @@ import org.jasig.portlet.spring.IExpressionProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>HttpContentRequestImpl class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
     private static final Logger log = LoggerFactory.getLogger(HttpContentRequestImpl.class);
@@ -48,9 +54,18 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
     private boolean isForm;
     private HttpContext httpContext;
 
+    /**
+     * <p>Constructor for HttpContentRequestImpl.</p>
+     */
     public HttpContentRequestImpl() {
     }
 
+    /**
+     * <p>Constructor for HttpContentRequestImpl.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @param expressionProcessor a {@link org.jasig.portlet.spring.IExpressionProcessor} object
+     */
     public HttpContentRequestImpl(PortletRequest request, IExpressionProcessor expressionProcessor) {
         this();
 
@@ -102,8 +117,9 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
 
     /**
      * add a new parameter to the list of available parameters.
-     * @param fieldName
-     * @param value
+     *
+     * @param fieldName a {@link java.lang.String} object
+     * @param value a {@link java.lang.String} object
      */
     public void addParameter(String fieldName, String value) {
         IFormField field = new FormFieldImpl();
@@ -113,6 +129,7 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
     }
     /**
      * Returns a map of parameters for the gateway login form.  Map Keys are user-friendly logical names for the parameter.
+     *
      * @return Map of parameters for the gateway login form.
      */
     public Map<String, IFormField> getParameters() {
@@ -122,40 +139,81 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
     /**
      * Sets a map of parameters for the gateway login form.  The Map's keys are user-friendly logical names for
      * each parameter.
-     * @param parameters
+     *
+     * @param parameters a {@link java.util.Map} object
      */
     public void setParameters(Map<String, IFormField> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * <p>Getter for the field <code>headers</code>.</p>
+     *
+     * @return a {@link java.util.Map} object
+     */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
+    /**
+     * <p>Setter for the field <code>headers</code>.</p>
+     *
+     * @param headers a {@link java.util.Map} object
+     */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
+    /**
+     * <p>Getter for the field <code>method</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getMethod() {
         return method;
     }
 
+    /**
+     * <p>Setter for the field <code>method</code>.</p>
+     *
+     * @param method a {@link java.lang.String} object
+     */
     public void setMethod(String method) {
         this.method = method;
     }
 
+    /**
+     * <p>isForm.</p>
+     *
+     * @return a boolean
+     */
     public boolean isForm() {
         return isForm;
     }
 
+    /**
+     * <p>setForm.</p>
+     *
+     * @param isForm a boolean
+     */
     public void setForm(boolean isForm) {
         this.isForm = isForm;
     }
 
+    /**
+     * <p>Getter for the field <code>httpContext</code>.</p>
+     *
+     * @return a {@link org.apache.http.protocol.HttpContext} object
+     */
     public HttpContext getHttpContext() {
         return httpContext;
     }
 
+    /**
+     * <p>Setter for the field <code>httpContext</code>.</p>
+     *
+     * @param httpContext a {@link org.apache.http.protocol.HttpContext} object
+     */
     public void setHttpContext(HttpContext httpContext) {
         this.httpContext = httpContext;
     }
@@ -164,6 +222,7 @@ public class HttpContentRequestImpl extends GenericContentRequestImpl {
      * duplicate() creates a duplicate of the HttpContentRequest without
      * using clone().  All objects are unique, but the data contained within
      * the objects is the same
+     *
      * @return a unique HttpContentRequestImpl object with the same data
      */
     public HttpContentRequestImpl duplicate() {

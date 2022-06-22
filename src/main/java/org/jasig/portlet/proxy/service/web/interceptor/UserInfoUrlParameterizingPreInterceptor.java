@@ -34,17 +34,19 @@ import org.springframework.stereotype.Service;
 /**
  * UserInfoUrlParameterizingPreInterceptor allows content requests to include
  * dynamic parameters of the form {attributeName} in content requests, either
- * in the URL string or in parameters associated with the request.  Each 
+ * in the URL string or in parameters associated with the request.  Each
  * dynamic string will be replaced with the value of the attribute in the UserInfo
  * map, if one exists.
- * 
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service("userInfoUrlParameterizingPreInterceptor")
 public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor {
 	
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	
+  /** {@inheritDoc} */
   @Override
 	public void intercept(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {
@@ -102,6 +104,7 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 	  return s.replaceAll("\\{[^\\}]*\\}", "");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean validate(HttpContentRequestImpl proxyRequest,
 			PortletRequest portletRequest) {

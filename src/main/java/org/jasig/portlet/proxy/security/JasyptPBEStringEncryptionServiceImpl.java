@@ -29,11 +29,12 @@ import org.springframework.util.Assert;
 import javax.annotation.PostConstruct;
 
 /**
- * JasyptPBEStringEncryptionServiceImpl is an implementation of 
+ * JasyptPBEStringEncryptionServiceImpl is an implementation of
  * IStringEncryptionService that uses a configurable Jasypt PBEStringEncryptor
  * to perform string encryption and decryption.
- * 
+ *
  * @author Jen Bourey
+ * @version $Id: $Id
  */
 public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -42,17 +43,15 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
     
     /**
      * Set the PBEStringEncryptor to be used
-     * 
-     * @param encryptor
+     *
+     * @param encryptor a {@link org.jasypt.encryption.pbe.PBEStringEncryptor} object
      */
     @Required
     public void setStringEncryptor(final PBEStringEncryptor encryptor) {
         this.encryptor = encryptor;
     }
     
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public String encrypt(final String plaintext) {
         try {
             return this.encryptor.encrypt(plaintext);
@@ -82,9 +81,7 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public String decrypt(final String cryptotext) {
         return decrypt(cryptotext, true);
@@ -92,6 +89,8 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
 
     /**
      * {@inheritDoc}
+     *
+     * @throws java.lang.Exception if any.
      */
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
@@ -107,9 +106,7 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean usingDefaultEncryptionKey() {
         try {

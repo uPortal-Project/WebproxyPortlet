@@ -40,26 +40,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
+/**
+ * <p>AnchorSearchStrategy class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class AnchorSearchStrategy implements ISearchStrategy {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ISearchService contentSearchProvider;
+    /**
+     * <p>Setter for the field <code>contentSearchProvider</code>.</p>
+     *
+     * @param contentSearchProvider a {@link org.jasig.portlet.proxy.search.ISearchService} object
+     */
     @Required
     @Resource(name="contentSearchProvider")
     public void setContentSearchProvider(ISearchService contentSearchProvider) {
         this.contentSearchProvider = contentSearchProvider;
     }
     
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
         contentSearchProvider.addSearchStrategy(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getStrategyName() {
         return "Anchor";
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<SearchResult> search(SearchRequest searchQuery,
             EventRequest request, Document document) {

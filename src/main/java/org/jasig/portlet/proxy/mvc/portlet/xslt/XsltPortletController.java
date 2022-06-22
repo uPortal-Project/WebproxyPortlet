@@ -35,21 +35,33 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.servlet.view.xslt.XsltView;
 
 /**
+ * <p>XsltPortletController class.</p>
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Controller
 @RequestMapping("VIEW")
 public class XsltPortletController {
 
+    /** Constant <code>CONTENT_LOCATION_KEY="location"</code> */
     protected static final String CONTENT_LOCATION_KEY = "location";
+    /** Constant <code>CONTENT_SERVICE_KEY="contentService"</code> */
     protected static final String CONTENT_SERVICE_KEY = "contentService";
+    /** Constant <code>MAIN_XSLT_KEY="mainXslt"</code> */
     protected static final String MAIN_XSLT_KEY = "mainXslt";
+    /** Constant <code>MOBILE_XSLT_KEY="mobileXslt"</code> */
     protected static final String MOBILE_XSLT_KEY = "mobileXslt";
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ApplicationContext applicationContext;
 
+    /**
+     * <p>Setter for the field <code>applicationContext</code>.</p>
+     *
+     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object
+     */
     @Autowired(required = true)
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -57,11 +69,22 @@ public class XsltPortletController {
 
     private IViewSelector viewSelector;
 
+    /**
+     * <p>Setter for the field <code>viewSelector</code>.</p>
+     *
+     * @param viewSelector a {@link org.jasig.portlet.proxy.mvc.IViewSelector} object
+     */
     @Autowired(required = true)
     public void setViewSelector(IViewSelector viewSelector) {
         this.viewSelector = viewSelector;
     }
 
+    /**
+     * <p>showContent.</p>
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     */
     @RequestMapping
     public ModelAndView showContent(PortletRequest request) {
         final ModelAndView mv = new ModelAndView();

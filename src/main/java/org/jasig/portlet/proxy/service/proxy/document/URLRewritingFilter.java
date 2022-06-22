@@ -46,18 +46,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.portlet.util.PortletUtils;
 
 /**
+ * <p>URLRewritingFilter class.</p>
+ *
  * @author Jen Bourey, jennifer.bourey@gmail.com
+ * @version $Id: $Id
  */
 @Service("urlRewritingFilter")
 public class URLRewritingFilter implements IDocumentFilter {
 
+    /** Constant <code>REWRITTEN_URLS_KEY="rewrittenUrls"</code> */
     public final static String REWRITTEN_URLS_KEY = "rewrittenUrls";
+    /** Constant <code>WHITELIST_REGEXES_KEY="whitelistRegexes"</code> */
     public final static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
 
     protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> actionElements;
 
+    /**
+     * <p>Setter for the field <code>actionElements</code>.</p>
+     *
+     * @param actionElements a {@link java.util.Map} object
+     */
     @Resource(name = "urlRewritingActionElements")
     public void setActionElements(Map<String, Set<String>> actionElements) {
         this.actionElements = actionElements;
@@ -65,6 +75,11 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     private Map<String, Set<String>> resourceElements;
 
+    /**
+     * <p>Setter for the field <code>resourceElements</code>.</p>
+     *
+     * @param resourceElements a {@link java.util.Map} object
+     */
     @Resource(name = "urlRewritingResourceElements")
     public void setResourceElements(Map<String, Set<String>> resourceElements) {
         this.resourceElements = resourceElements;
@@ -94,6 +109,7 @@ public class URLRewritingFilter implements IDocumentFilter {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void filter(final Document document, final IContentResponse proxyResponse, final RenderRequest request, final RenderResponse response) {
 
@@ -102,6 +118,16 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     }
 
+    /**
+     * <p>updateUrls.</p>
+     *
+     * @param document a {@link org.jsoup.nodes.Document} object
+     * @param proxyResponse a {@link org.jasig.portlet.proxy.service.IContentResponse} object
+     * @param elementSet a {@link java.util.Map} object
+     * @param request a {@link javax.portlet.RenderRequest} object
+     * @param response a {@link javax.portlet.RenderResponse} object
+     * @param action a boolean
+     */
     protected void updateUrls(final Document document, final IContentResponse proxyResponse, final Map<String, Set<String>> elementSet,
             final RenderRequest request, final RenderResponse response, boolean action) {
 
@@ -222,6 +248,14 @@ public class URLRewritingFilter implements IDocumentFilter {
 
     }
 
+    /**
+     * <p>createFormUrl.</p>
+     *
+     * @param response a {@link javax.portlet.RenderResponse} object
+     * @param isPost a boolean
+     * @param url a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     protected String createFormUrl(final RenderResponse response, final boolean isPost, final String url) {
         final PortletURL portletUrl = response.createActionURL();
         portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
@@ -230,18 +264,39 @@ public class URLRewritingFilter implements IDocumentFilter {
         return portletUrl.toString();
     }
 
+    /**
+     * <p>createActionUrl.</p>
+     *
+     * @param response a {@link javax.portlet.RenderResponse} object
+     * @param url a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     protected String createActionUrl(final RenderResponse response, final String url) {
         final PortletURL portletUrl = response.createRenderURL();
         portletUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         return portletUrl.toString();
     }
 
+    /**
+     * <p>createResourceUrl.</p>
+     *
+     * @param response a {@link javax.portlet.RenderResponse} object
+     * @param url a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     protected String createResourceUrl(final RenderResponse response, final String url) {
         final ResourceURL resourceUrl = response.createResourceURL();
         resourceUrl.setParameter(HttpContentServiceImpl.URL_PARAM, url);
         return resourceUrl.toString();
     }
 
+    /**
+     * <p>getBaseServerUrl.</p>
+     *
+     * @param fullUrl a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     * @throws java.net.URISyntaxException if any.
+     */
     protected String getBaseServerUrl(final String fullUrl) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(fullUrl);
         uriBuilder.removeQuery();
@@ -249,6 +304,13 @@ public class URLRewritingFilter implements IDocumentFilter {
         return uriBuilder.build().toString();
     }
 
+    /**
+     * <p>getRelativePathUrl.</p>
+     *
+     * @param fullUrl a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     * @throws java.net.URISyntaxException if any.
+     */
     protected String getRelativePathUrl(final String fullUrl) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(fullUrl);
         uriBuilder.removeQuery();

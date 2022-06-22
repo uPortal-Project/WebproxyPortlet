@@ -33,22 +33,32 @@ import org.springframework.web.portlet.util.PortletUtils;
 /**
  * MultiRequestHttpClientServiceImpl associates a single HTTP client with each
  * user's portlet session.  This client may optionally be shared among multiple
- * portlets to provide cross-portlet session state sharing. 
- * 
+ * portlets to provide cross-portlet session state sharing.
+ *
  * @author Jen Bourey
+ * @version $Id: $Id
  */
 @Service
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
     private static final Logger LOG = LoggerFactory.getLogger(MultiRequestHttpClientServiceImpl.class);
+    /** Constant <code>HTTP_CLIENT_CONNECTION_TIMEOUT="httpClientConnectionTimeout"</code> */
     public static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
+    /** Constant <code>HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT="httpClientConnectionRequestTimeout"</code> */
     public static final String HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = "httpClientConnectionRequestTimeout";
+    /** Constant <code>HTTP_CLIENT_SOCKET_TIMEOUT="httpClientSocketTimeout"</code> */
     public static final String HTTP_CLIENT_SOCKET_TIMEOUT = "httpClientSocketTimeout";
+    /** Constant <code>DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT=10000</code> */
     public static final int DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT = 10000;
+    /** Constant <code>DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT=5000</code> */
     public static final int DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT = 5000;
+    /** Constant <code>DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT=10000</code> */
     public static final int DEFAULT_HTTP_CLIENT_SOCKET_TIMEOUT = 10000;
+    /** Constant <code>CLIENT_SESSION_KEY="httpClient"</code> */
     public static final String CLIENT_SESSION_KEY = "httpClient";
+    /** Constant <code>SHARED_SESSION_KEY="sharedSessionKey"</code> */
     public static final String SHARED_SESSION_KEY = "sharedSessionKey";
 
+    /** {@inheritDoc} */
     @Override
     public HttpClient getHttpClient(PortletRequest request) {
         final PortletSession session = request.getPortletSession();
@@ -79,9 +89,9 @@ public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
 
     /**
      * Create a new HTTP Client for the provided portlet request.
-     * 
-     * @param request
-     * @return
+     *
+     * @param request a {@link javax.portlet.PortletRequest} object
+     * @return a {@link org.apache.http.client.HttpClient} object
      */
     protected HttpClient createHttpClient(PortletRequest request) {
         PortletPreferences prefs = request.getPreferences();

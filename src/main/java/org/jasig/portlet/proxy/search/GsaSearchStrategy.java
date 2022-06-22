@@ -54,26 +54,42 @@ import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+/**
+ * <p>GsaSearchStrategy class.</p>
+ *
+ * @author bjagg
+ * @version $Id: $Id
+ */
 public class GsaSearchStrategy implements ISearchStrategy {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ISearchService contentSearchProvider;
+    /**
+     * <p>Setter for the field <code>contentSearchProvider</code>.</p>
+     *
+     * @param contentSearchProvider a {@link org.jasig.portlet.proxy.search.ISearchService} object
+     */
     @Required
     @Resource(name="contentSearchProvider")
     public void setContentSearchProvider(ISearchService contentSearchProvider) {
         this.contentSearchProvider = contentSearchProvider;
     }
     
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
         contentSearchProvider.addSearchStrategy(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getStrategyName() {
         return "GSA";
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<SearchResult> search(SearchRequest searchQuery,
             EventRequest request, org.jsoup.nodes.Document ignore) {

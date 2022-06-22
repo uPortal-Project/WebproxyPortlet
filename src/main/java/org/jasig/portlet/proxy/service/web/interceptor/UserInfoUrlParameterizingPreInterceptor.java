@@ -85,6 +85,9 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 				}
 			}
 
+			// curly braces are illegal URL characters
+			url = removeRemainingUrlTokens(url);
+
 			// update the URL in the content request
 			proxyRequest.setProxiedLocation(url);
 
@@ -92,6 +95,11 @@ public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor 
 			log.error("Exception while encoding URL parameters", e);
 		}
 
+	}
+
+	private String removeRemainingUrlTokens(String url) {
+	  String s = url.replaceAll("/\\{[^\\}]*\\}/", "/");
+	  return s.replaceAll("\\{[^\\}]*\\}", "");
 	}
 
 	@Override

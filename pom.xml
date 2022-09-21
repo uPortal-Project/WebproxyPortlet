@@ -37,15 +37,15 @@
     </description>
 
     <scm>
-        <connection>scm:git:git://github.com/Jasig/WebproxyPortlet.git</connection>
-        <developerConnection>scm:git:git@github.com:Jasig/WebproxyPortlet.git</developerConnection>
-        <url>https://github.com/Jasig/WebproxyPortlet</url>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>scm:git:https://github.com/uPortal-Project/WebproxyPortlet.git</connection>
+        <developerConnection>scm:git:git@github.com:uPortal-Project/WebproxyPortlet.git</developerConnection>
+        <url>https://github.com/uPortal-Project/WebproxyPortlet</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <issueManagement>
-        <url>${jasig-issues-base}/WPP</url>
-        <system>${jasig-issues-system}</system>
+        <url>https://github.com/uPortal-Project/WebproxyPortlet/issues</url>
+        <system>GitHub</system>
     </issueManagement>
 
     <!-- Dependency Version Properties -->

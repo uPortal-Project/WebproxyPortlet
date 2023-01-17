@@ -28,13 +28,16 @@ on:
 
 jobs:
   test:
-    name: '${{ matrix.platform }} with Java 8'
+    name: '${{ matrix.platform }} with Java ${{ matrix.java-version }}'
     strategy:
       matrix:
         platform:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        java-version:
+          - 8
+          - 11
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
@@ -43,6 +46,6 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: adopt-hotspot
-          java-version: 8
+          java-version: ${{ matrix.java-version }}
       - name: Build and Test
         run: 'mvn -B package'

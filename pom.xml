@@ -57,7 +57,7 @@
         <junit.version>4.13.2</junit.version>
         <commons-lang.version>2.6</commons-lang.version>
         <portlet-api.version>2.0</portlet-api.version>
-        <resource-server.version>1.0.44</resource-server.version>
+        <resource-server.version>1.5.0</resource-server.version>
         <servlet-api.version>2.5</servlet-api.version>
         <spring.version>4.3.30.RELEASE</spring.version>
         <logbackVersion>1.3.5</logbackVersion>
@@ -479,6 +479,7 @@
                             <groupId>org.jasig.resourceserver</groupId>
                             <artifactId>resource-server-content</artifactId>
                             <includes>
+				<include>rs/jquery/1.12.2/</include>
                                 <include>rs/jquery/1.11.0/</include>
                                 <include>/rs/jqueryui/1.8.24/</include>
                                 <include>/rs/famfamfam/silk/1.3/error.png</include>

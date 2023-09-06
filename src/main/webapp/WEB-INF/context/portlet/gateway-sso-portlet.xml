@@ -175,7 +175,7 @@
 
     </util:list>
 
-    <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <bean class="com.liferay.portletmvc4spring.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>
     </bean>
 

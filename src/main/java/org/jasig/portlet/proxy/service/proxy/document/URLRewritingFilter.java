@@ -43,7 +43,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.portlet.util.PortletUtils;
+import com.liferay.portletmvc4spring.util.PortletUtils;
 
 /**
  * <p>URLRewritingFilter class.</p>

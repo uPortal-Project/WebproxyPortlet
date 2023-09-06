@@ -22,7 +22,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
-import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
+import com.liferay.portletmvc4spring.handler.HandlerInterceptorAdapter;
 
 /**
  * <p>MinimizedStateHandlerInterceptor class.</p>

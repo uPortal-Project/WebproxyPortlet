@@ -59,12 +59,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.EventMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.EventMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ResourceMapping;
 
 /**
  * ProxyPortletController is the main view controller for web proxy portlets.

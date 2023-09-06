@@ -46,9 +46,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.servlet.ModelAndView;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
+import org.springframework.web.servlet.View;
 
 /**
  * <p>GatewayPortletEditController class.</p>
@@ -113,7 +114,7 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
      *
      * @param request a {@link javax.portlet.RenderRequest} object
      * @param entryName a {@link java.lang.String} object
-     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object
      */
     @RenderMapping
     public ModelAndView displayEditView(RenderRequest request, @RequestParam(required=false) String entryName) {
@@ -136,7 +137,7 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
         // Add descendingMap so username is listed before password for the form.
         mv.addObject(GATEWAY_ENTRY_PREFERENCES, preferencesForEntry.descendingMap());
 
-        mv.setView( viewSelector.isMobile(request) ? mobileViewName : viewName);
+        mv.setViewName(viewSelector.isMobile(request) ? mobileViewName : viewName);
         return mv;
     }
 

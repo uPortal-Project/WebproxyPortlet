@@ -48,8 +48,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
 
 /**
  * ProxyConfigController

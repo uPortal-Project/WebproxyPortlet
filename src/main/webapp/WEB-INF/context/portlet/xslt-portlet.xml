@@ -29,7 +29,7 @@
     <context:component-scan base-package="org.jasig.portlet.proxy.mvc.portlet.xslt" />
     <context:annotation-config />
 
-    <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <bean class="com.liferay.portletmvc4spring.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors"><bean class="org.jasig.portlet.proxy.mvc.MinimizedStateHandlerInterceptor"/></property>
     </bean>
 

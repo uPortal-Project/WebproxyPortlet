@@ -58,8 +58,9 @@
         <commons-lang.version>2.6</commons-lang.version>
         <portlet-api.version>2.0</portlet-api.version>
         <resource-server.version>1.0.44</resource-server.version>
-        <servlet-api.version>2.5</servlet-api.version>
-        <spring.version>4.3.30.RELEASE</spring.version>
+        <servlet.version>3.1.0</servlet.version>
+        <spring.version>5.3.28</spring.version>
+        <portletmvc4spring.version>5.2.0</portletmvc4spring.version>
         <logbackVersion>1.3.5</logbackVersion>
         <slf4jVersion>2.0.6</slf4jVersion>
         <mockito.version>4.9.0</mockito.version>
@@ -87,8 +88,8 @@
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>${servlet-api.version}</version>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -96,11 +97,6 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.ehcache</groupId>
-                <artifactId>ehcache-core</artifactId>
-                <version>2.6.11</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -177,9 +173,14 @@
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc-portlet</artifactId>
-                <version>${spring.version}</version>
+                <groupId>com.liferay.portletmvc4spring</groupId>
+                <artifactId>com.liferay.portletmvc4spring.framework</artifactId>
+                <version>${portletmvc4spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.liferay.portletmvc4spring</groupId>
+                <artifactId>com.liferay.portletmvc4spring.security</artifactId>
+                <version>${portletmvc4spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -264,17 +265,13 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -318,8 +315,12 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc-portlet</artifactId>
+            <groupId>com.liferay.portletmvc4spring</groupId>
+            <artifactId>com.liferay.portletmvc4spring.framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.liferay.portletmvc4spring</groupId>
+            <artifactId>com.liferay.portletmvc4spring.security</artifactId>
         </dependency>
         <dependency>
             <groupId>taglibs</groupId>

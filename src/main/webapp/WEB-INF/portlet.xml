@@ -27,7 +27,7 @@
 
     <portlet>
         <portlet-name>WebProxyPortlet</portlet-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <portlet-class>com.liferay.portletmvc4spring.DispatcherPortlet</portlet-class>
         <init-param>
             <name>contextConfigLocation</name>
             <value>/WEB-INF/context/portlet/webproxy-portlet.xml</value>
@@ -85,7 +85,7 @@
 
     <portlet>
         <portlet-name>XsltPortlet</portlet-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <portlet-class>com.liferay.portletmvc4spring.DispatcherPortlet</portlet-class>
         <init-param>
             <name>contextConfigLocation</name>
             <value>/WEB-INF/context/portlet/xslt-portlet.xml</value>
@@ -116,7 +116,7 @@
 
     <portlet>
         <portlet-name>JsonPortlet</portlet-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <portlet-class>com.liferay.portletmvc4spring.DispatcherPortlet</portlet-class>
         <init-param>
             <name>contextConfigLocation</name>
             <!-- Change this file to be NewWebProxyPortlet-portlet.xml after creation 
@@ -149,7 +149,7 @@
 
     <portlet>
         <portlet-name>GatewayPortlet</portlet-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <portlet-class>com.liferay.portletmvc4spring.DispatcherPortlet</portlet-class>
         <init-param>
             <name>contextConfigLocation</name>
             <value>/WEB-INF/context/portlet/gateway-sso-portlet.xml</value>

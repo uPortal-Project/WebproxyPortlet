@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.xslt.XsltView;
 
 /**
@@ -83,7 +83,7 @@ public class XsltPortletController {
      * <p>showContent.</p>
      *
      * @param request a {@link javax.portlet.PortletRequest} object
-     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object
      */
     @RequestMapping
     public ModelAndView showContent(PortletRequest request) {

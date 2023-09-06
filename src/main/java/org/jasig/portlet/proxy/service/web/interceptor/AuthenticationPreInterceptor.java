@@ -25,7 +25,7 @@ import javax.portlet.PortletSession;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.portlet.util.PortletUtils;
+import com.liferay.portletmvc4spring.util.PortletUtils;
 
 /**
  * AuthenticationPreInterceptor provides a base class for implementing authentication

@@ -148,7 +148,7 @@
     <property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
   </bean>
 
-  <bean id="exceptionResolver" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver">
+  <bean id="exceptionResolver" class="com.liferay.portletmvc4spring.handler.SimpleMappingExceptionResolver">
     <!--
      | Always declare an 'exceptionResolver' bean with a 'defaultErrorView'
      | because, in addition to other uses, it protects the portlet from

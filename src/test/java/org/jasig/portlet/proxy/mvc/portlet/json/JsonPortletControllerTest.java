@@ -29,7 +29,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 import org.jasig.portlet.proxy.mvc.IViewSelector;
-import org.jasig.portlet.proxy.mvc.portlet.json.JsonPortletController;
 import org.jasig.portlet.proxy.service.ClasspathResourceContentService;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.junit.Before;
@@ -37,7 +36,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com

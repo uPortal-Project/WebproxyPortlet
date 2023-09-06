@@ -32,9 +32,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.servlet.ModelAndView;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ResourceMapping;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -88,7 +88,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
 	 * <p>getView.</p>
 	 *
 	 * @param request a {@link javax.portlet.RenderRequest} object
-	 * @return a {@link org.springframework.web.portlet.ModelAndView} object
+	 * @return a {@link org.springframework.web.servlet.ModelAndView} object
 	 */
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
@@ -114,7 +114,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
         mv.addObject("openInNewPage", openInNewPage);
 		
 		final String view = viewSelector.isMobile(request) ? mobileViewName : viewName;
-		mv.setView(view);
+		mv.setViewName(view);
 		return mv;
 	}
 

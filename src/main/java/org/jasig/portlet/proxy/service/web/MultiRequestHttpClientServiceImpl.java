@@ -25,8 +25,6 @@ import javax.portlet.PortletSession;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.liferay.portletmvc4spring.util.PortletUtils;
 
@@ -40,7 +38,6 @@ import com.liferay.portletmvc4spring.util.PortletUtils;
  */
 @Service
 public class MultiRequestHttpClientServiceImpl implements IHttpClientService {
-    private static final Logger LOG = LoggerFactory.getLogger(MultiRequestHttpClientServiceImpl.class);
     /** Constant <code>HTTP_CLIENT_CONNECTION_TIMEOUT="httpClientConnectionTimeout"</code> */
     public static final String HTTP_CLIENT_CONNECTION_TIMEOUT = "httpClientConnectionTimeout";
     /** Constant <code>HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT="httpClientConnectionRequestTimeout"</code> */

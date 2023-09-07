@@ -24,9 +24,8 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletPreferences;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,9 +36,8 @@ import org.springframework.stereotype.Service;
  * @version $Id: $Id
  */
 @Service("headerPassingPreInterceptor")
+@Slf4j
 public class HeaderPassingPreInterceptor implements IPreInterceptor {
-
-  protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** Constant <code>HEADER_PREFERENCE_NAMES="headerNames"</code> */
     public static final String HEADER_PREFERENCE_NAMES = "headerNames";
@@ -63,7 +61,7 @@ public class HeaderPassingPreInterceptor implements IPreInterceptor {
           }
           proxyRequest.setHeaders(headerMap);
         }else{
-          logger.warn("Invalid data in preferences. Header name array length does not equal header value array length");
+          log.warn("Invalid data in preferences. Header name array length does not equal header value array length");
         }
     }
 

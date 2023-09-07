@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -47,8 +48,6 @@ import org.jasig.portlet.proxy.service.IContentService;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
 import org.jasig.portlet.spring.IExpressionProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
@@ -61,9 +60,8 @@ import org.springframework.stereotype.Service;
  * @version $Id: $Id
  */
 @Service("httpContentService")
+@Slf4j
 public class HttpContentServiceImpl implements IContentService<HttpContentRequestImpl, GenericContentResponseImpl> {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /** Constant <code>PROXY_PORTLET_PARAM_PREFIX="proxy."</code> */
     public final static String PROXY_PORTLET_PARAM_PREFIX = "proxy.";

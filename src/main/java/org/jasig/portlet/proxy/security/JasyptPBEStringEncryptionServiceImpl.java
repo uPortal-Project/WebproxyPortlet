@@ -18,11 +18,10 @@
  */
 package org.jasig.portlet.proxy.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionInitializationException;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
 
@@ -36,8 +35,8 @@ import javax.annotation.PostConstruct;
  * @author Jen Bourey
  * @version $Id: $Id
  */
+@Slf4j
 public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionService {
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private PBEStringEncryptor encryptor = null;
     
@@ -56,7 +55,7 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
         try {
             return this.encryptor.encrypt(plaintext);
         } catch (EncryptionInitializationException e) {
-            logger.warn(e.getMessage(), e);
+            log.warn(e.getMessage(), e);
             throw new StringEncryptionException("Encryption error. Verify an encryption password"
                     + " is configured in configuration.properties", e);
         }
@@ -67,13 +66,13 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
             return this.encryptor.decrypt(cryptotext);
         } catch (EncryptionInitializationException e) {
             if (logError) {
-                logger.warn("Decryption failed.  Error message: {}", e.getMessage());
+                log.warn("Decryption failed.  Error message: {}", e.getMessage());
             }
             throw new StringEncryptionException("Decryption error. Was encryption password"
                         + " changed in the configuration.properties?", e);
         } catch (EncryptionOperationNotPossibleException e) {
             if (logError) {
-                logger.warn("Decryption failed.  This suggests the salt key in "
+                log.warn("Decryption failed.  This suggests the salt key in "
                         + "configuration.properties has been changed.");
             }
             throw new StringEncryptionException("Decryption error. Was encryption password"
@@ -102,7 +101,7 @@ public class JasyptPBEStringEncryptionServiceImpl implements IStringEncryptionSe
         Assert.isTrue(dec.equals(this.getClass().getName()), "String decryption failed to decode the encrypted text " + enc);
 
         if (usingDefaultEncryptionKey()) {
-            logger.error("Encryption key at default value.  Change it in configuration.properties for improved security!");
+            log.error("Encryption key at default value.  Change it in configuration.properties for improved security!");
         }
     }
 

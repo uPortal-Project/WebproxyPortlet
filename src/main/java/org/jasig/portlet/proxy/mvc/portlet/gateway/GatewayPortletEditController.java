@@ -39,8 +39,6 @@ import org.jasig.portlet.proxy.security.StringEncryptionException;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -49,7 +47,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
 import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
-import org.springframework.web.servlet.View;
 
 /**
  * <p>GatewayPortletEditController class.</p>
@@ -68,7 +65,6 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
     public static final String ERROR_KEY = "error";
     /** Constant <code>GATEWAY_ENTRY="gatewayEntry"</code> */
     public static final String GATEWAY_ENTRY = "gatewayEntry";
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name="gatewayEntries")
     private List<GatewayEntry> gatewayEntries;

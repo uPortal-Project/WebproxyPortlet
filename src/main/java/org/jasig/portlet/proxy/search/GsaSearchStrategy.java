@@ -37,6 +37,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DecompressingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -48,8 +49,6 @@ import org.apereo.portal.search.PortletUrlType;
 import org.apereo.portal.search.SearchRequest;
 import org.apereo.portal.search.SearchResult;
 import org.jasig.portlet.proxy.search.util.SearchUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -60,8 +59,8 @@ import org.xml.sax.SAXException;
  * @author bjagg
  * @version $Id: $Id
  */
+@Slf4j
 public class GsaSearchStrategy implements ISearchStrategy {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ISearchService contentSearchProvider;
     /**

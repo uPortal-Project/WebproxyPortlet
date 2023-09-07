@@ -25,9 +25,8 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.liferay.portletmvc4spring.util.PortletUtils;
 
 /**
@@ -36,8 +35,8 @@ import com.liferay.portletmvc4spring.util.PortletUtils;
  * @author bjagg
  * @version $Id: $Id
  */
+@Slf4j
 public class SearchUtil {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * <p>updateUrls.</p>

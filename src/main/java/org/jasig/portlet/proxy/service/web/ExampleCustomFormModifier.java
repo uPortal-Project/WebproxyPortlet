@@ -18,8 +18,7 @@
  */
 package org.jasig.portlet.proxy.service.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
@@ -32,9 +31,8 @@ import java.net.URLConnection;
  * @author bjagg
  * @version $Id: $Id
  */
+@Slf4j
 public class ExampleCustomFormModifier implements IAuthenticationFormModifier {
-
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * {@inheritDoc}
@@ -58,9 +56,9 @@ public class ExampleCustomFormModifier implements IAuthenticationFormModifier {
         tokenID = tokenID.replaceAll("=","");
         tokenID = tokenID.replaceAll(",","");
         contentRequest.addParameter("tokenID", tokenID); // For use by javascript
-        logger.debug("urlSource: " + urlSource);
+        log.debug("urlSource: " + urlSource);
         String postUrl = urlSource+tokenID+"&SS=LGRQ&URL=https%3A%2F%2Fwa-usd.prod.sdbor.edu%2FWebAdvisor%2Fwebadvisor%3F%26TYPE%3DM%26PID%3DCORE-WBMAIN%26TOKENIDX%3D"+tokenID;
-        logger.debug("postURL: " + postUrl);
+        log.debug("postURL: " + postUrl);
         contentRequest.setProxiedLocation(postUrl);
     }
 	

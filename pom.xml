@@ -62,6 +62,7 @@
         <spring.version>5.3.28</spring.version>
         <portletmvc4spring.version>5.2.0</portletmvc4spring.version>
         <logbackVersion>1.3.5</logbackVersion>
+        <lombok.version>1.18.28</lombok.version>
         <slf4jVersion>2.0.6</slf4jVersion>
         <mockito.version>4.9.0</mockito.version>
         <portlet.mvc.util.version>1.1.3</portlet.mvc.util.version>
@@ -127,14 +128,12 @@
                 <groupId>org.jasig.portal</groupId>
                 <artifactId>uPortal-spring</artifactId>
                 <version>${uportal-libs.version}</version>
-                <!--
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-collections</groupId>
-                        <artifactId>commons-collections</artifactId>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>log4j-over-slf4j</artifactId>
                     </exclusion>
                 </exclusions>
-                -->
             </dependency>
             <dependency>
                 <groupId>org.jasig.resourceserver</groupId>
@@ -200,29 +199,8 @@
 
             <!-- For sl4j/logback logging, see https://wiki.jasig.org/display/PLT/Logging+Best+Practices -->
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4jVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jul-to-slf4j</artifactId>
-                <version>${slf4jVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>log4j-over-slf4j</artifactId>
-                <version>${slf4jVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4jVersion}</version>
             </dependency>
             <dependency>
@@ -232,7 +210,11 @@
                 <scope>runtime</scope>
             </dependency>
             <!-- End of logging section -->
-
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -366,23 +348,16 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
         <!-- End of logging section -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

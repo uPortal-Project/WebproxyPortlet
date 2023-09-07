@@ -33,6 +33,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jasig.portlet.proxy.service.IContentResponse;
@@ -40,8 +41,6 @@ import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.liferay.portletmvc4spring.util.PortletUtils;
 
@@ -52,14 +51,13 @@ import com.liferay.portletmvc4spring.util.PortletUtils;
  * @version $Id: $Id
  */
 @Service("urlRewritingFilter")
+@Slf4j
 public class URLRewritingFilter implements IDocumentFilter {
 
     /** Constant <code>REWRITTEN_URLS_KEY="rewrittenUrls"</code> */
     public final static String REWRITTEN_URLS_KEY = "rewrittenUrls";
     /** Constant <code>WHITELIST_REGEXES_KEY="whitelistRegexes"</code> */
     public final static String WHITELIST_REGEXES_KEY = "whitelistRegexes";
-
-    protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> actionElements;
 
@@ -156,9 +154,9 @@ public class URLRewritingFilter implements IDocumentFilter {
         try {
             baseUrl = getBaseServerUrl(proxyResponse.getProxiedLocation());
             relativeUrl = getRelativePathUrl(proxyResponse.getProxiedLocation());
-            LOG.trace("Computed base url {} and relative url {} for proxied url {}", baseUrl, relativeUrl, proxyResponse.getProxiedLocation());
+            log.trace("Computed base url {} and relative url {} for proxied url {}", baseUrl, relativeUrl, proxyResponse.getProxiedLocation());
         } catch (URISyntaxException e) {
-            LOG.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         for (final Map.Entry<String, Set<String>> elementEntry : elementSet.entrySet()) {
@@ -170,7 +168,7 @@ public class URLRewritingFilter implements IDocumentFilter {
                 for (Element element : elements) {
 
                     String attributeUrl = element.attr(attributeName);
-                    LOG.trace("Considering element {}  with URL attribute {} of value {}", element, attributeName, attributeUrl);
+                    log.trace("Considering element {}  with URL attribute {} of value {}", element, attributeName, attributeUrl);
 
                     // Ignore blank
                     if (StringUtils.isBlank(attributeUrl)) {

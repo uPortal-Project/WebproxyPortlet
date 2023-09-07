@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.TicketValidationException;
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Service;
  * @version $Id: $Id
  */
 @Service(ProxyCASAuthenticationPreInterceptor.BEAN_ID)
+@Slf4j
 public class ProxyCASAuthenticationPreInterceptor extends AuthenticationPreInterceptor {
 
     /** Constant <code>BEAN_ID="proxyCASAuthenticationPreInterceptor"</code> */

@@ -18,10 +18,9 @@
  */
 package org.jasig.portlet.proxy.mvc;
 
-import javax.portlet.PortletRequest;
+import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.portlet.PortletRequest;
 
 /**
  * <p>ThemeNameViewSelectorImpl class.</p>
@@ -29,14 +28,13 @@ import org.slf4j.LoggerFactory;
  * @author bjagg
  * @version $Id: $Id
  */
+@Slf4j
 public class ThemeNameViewSelectorImpl implements IViewSelector {
     
     private static final String THEME_NAME_PROPERTY = "themeName";
     private static final String MOBILE_THEMES_KEY = "mobileThemes";
     private String[] mobileThemesDefault = new String[]{ "UniversalityMobile" };
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
     /** {@inheritDoc} */
     public boolean isMobile(PortletRequest request) {
         
@@ -46,7 +44,7 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
         // if no theme name can be found, just assume the request is for a 
         // desktop client
         if (themeName == null) {
-            logger.debug("No theme name found, assuming desktop environment");
+            log.debug("No theme name found, assuming desktop environment");
             return false;
         }
 
@@ -54,12 +52,12 @@ public class ThemeNameViewSelectorImpl implements IViewSelector {
         // mobile themes
         for (String theme : mobileThemes) {
             if (themeName.equals(theme)) {
-                logger.debug("Theme name {} matches configured list of mobile themes", themeName);
+                log.debug("Theme name {} matches configured list of mobile themes", themeName);
                 return true;
             }
         }
         
-        logger.debug("No match found for theme name {}, assuming desktop environment", themeName);
+        log.debug("No match found for theme name {}, assuming desktop environment", themeName);
         return false;
     }
 

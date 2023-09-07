@@ -37,6 +37,7 @@ import org.jasig.portlet.proxy.service.web.interceptor.UserPreferencesPreInterce
  * @author Jen Bourey, jennifer.bourey@gmail.com
  * @version $Id: $Id
  */
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayEntry {
 
     private String name;

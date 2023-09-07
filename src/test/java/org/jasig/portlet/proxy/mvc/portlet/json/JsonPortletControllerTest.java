@@ -33,14 +33,16 @@ import org.jasig.portlet.proxy.service.ClasspathResourceContentService;
 import org.jasig.portlet.proxy.service.IContentService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
+@RunWith(MockitoJUnitRunner.class)
 public class JsonPortletControllerTest {
 
     JsonPortletController controller;
@@ -54,8 +56,7 @@ public class JsonPortletControllerTest {
     
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        
+
         controller = new JsonPortletController();
         controller.setViewSelector(viewSelector);
         controller.setApplicationContext(applicationContext);
@@ -96,7 +97,6 @@ public class JsonPortletControllerTest {
     
     @Test
     public void testNoMobileView() {
-        when(viewSelector.isMobile(request)).thenReturn(true);
         when(preferences.getValue(JsonPortletController.MOBILE_VIEW_KEY, null)).thenReturn(null);
         final ModelAndView mv = controller.showContent(request);
         assertEquals(mv.getViewName(), "main");

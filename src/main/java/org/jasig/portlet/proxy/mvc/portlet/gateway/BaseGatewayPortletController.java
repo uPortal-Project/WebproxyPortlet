@@ -29,6 +29,7 @@ import java.util.List;
  * @author James Wennmacher, jwennmacher@unicon.net
  * @version $Id: $Id
  */
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class BaseGatewayPortletController {
     /**
      * <p>removeInaccessibleEntries.</p>

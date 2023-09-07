@@ -148,6 +148,7 @@
     </portlet>
 
     <portlet>
+        <!-- This portlet type is deprecated due to no known usage. Remove when we jump to Java 17. -->
         <portlet-name>GatewayPortlet</portlet-name>
         <portlet-class>com.liferay.portletmvc4spring.DispatcherPortlet</portlet-class>
         <init-param>

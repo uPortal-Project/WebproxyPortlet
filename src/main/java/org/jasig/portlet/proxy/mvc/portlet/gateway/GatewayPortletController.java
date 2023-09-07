@@ -56,6 +56,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("VIEW")
 @Slf4j
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayPortletController extends BaseGatewayPortletController {
     private static final String HTTPS = "HTTPS";
 

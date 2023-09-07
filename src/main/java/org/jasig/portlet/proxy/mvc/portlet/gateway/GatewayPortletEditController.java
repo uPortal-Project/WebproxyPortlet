@@ -56,6 +56,7 @@ import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping("EDIT")
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayPortletEditController extends BaseGatewayPortletController {
     /** Constant <code>INCONSISTENT_FIELD_VALUES="edit.proxy.error.message.inconsistent.f"{trunked}</code> */
     public static final String INCONSISTENT_FIELD_VALUES = "edit.proxy.error.message.inconsistent.field.values";

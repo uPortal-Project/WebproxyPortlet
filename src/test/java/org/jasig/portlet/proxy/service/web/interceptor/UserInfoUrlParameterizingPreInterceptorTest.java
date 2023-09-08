@@ -31,9 +31,11 @@ import org.jasig.portlet.proxy.service.web.FormFieldImpl;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class UserInfoUrlParameterizingPreInterceptorTest {
 	
 	UserInfoUrlParameterizingPreInterceptor preprocessor;
@@ -44,8 +46,6 @@ public class UserInfoUrlParameterizingPreInterceptorTest {
 	
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		
 		preprocessor = new UserInfoUrlParameterizingPreInterceptor();
 		
 		parameters = new HashMap<String, IFormField>();

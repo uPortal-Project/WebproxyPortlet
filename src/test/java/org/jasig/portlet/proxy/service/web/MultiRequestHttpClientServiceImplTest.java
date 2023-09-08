@@ -30,9 +30,11 @@ import javax.portlet.PortletSession;
 import org.apache.http.client.HttpClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MultiRequestHttpClientServiceImplTest {
 
 	@Mock PortletRequest request;
@@ -43,8 +45,6 @@ public class MultiRequestHttpClientServiceImplTest {
 	
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		
 		service = new MultiRequestHttpClientServiceImpl();
 		
 		when(request.getPreferences()).thenReturn(preferences);

@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -35,7 +35,9 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletPreferences;
 
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HeaderPassingPreInterceptorTest {
 
   HeaderPassingPreInterceptor preprocessor;
@@ -48,8 +50,6 @@ public class HeaderPassingPreInterceptorTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
-
     preprocessor = new HeaderPassingPreInterceptor();
 
     headerNames = new String[]{"uid", "ApplicationSpecificCN", "displayName"};

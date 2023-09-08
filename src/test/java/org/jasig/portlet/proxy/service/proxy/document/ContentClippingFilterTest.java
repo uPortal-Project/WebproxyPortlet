@@ -26,17 +26,18 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.jasig.portlet.proxy.service.GenericContentResponseImpl;
-import org.jasig.portlet.proxy.service.proxy.document.ContentClippingFilter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ContentClippingFilterTest {
 
     ContentClippingFilter filter;
@@ -48,8 +49,6 @@ public class ContentClippingFilterTest {
     
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        
         filter = new ContentClippingFilter();
 
         when(request.getPreferences()).thenReturn(preferences);

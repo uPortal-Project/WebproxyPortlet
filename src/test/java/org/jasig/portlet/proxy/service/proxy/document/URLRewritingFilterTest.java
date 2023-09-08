@@ -43,12 +43,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * @author Jen Bourey, jennifer.bourey@gmail.com
  */
+@RunWith(MockitoJUnitRunner.class)
 public class URLRewritingFilterTest {
 
     URLRewritingFilter filter;
@@ -63,8 +65,6 @@ public class URLRewritingFilterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(request.getPortletSession()).thenReturn(session);
         when(session.getAttribute(URLRewritingFilter.REWRITTEN_URLS_KEY)).thenReturn(rewrittenUrls);
         when(request.getPreferences()).thenReturn(preferences);

@@ -31,7 +31,7 @@ is rendered within the portlet window.  Web Proxy Portlet is often used to incor
 are built and run in non-Java environments allowing a site flexibility for integrating content with many different
 technologies.
 
-WebproxyPortlet v2 Gateway SSO is a feature that allows uPortal to sign on to any remote system even if the remote system
+WebproxyPortlet v2 Gateway SSO (DEPRECATED) is a feature that allows uPortal to sign on to any remote system even if the remote system
 does not share any authentication information with uPortal.  Gateway SSO will submit login information to the remote
 system and then redirect to that remote system.  Other SSO solution assume that uPortal has authenticated to some system,
 such as CAS and will then trust CAS to say the user is authenticated.  In this system, the authentication information is
@@ -53,7 +53,7 @@ Web Proxy Portlet
   - Clipping to get subsections of the targeted URL
   - Uses AJAX to request and replace portlet content from whitelist of proxy URLs
 
-Gateway SSO
+Gateway SSO (DEPRECATED)
   - Log into remote services for users based on user attributes
 
 XSLT Portlet

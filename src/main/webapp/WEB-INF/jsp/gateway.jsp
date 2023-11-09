@@ -22,7 +22,7 @@
 <c:set var="n"><portlet:namespace/></c:set>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/webproxy.css" type="text/css"/>
-<script src="<rs:resourceURL value='/rs/jquery/1.11.0/jquery-1.11.0.min.js'/>" type="text/javascript"></script>
+<script src="<rs:resourceURL value="/rs/jquery/1.12.4/jquery-1.12.4.min.js"/>" type="text/javascript"></script>
 <script src="<rs:resourceURL value="/rs/jqueryui/1.8.24/jquery-ui-1.8.24.min.js"/>" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/scripts/webproxy.js" type="text/javascript"></script>
 

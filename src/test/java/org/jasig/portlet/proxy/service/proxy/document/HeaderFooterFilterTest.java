@@ -29,9 +29,11 @@ import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HeaderFooterFilterTest {
 
 	private HeaderFooterFilter filter;
@@ -44,7 +46,6 @@ public class HeaderFooterFilterTest {
 	
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);		
 		when(portletRequest.getPreferences()).thenReturn(preferences);
 		
 		filter = new HeaderFooterFilter();

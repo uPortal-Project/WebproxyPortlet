@@ -28,17 +28,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IContentRequest;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.IContentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * <p>JsonPortletController class.</p>
@@ -48,6 +47,7 @@ import org.springframework.web.portlet.ModelAndView;
  */
 @Controller
 @RequestMapping("VIEW")
+@Slf4j
 public class JsonPortletController {
 
     /** Constant <code>CONTENT_LOCATION_KEY="location"</code> */
@@ -58,9 +58,7 @@ public class JsonPortletController {
     protected static final String MAIN_VIEW_KEY = "mainView";
     /** Constant <code>MOBILE_VIEW_KEY="mobileView"</code> */
     protected static final String MOBILE_VIEW_KEY = "mobileView";
-    
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    
+
     private ApplicationContext applicationContext;
     
     /**
@@ -89,7 +87,7 @@ public class JsonPortletController {
      * <p>showContent.</p>
      *
      * @param request a {@link javax.portlet.PortletRequest} object
-     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object
      */
     @RequestMapping
     public ModelAndView showContent(PortletRequest request) {

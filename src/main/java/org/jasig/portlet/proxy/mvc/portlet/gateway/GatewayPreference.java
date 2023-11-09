@@ -24,6 +24,7 @@ package org.jasig.portlet.proxy.mvc.portlet.gateway;
  * @author James Wennmacher, jwennmacher@unicon.net
  * @version $Id: $Id
  */
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayPreference {
     String system;
     String logicalFieldName;

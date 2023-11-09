@@ -5,4 +5,5 @@
 /*.iml
 .idea
 .springBeans
+.DS_Store
 overlays

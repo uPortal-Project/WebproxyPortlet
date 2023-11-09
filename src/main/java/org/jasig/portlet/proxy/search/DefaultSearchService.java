@@ -29,8 +29,6 @@ import org.apereo.portal.search.SearchRequest;
 import org.apereo.portal.search.SearchResult;
 import org.apereo.portal.search.SearchResults;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultSearchService class.</p>
@@ -42,8 +40,6 @@ public class DefaultSearchService implements ISearchService {
 
     /** Constant <code>SEARCH_STRATEGIES_PREFERENCE="searchStrategies"</code> */
     public static final String SEARCH_STRATEGIES_PREFERENCE = "searchStrategies";
-
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, ISearchStrategy> strategies = new HashMap<String, ISearchStrategy>();
     /** {@inheritDoc} */

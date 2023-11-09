@@ -31,23 +31,12 @@
     </context-param>
 
     <context-param>
-        <param-name>log4jConfigLocation</param-name>
-        <param-value>/WEB-INF/classes/log4j.properties</param-value>
-    </context-param>
-
-    <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/context/applicationContext.xml,classpath:/properties/contextOverrides/*.xml</param-value>
     </context-param>
 
     <listener>
         <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
-    </listener>
-
-    <listener>
-        <listener-class>
-                org.springframework.web.util.Log4jConfigListener
-        </listener-class>
     </listener>
 
     <listener>
@@ -74,7 +63,7 @@
     <servlet>
         <servlet-name>ViewRendererServlet</servlet-name>
         <servlet-class>
-                org.springframework.web.servlet.ViewRendererServlet
+            com.liferay.portletmvc4spring.ViewRendererServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>

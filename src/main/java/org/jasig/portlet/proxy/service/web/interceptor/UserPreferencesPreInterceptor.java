@@ -23,12 +23,11 @@ import java.util.Map;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.portlet.proxy.security.IStringEncryptionService;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,8 +39,8 @@ import org.springframework.stereotype.Service;
  * @version $Id: $Id
  */
 @Service("UserPreferencesPreInterceptor")
+@Slf4j
 public class UserPreferencesPreInterceptor implements IPreInterceptor {
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String preferencesRegex;
     
@@ -76,7 +75,7 @@ public class UserPreferencesPreInterceptor implements IPreInterceptor {
 				if (parameterValue.matches(preferencesRegex)) {
 					String preferredValue = prefs.getValue(parameterValue, parameterValue);
 					if (parameter.getSecured() && StringUtils.isNotBlank(preferredValue) && stringEncryptionService != null) {
-						logger.debug("decrypting preferredValue '" + preferredValue + "' for parameterKey: '" + parameterKey);
+						log.debug("decrypting preferredValue '" + preferredValue + "' for parameterKey: '" + parameterKey);
 						preferredValue = stringEncryptionService.decrypt(preferredValue);
 					}
 					parameterValues[i] = preferredValue;

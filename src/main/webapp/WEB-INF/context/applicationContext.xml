@@ -136,8 +136,6 @@
   <!--
    | View resolvers, look for a named view bean before going to JSP resolution
    +-->
-  <bean class="org.springframework.web.servlet.view.XmlViewResolver"
-        p:order="0" p:location="/WEB-INF/context/views.xml"/>
 
   <!-- Default View Resolver -->
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -148,7 +146,7 @@
     <property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
   </bean>
 
-  <bean id="exceptionResolver" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver">
+  <bean id="exceptionResolver" class="com.liferay.portletmvc4spring.handler.SimpleMappingExceptionResolver">
     <!--
      | Always declare an 'exceptionResolver' bean with a 'defaultErrorView'
      | because, in addition to other uses, it protects the portlet from

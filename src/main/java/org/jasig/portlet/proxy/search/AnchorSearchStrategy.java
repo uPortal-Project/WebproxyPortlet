@@ -27,6 +27,7 @@ import javax.portlet.EventRequest;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apereo.portal.search.PortletUrl;
 import org.apereo.portal.search.PortletUrlParameter;
 import org.apereo.portal.search.PortletUrlType;
@@ -36,8 +37,6 @@ import org.jasig.portlet.proxy.search.util.SearchUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -46,9 +45,8 @@ import org.springframework.beans.factory.annotation.Required;
  * @author bjagg
  * @version $Id: $Id
  */
+@Slf4j
 public class AnchorSearchStrategy implements ISearchStrategy {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
     private ISearchService contentSearchProvider;
     /**
      * <p>Setter for the field <code>contentSearchProvider</code>.</p>

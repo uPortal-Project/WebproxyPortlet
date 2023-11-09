@@ -39,16 +39,14 @@ import org.jasig.portlet.proxy.security.StringEncryptionException;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.servlet.ModelAndView;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
 
 /**
  * <p>GatewayPortletEditController class.</p>
@@ -58,6 +56,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping("EDIT")
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayPortletEditController extends BaseGatewayPortletController {
     /** Constant <code>INCONSISTENT_FIELD_VALUES="edit.proxy.error.message.inconsistent.f"{trunked}</code> */
     public static final String INCONSISTENT_FIELD_VALUES = "edit.proxy.error.message.inconsistent.field.values";
@@ -67,7 +66,6 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
     public static final String ERROR_KEY = "error";
     /** Constant <code>GATEWAY_ENTRY="gatewayEntry"</code> */
     public static final String GATEWAY_ENTRY = "gatewayEntry";
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name="gatewayEntries")
     private List<GatewayEntry> gatewayEntries;
@@ -113,7 +111,7 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
      *
      * @param request a {@link javax.portlet.RenderRequest} object
      * @param entryName a {@link java.lang.String} object
-     * @return a {@link org.springframework.web.portlet.ModelAndView} object
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object
      */
     @RenderMapping
     public ModelAndView displayEditView(RenderRequest request, @RequestParam(required=false) String entryName) {
@@ -136,7 +134,7 @@ public class GatewayPortletEditController extends BaseGatewayPortletController {
         // Add descendingMap so username is listed before password for the form.
         mv.addObject(GATEWAY_ENTRY_PREFERENCES, preferencesForEntry.descendingMap());
 
-        mv.setView( viewSelector.isMobile(request) ? mobileViewName : viewName);
+        mv.setViewName(viewSelector.isMobile(request) ? mobileViewName : viewName);
         return mv;
     }
 

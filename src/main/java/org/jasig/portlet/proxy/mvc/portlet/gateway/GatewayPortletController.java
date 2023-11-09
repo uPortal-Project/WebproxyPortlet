@@ -18,23 +18,22 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
 import org.jasig.portlet.proxy.service.web.IAuthenticationFormModifier;
 import org.jasig.portlet.proxy.service.web.interceptor.IPreInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.servlet.ModelAndView;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ResourceMapping;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -56,11 +55,11 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("VIEW")
+@Slf4j
+@Deprecated // No known usage of this portlet type. Remove when we jump to Java 17.
 public class GatewayPortletController extends BaseGatewayPortletController {
     private static final String HTTPS = "HTTPS";
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
     @Resource(name="gatewayEntries")
     private List<GatewayEntry> gatewayEntries;
 
@@ -88,7 +87,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
 	 * <p>getView.</p>
 	 *
 	 * @param request a {@link javax.portlet.RenderRequest} object
-	 * @return a {@link org.springframework.web.portlet.ModelAndView} object
+	 * @return a {@link org.springframework.web.servlet.ModelAndView} object
 	 */
 	@RenderMapping
 	public ModelAndView getView(RenderRequest request){
@@ -114,7 +113,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
         mv.addObject("openInNewPage", openInNewPage);
 		
 		final String view = viewSelector.isMobile(request) ? mobileViewName : viewName;
-		mv.setView(view);
+		mv.setViewName(view);
 		return mv;
 	}
 
@@ -199,7 +198,7 @@ public class GatewayPortletController extends BaseGatewayPortletController {
             if (entry.isRequireSecure() && StringUtils.isNotBlank(contentRequest.getProxiedLocation())
                     && contentRequest.getProxiedLocation().length() >= HTTPS.length()) {
                 if (!HTTPS.equalsIgnoreCase(contentRequest.getProxiedLocation().substring(0, HTTPS.length()))) {
-                    logger.error("Proxied location '" + contentRequest.getProxiedLocation() + "' for gateway entry "
+                    log.error("Proxied location '" + contentRequest.getProxiedLocation() + "' for gateway entry "
                             + entry.getName() + " is not secure - discarding entry!!!");
                     contentRequest.setParameters(new HashMap<String, IFormField>());
                     contentRequest.setProxiedLocation("/HTTPSUrlRequiredButNotSpecified");   // Force a failure that's clear

@@ -40,6 +40,7 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apereo.portal.search.SearchConstants;
 import org.apereo.portal.search.SearchResults;
@@ -52,19 +53,16 @@ import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.proxy.service.web.HttpContentResponseImpl;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.EventMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.EventMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ResourceMapping;
 
 /**
  * ProxyPortletController is the main view controller for web proxy portlets.
@@ -74,6 +72,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
  */
 @Controller
 @RequestMapping("VIEW")
+@Slf4j
 public class ProxyPortletController {
 
     /** Constant <code>PREF_CHARACTER_ENCODING="sourcePageCharacterEncoding"</code> */
@@ -84,7 +83,6 @@ public class ProxyPortletController {
     protected static final String CONTENT_SERVICE_KEY = "contentService";
     /** Constant <code>FILTER_LIST_KEY="filters"</code> */
     protected static final String FILTER_LIST_KEY = "filters";
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String PROXY_RESPONSE_KEY = "proxyResponse";
     @Autowired
     private ApplicationContext applicationContext;

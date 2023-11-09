@@ -1,4 +1,5 @@
 # Gateway SSO Configuration
+*THIS PORTLET TYPE IS DEPRECATED*
 
 ![Example](Gateway SSO example.png)
 

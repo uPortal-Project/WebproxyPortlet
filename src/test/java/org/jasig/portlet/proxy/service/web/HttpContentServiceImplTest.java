@@ -33,10 +33,13 @@ import org.jasig.portlet.spring.SpringELProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.ArgumentMatchers.any;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
 public class HttpContentServiceImplTest {
 
 	@Spy HttpContentServiceImpl service;
@@ -47,7 +50,6 @@ public class HttpContentServiceImplTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
 		when(request.getParameterMap()).thenReturn(params);
 
 		when(request.getPreferences()).thenReturn(preferences);

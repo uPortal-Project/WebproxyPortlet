@@ -25,10 +25,9 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,10 +41,9 @@ import org.springframework.stereotype.Service;
  * @version $Id: $Id
  */
 @Service("userInfoUrlParameterizingPreInterceptor")
+@Slf4j
 public class UserInfoUrlParameterizingPreInterceptor implements IPreInterceptor {
-	
-  protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
   /** {@inheritDoc} */
   @Override
 	public void intercept(HttpContentRequestImpl proxyRequest,

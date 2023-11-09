@@ -35,8 +35,6 @@ import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.proxy.document.URLRewritingFilter;
 import org.jasig.portlet.spring.IExpressionProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>HttpContentRequestImpl class.</p>
@@ -45,8 +43,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $Id
  */
 public class HttpContentRequestImpl extends GenericContentRequestImpl {
-
-    private static final Logger log = LoggerFactory.getLogger(HttpContentRequestImpl.class);
 
     private Map<String, IFormField> parameters = new HashMap<String, IFormField>();
     private Map<String, String> headers = new HashMap<String, String>();

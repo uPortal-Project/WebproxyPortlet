@@ -30,6 +30,7 @@ import javax.portlet.PortletModeException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.portlet.proxy.search.ISearchService;
 import org.jasig.portlet.proxy.service.GenericContentRequestImpl;
@@ -40,16 +41,14 @@ import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;
 import org.jasig.portlet.proxy.service.web.interceptor.PortletPreferencesBasicAuthenticationPreInterceptor;
 import org.jasig.portlet.proxy.service.web.interceptor.ProxyCASAuthenticationPreInterceptor;
 import org.jasig.portlet.proxy.service.web.interceptor.UserInfoBasicAuthenticationPreInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import com.liferay.portletmvc4spring.bind.annotation.ActionMapping;
+import com.liferay.portletmvc4spring.bind.annotation.RenderMapping;
 
 /**
  * ProxyConfigController
@@ -59,9 +58,8 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping("CONFIG")
+@Slf4j
 public class EditProxyController {
-
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String,String> pageCharacterEncodings;
 

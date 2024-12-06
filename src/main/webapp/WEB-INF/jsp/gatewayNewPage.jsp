@@ -28,7 +28,7 @@
   <title>Gateway</title>
 
   <link type="text/css" rel="stylesheet" href="<c:url value="/css/webproxy.css"/>"/>
-  <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-1.11.0.min.js" ></script>
+  <script src="<rs:resourceURL value="/rs/jquery/1.12.4/jquery-1.12.4.min.js"/>" type="text/javascript"></script>
   <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
   <script type="text/javascript">
     $(document).ready(function () {

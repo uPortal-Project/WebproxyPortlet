@@ -53,6 +53,7 @@ public class HttpContentServiceImplTest {
 		when(request.getPreferences()).thenReturn(preferences);
   		when(preferences.getValue(GenericContentRequestImpl.CONTENT_LOCATION_PREFERENCE, null)).thenReturn("http://somewhere.com/path/page.html");
 
+		when(request.getParameter("proxy.url")).thenReturn(null);
 	}
 
 
@@ -103,6 +104,7 @@ public class HttpContentServiceImplTest {
 	@Test
 	public void testNonForm() {
 
+		when(request.getParameter("proxy.formMethod")).thenReturn(null);
 		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("false");
 		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);

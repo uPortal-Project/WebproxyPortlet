@@ -49,9 +49,6 @@ public class MultiRequestHttpClientServiceImplTest {
 		
 		when(request.getPreferences()).thenReturn(preferences);
 		when(request.getPortletSession()).thenReturn(session);
-		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_TIMEOUT,
-				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)))
-				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
 		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT,
 				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT)))
 				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_REQUEST_TIMEOUT));
@@ -63,6 +60,10 @@ public class MultiRequestHttpClientServiceImplTest {
 	
 	@Test
 	public void testGetSharedClient() {
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
+		when(session.getAttribute("org.springframework.web.util.WebUtils.MUTEX", 1)).thenReturn(null);
 		when(preferences.getValue(MultiRequestHttpClientServiceImpl.SHARED_SESSION_KEY, null)).thenReturn("sharedSession");
 		when(session.getAttribute("sharedSession", PortletSession.APPLICATION_SCOPE)).thenReturn(client);
 		
@@ -72,6 +73,8 @@ public class MultiRequestHttpClientServiceImplTest {
 	
 	@Test
 	public void testGetUnsharedClient() {
+		when(preferences.getValue("sharedSessionKey", null)).thenReturn(null);
+		when(session.getAttribute("org.springframework.web.util.WebUtils.MUTEX", 1)).thenReturn(null);
 		when(session.getAttribute(MultiRequestHttpClientServiceImpl.CLIENT_SESSION_KEY, PortletSession.PORTLET_SCOPE)).thenReturn(client);
 		
 		HttpClient response = service.getHttpClient(request);
@@ -80,6 +83,9 @@ public class MultiRequestHttpClientServiceImplTest {
 	
 	@Test
 	public void testCreateSharedClient() {
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
 		when(preferences.getValue(MultiRequestHttpClientServiceImpl.SHARED_SESSION_KEY, null)).thenReturn("sharedSession");
 		HttpClient response = service.getHttpClient(request);
 		assertNotNull(response);
@@ -88,6 +94,10 @@ public class MultiRequestHttpClientServiceImplTest {
 	
 	@Test
 	public void testCreateUnsharedClient() {
+		when(preferences.getValue(MultiRequestHttpClientServiceImpl.HTTP_CLIENT_CONNECTION_TIMEOUT,
+				String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT)))
+				.thenReturn(String.valueOf(MultiRequestHttpClientServiceImpl.DEFAULT_HTTP_CLIENT_CONNECTION_TIMEOUT));
+		when(preferences.getValue("sharedSessionKey", null)).thenReturn(null);
 		HttpClient response = service.getHttpClient(request);
 		assertNotNull(response);
 		verify(session).setAttribute(MultiRequestHttpClientServiceImpl.CLIENT_SESSION_KEY, response, PortletSession.PORTLET_SCOPE);

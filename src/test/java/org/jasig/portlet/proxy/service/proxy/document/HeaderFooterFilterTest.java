@@ -61,6 +61,7 @@ public class HeaderFooterFilterTest {
 
 	@Test
 	public void addHeader() {
+		when(preferences.getValue("footerHtml", null)).thenReturn(null);
 		String header = "<div>A header</div>";
 		when(preferences.getValue(HeaderFooterFilter.HEADER_KEY, null)).thenReturn(header);
 	
@@ -72,6 +73,7 @@ public class HeaderFooterFilterTest {
 	@Test
 	public void addFooter() {
 		
+		when(preferences.getValue("headerHtml", null)).thenReturn(null);
 		String footer = "<div>A footer</div>";
 		when(preferences.getValue(HeaderFooterFilter.FOOTER_KEY, null)).thenReturn(footer);
 		

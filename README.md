@@ -3,9 +3,8 @@
 # Web Proxy Portlet
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jasig.portlet.proxy/WebProxyPortlet)
-[![build status](https://github.com/uPortal-Project/WebproxyPortlet/workflows/CI/badge.svg?branch=master)](https://github.com/uPortal-Project/WebproxyPortlet/actions)
-[![Code Climate](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet/badges/gpa.svg)](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet)
-[![codeclimate.com Issue Count](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet/badges/issue_count.svg)](https://codeclimate.com/github/uPortal-Project/WebproxyPortlet)
+[![CI](https://github.com/uPortal-Project/WebproxyPortlet/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/uPortal-Project/WebproxyPortlet/actions/workflows/CI.yml)
+
 
 [Link to old documentation](https://wiki.jasig.org/display/PLT/WebProxy)
 

@@ -76,7 +76,7 @@ var webproxyGatewayHandleRequest = function ($,data, index, formId) {
         // TODO
     } else {
         var iframe = $(document.createElement("iframe"));
-        iframe.load(function () {
+        iframe.on("load", function () {
             handleRequest(contentRequests, index+1);
         });
         iframe.attr("src", contentRequest.proxiedLocation);

@@ -22,8 +22,6 @@
 <c:set var="n"><portlet:namespace/></c:set>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/webproxy.css" type="text/css"/>
-<script src="<rs:resourceURL value="/rs/jquery/1.12.4/jquery-1.12.4.min.js"/>" type="text/javascript"></script>
-<script src="<rs:resourceURL value="/rs/jqueryui/1.8.24/jquery-ui-1.8.24.min.js"/>" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/scripts/webproxy.js" type="text/javascript"></script>
 
 <portlet:resourceURL var="requestsUrl" escapeXml="false"/>
@@ -56,9 +54,15 @@
     </div>
 
     <spring:message var="loadingTitle" code="portlet.logging.in.title"/>
-    <div class="logging-in-message hidden" title="${loadingTitle}">
-        <spring:message code="portlet.logging.in.display"/>
-        <img src="${pageContext.request.contextPath}/images/loading.gif"/>
+    <div id="${n}loggingInModal" class="modal fade" tabindex="-1" role="dialog" aria-label="${loadingTitle}">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <spring:message code="portlet.logging.in.display"/>
+                    <img src="${pageContext.request.contextPath}/images/loading.gif"/>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -66,11 +70,12 @@
 <script type="text/javascript">
 
     var ${n} = {};
-    ${n}.jQuery = jQuery.noConflict(true);
+    ${n}.jQuery = up.jQuery;
 
     ${n}.jQuery(function() {
 
         var $ = ${n}.jQuery;
+        var modal = new bootstrap.Modal(document.getElementById('${n}loggingInModal'));
 
         $("#${n} .gateway-link").each(function(idx, link) {
             $(link).click(function() {
@@ -87,9 +92,7 @@
                                     <spring:message var="launchErrorMessage" code="error.message.invalid.beanName"/>
                                     $(link).parent().append("<p class='portlet-msg error text-danger'>${launchErrorMessage}. BeanName: " + link.getAttribute("index") + "</p>");
                                 } else {
-                                    var dialog = $(".logging-in-message");
-                                    dialog.dialog();
-                                    dialog.removeClass("hidden");
+                                    modal.show();
                                     webproxyGatewayHandleRequest($, data, 0, "${n}form");
                                 }
                             },

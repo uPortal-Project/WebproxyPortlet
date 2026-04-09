@@ -28,12 +28,12 @@
   <title>Gateway</title>
 
   <link type="text/css" rel="stylesheet" href="<c:url value="/css/webproxy.css"/>"/>
-  <script src="<rs:resourceURL value="/rs/jquery/1.12.4/jquery-1.12.4.min.js"/>" type="text/javascript"></script>
+  <script src="/resource-server/webjars/jquery/dist/jquery.min.js" type="text/javascript"></script>
   <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
   <script type="text/javascript">
     $(document).ready(function () {
 
-      $( document ).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+      $( document ).on("ajaxError", function(event, jqXHR, ajaxSettings, thrownError) {
         $(".documentBody").html("<p class='portlet-msg error text-danger'>An Error occurred.  See stack trace in log file for more information</p>" + jqXHR.responseText);
       });
 

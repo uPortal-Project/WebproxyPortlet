@@ -82,7 +82,7 @@
                 <c:choose>
                     <c:when test="${openInNewPage}">
                         var url = "${newPageUrl}";
-                        window.open(url + (url.indexOf('?') > -1 ? '&' : '?') + "index=" + link.getAttribute("index"));
+                        window.open(url + (url.indexOf('?') > -1 ? '&' : '?') + "index=" + encodeURIComponent(link.getAttribute("index")));
                     </c:when>
                     <c:otherwise>
                         $.get(

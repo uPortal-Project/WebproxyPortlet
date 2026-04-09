@@ -28,6 +28,7 @@
   <title>Gateway</title>
 
   <link type="text/css" rel="stylesheet" href="<c:url value="/css/webproxy.css"/>"/>
+  <%-- rs:resourceURL resolves to /ResourceServingWebapp by default; webjars live under /resource-server --%>
   <script src="/resource-server/webjars/jquery/dist/jquery.min.js" type="text/javascript"></script>
   <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/webproxy.js" ></script>
   <script type="text/javascript">

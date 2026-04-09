@@ -77,7 +77,7 @@ var webproxyGatewayHandleRequest = function ($,data, index, formId) {
     } else {
         var iframe = $(document.createElement("iframe"));
         iframe.on("load", function () {
-            handleRequest(contentRequests, index+1);
+            webproxyGatewayHandleRequest($, data, index+1, formId);
         });
         iframe.attr("src", contentRequest.proxiedLocation);
     }

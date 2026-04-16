@@ -75,7 +75,10 @@
     ${n}.jQuery(function() {
 
         var $ = ${n}.jQuery;
-        var modal = new bootstrap.Modal(document.getElementById('${n}loggingInModal'));
+        var modal = typeof bootstrap !== 'undefined'
+            ? new bootstrap.Modal(document.getElementById('${n}loggingInModal'))
+            : { show: function() { document.getElementById('${n}loggingInModal').style.display = 'block'; },
+                hide: function() { document.getElementById('${n}loggingInModal').style.display = 'none'; } };
 
         $("#${n} .gateway-link").each(function(idx, link) {
             $(link).click(function() {

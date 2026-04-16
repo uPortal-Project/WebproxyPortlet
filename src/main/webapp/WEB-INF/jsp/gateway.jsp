@@ -54,7 +54,7 @@
     </div>
 
     <spring:message var="loadingTitle" code="portlet.logging.in.title"/>
-    <div id="${n}loggingInModal" class="modal fade" tabindex="-1" role="dialog" aria-label="${loadingTitle}">
+    <div id="${n}loggingInModal" class="modal fade" tabindex="-1" role="dialog" aria-label="${loadingTitle}" style="display:none;">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-body text-center">

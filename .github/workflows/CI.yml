@@ -39,15 +39,14 @@ jobs:
           - temurin
           - zulu
         java-version:
-          - 17
-          - 21
+          - 11
         include:
           - platform: windows-latest
             java-distribution: adopt-hotspot
-            java-version: 17
+            java-version: 11
           - platform: macos-latest
             java-distribution: adopt-hotspot
-            java-version: 17
+            java-version: 11
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 5
     steps:

@@ -76,10 +76,13 @@ var webproxyGatewayHandleRequest = function ($,data, index, formId) {
         // TODO
     } else {
         var iframe = $(document.createElement("iframe"));
-        iframe.load(function () {
-            handleRequest(contentRequests, index+1);
+        iframe.css({position: 'absolute', width: 0, height: 0, border: 0, left: '-9999px'});
+        iframe.on("load", function () {
+            iframe.remove();
+            webproxyGatewayHandleRequest($, data, index+1, formId);
         });
         iframe.attr("src", contentRequest.proxiedLocation);
+        $(document.body).append(iframe);
     }
 };
 

@@ -72,7 +72,8 @@
                     $(link).click(function () {
                         <c:choose>
                         <c:when test="${openInNewPage}">
-                        window.open("${newPageUrl}?index=" + link.getAttribute("index"));
+                        var url = "${newPageUrl}";
+                        window.open(url + (url.indexOf('?') > -1 ? '&' : '?') + "index=" + encodeURIComponent(link.getAttribute("index")));
                         </c:when>
                         <c:otherwise>
                         $.get(

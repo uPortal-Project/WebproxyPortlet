@@ -12,23 +12,34 @@
     },
     {
       "matchPackageNames": [
-        "org.springframework:spring-framework-bom",
-        "org.springframework:spring-aop",
-        "org.springframework:spring-beans",
-        "org.springframework:spring-context",
-        "org.springframework:spring-context-support",
-        "org.springframework:spring-core",
-        "org.springframework:spring-jdbc",
-        "org.springframework:spring-orm",
-        "org.springframework:spring-test",
-        "org.springframework:spring-tx",
-        "org.springframework:spring-web",
-        "org.springframework:spring-webmvc",
-        "org.springframework:spring-webmvc-portlet",
-        "org.springframework.data:spring-data-jpa"
+        "javax.servlet:servlet-api"
+      ],
+      "allowedVersions": "< 3.0",
+      "description": "This portlet compiles against the legacy javax.servlet:servlet-api:2.5 artifact. Servlet 3.x moved to javax.servlet:javax.servlet-api (different artifactId); staying on 2.5 preserves the API surface this portlet's source was written for. The runtime still provides Servlet 3.1 via tomcat-servlet-api (managed by uportal-portlet-parent)."
+    },
+    {
+      "matchPackagePrefixes": [
+        "org.springframework:",
+        "org.springframework.data:"
       ],
       "allowedVersions": "< 5.0",
-      "description": "This portlet is pinned to Spring Framework 4.3.x. Next-major bumps require a coordinated migration."
+      "description": "This portlet is pinned to Spring Framework 4.3.x. Spring 5+ requires a coordinated migration; Spring 6+ additionally needs Jakarta EE + Java 17+."
+    },
+    {
+      "matchPackageNames": [
+        "org.codehaus.plexus:plexus-archiver"
+      ],
+      "allowedVersions": "< 4.11.0",
+      "description": "plexus-archiver 4.11+ requires a newer commons-io (BoundedInputStream.builder()) than the one bundled with maven-war-plugin 3.4.0 (pinned by uportal-portlet-parent). Revisit once the parent bumps maven-war-plugin to 3.5.x+."
+    },
+    {
+      "matchPackageNames": [
+        "org.mockito:mockito-core",
+        "org.mockito:mockito-inline",
+        "org.mockito:mockito-junit-jupiter"
+      ],
+      "allowedVersions": "< 5.0",
+      "description": "Mockito 5 defaults to the inline MockMaker and ships a newer byte-buddy that references ClassFileVersion.JAVA_V21 — incompatible with the byte-buddy pulled transitively via Javassist on this portlet's classpath (NoSuchFieldError at MockMaker init). Stay on Mockito 4.x until the fleet is ready to reconcile byte-buddy at the parent level."
     }
   ]
 }

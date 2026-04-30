@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.portlet.util.PortletUtils;

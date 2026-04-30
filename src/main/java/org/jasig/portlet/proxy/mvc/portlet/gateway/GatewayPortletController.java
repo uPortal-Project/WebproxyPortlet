@@ -18,7 +18,7 @@
  */
 package org.jasig.portlet.proxy.mvc.portlet.gateway;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.service.IFormField;
 import org.jasig.portlet.proxy.service.web.HttpContentRequestImpl;

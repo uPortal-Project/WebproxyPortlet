@@ -33,7 +33,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jasig.portlet.proxy.service.IContentResponse;
 import org.jasig.portlet.proxy.service.web.HttpContentServiceImpl;

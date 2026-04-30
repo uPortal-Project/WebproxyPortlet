@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.jasig.portlet</groupId>
         <artifactId>uportal-portlet-parent</artifactId>
-        <version>48</version>
+        <version>49</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -257,30 +257,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <basedir>${basedir}</basedir>
-                    <header>${jasig-short-license-url}</header>
-                    <aggregate>true</aggregate>
-                    <excludes>
-                        <exclude>.gitignore</exclude>
-                        <exclude>src/test/resources/test.json</exclude>
-                        <exclude>src/main/resources/test-content/sample.json</exclude>
-                        <exclude>src/main/webapp/scripts/jquery-1.8.3.min.js</exclude>
-                        <exclude>target/**</exclude>
-                        <exclude>pom.xml.*</exclude>
-                        <exclude>release.properties</exclude>
-                        <exclude>LICENSE</exclude>
-                        <exclude>NOTICE</exclude>
-                        <exclude>NOTICE.template</exclude>
-                        <exclude>bin/**</exclude>
-                        <exclude>.idea/**</exclude>  <!-- for intelliJ Idea -->
-                        <exclude>overlays/**</exclude>  <!-- for intelliJ Idea -->
-                    </excludes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

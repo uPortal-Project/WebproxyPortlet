@@ -31,7 +31,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.WindowState;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.portlet.proxy.mvc.IViewSelector;
 import org.jasig.portlet.proxy.mvc.portlet.utilities.ActionScopedRequestAttributeManager;
 import org.jasig.portlet.proxy.security.IStringEncryptionService;

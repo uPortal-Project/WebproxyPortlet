@@ -22,7 +22,7 @@ package org.jasig.portlet.proxy.service.web.interceptor;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.springframework.stereotype.Service;
 

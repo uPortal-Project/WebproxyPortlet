@@ -21,20 +21,20 @@ This project includes:
   AOP alliance under Public Domain
   Apache Ant Core under The Apache Software License, Version 2.0
   Apache Ant Launcher under The Apache Software License, Version 2.0
-  Apache Commons CLI under Apache License, Version 2.0
+  Apache Commons CLI under Apache-2.0
   Apache Commons Codec under Apache License, Version 2.0
-  Apache Commons Compress under Apache License, Version 2.0
-  Apache Commons IO under Apache License, Version 2.0
-  Apache Commons Lang under Apache License, Version 2.0
+  Apache Commons Compress under Apache-2.0
+  Apache Commons IO under Apache-2.0
+  Apache Commons Lang under Apache-2.0
   Apache Commons Logging under The Apache Software License, Version 2.0
   Apache Commons Math under Apache License, Version 2.0
-  Apache Commons Pool under Apache License, Version 2.0
+  Apache Commons Pool under Apache-2.0
   Apache Groovy under The Apache Software License, Version 2.0
   Apache HttpClient under Apache License, Version 2.0
   Apache HttpCore under Apache License, Version 2.0
   Apache Pluto Portal Driver under The Apache Software License, Version 2.0
   Apache Pluto Portlet Container under The Apache Software License, Version 2.0
-  Apache Tika core under Apache License, Version 2.0
+  Apache Tika core under Apache-2.0
   AspectJ Runtime under Eclipse Public License - v 2.0
   Bouncy Castle ASN.1 Extension and Utility APIs under Bouncy Castle Licence
   Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs under Bouncy Castle Licence
@@ -42,15 +42,14 @@ This project includes:
   Byte Buddy (without dependencies) under Apache License, Version 2.0
   Byte Buddy agent under Apache License, Version 2.0
   cglib under Apache License, Version 2.0
-  com.sun:tools under COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
   Commons Lang under The Apache Software License, Version 2.0
   commons-collections under Apache License, Version 2.0
+  Converter: Moshi under Apache 2.0
   dom4j under BSD License
   Dough Lea's util.concurrent package under Public domain, Sun Microsoystems
   Ehcache Core under The Apache Software License, Version 2.0
-  Ehcache Spring Annotations - Core under Apache 2
   Ehcache Web Filters under The Apache Software License, Version 2.0
-  fastinfoset under Apache License, Version 2.0
+  Esbuild wrapper for Java bundled with original binaries under MIT License
   Guava: Google Core Libraries for Java under The Apache Software License, Version 2.0
   Hamcrest Core under New BSD License
   Hibernate Commons Annotations under GNU LESSER GENERAL PUBLIC LICENSE
@@ -60,6 +59,8 @@ This project includes:
   jackson-databind under The Apache Software License, Version 2.0
   Jadira Usertype Core (for Joda Time, Joda Money, Libphonenum and JDK Types with Hibernate) under Apache 2
   Jadira Usertype SPI Classes for Hibernate under Apache 2
+  Jakarta Activation under EDL 1.0
+  Jakarta XML Binding API under Eclipse Distribution License - v 1.0
   Jasig CAS Client for Java - Core under Apache License Version 2.0
   JASYPT: Java Simplified Encryption under The Apache Software License, Version 2.0
   Java Portlet Specification V2.0 under Commons Development and Distribution License, Version 1.0
@@ -67,31 +68,33 @@ This project includes:
   JavaBeans Activation Framework API jar under CDDL/GPLv2+CE
   Javassist under MPL 1.1 or LGPL 2.1 or Apache License 2.0
   javax.annotation API under CDDL + GPLv2 with classpath exception
-  JAXB Core under CDDL 1.1 or GPL2 w/ CPE
-  JAXB Reference Implementation under CDDL 1.1 or GPL2 w/ CPE
+  JAXB Core under CDDL+GPL License
   jaxb-api under CDDL 1.1 or GPL2 w/ CPE
   JAXB2 Basics - Runtime under BSD-Style License
   JBoss Logging 3 under GNU Lesser General Public License, version 2.1
-  JCL 1.2 implemented over SLF4J under Apache License, Version 2.0
+  JCL 1.2 implemented over SLF4J under Apache-2.0
   JGroups under Apache License 2.0
   JJWT :: API under Apache License, Version 2.0
-  JJWT :: Extensions :: Jackson under Apache License, Version 2.0
-  JJWT :: Impl under Apache License, Version 2.0
   Joda-Time under Apache License, Version 2.0
   JPA 2.0 API under Sun Binary Code License
   jsoup Java HTML Parser under The MIT License
-  jsr173_api under Commons Development and Distribution License, Version 1.0
   jstl under Commons Development and Distribution License, Version 1.0
-  JUL to SLF4J bridge under MIT License
+  JUL to SLF4J bridge under MIT
   JUnit under Eclipse Public License 1.0
   LDAPTIVE CORE under Apache 2 or GNU Lesser General Public License
-  Log4j Implemented Over SLF4J under Apache Software Licenses
-  Logback Classic Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
-  Logback Core Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
+  Log4j Implemented Over SLF4J under Apache-2.0
+  Logback Classic Module under Eclipse Public License - v 2.0 or GNU Lesser General Public License
+  Logback Core Module under Eclipse Public License - v 2.0 or GNU Lesser General Public License
+  Microsoft OAuth 2.0 User Agent library for Java under MIT License
   mockito-core under The MIT License
+  Moshi under Apache 2.0
   OAuth Core under The Apache Software License, Version 2.0
   Objenesis under Apache License, Version 2.0
   OGNL - Object Graph Navigation Library under Apache License, Version 2.0
+  OkHttp under Apache 2.0
+  OkHttp Logging Interceptor under Apache 2.0
+  Okio under Apache 2.0
+  Old JAXB Runtime under Eclipse Distribution License - v 1.0
   oro under Apache License, Version 2.0
   Person Directory API under Apache License, Version 2.0
   Person Directory Implementations under Apache License, Version 2.0
@@ -101,8 +104,9 @@ This project includes:
   Resource Server Content under Apache License Version 2.0
   Resource Server Core under Apache License Version 2.0
   Resource Server Utilities under Apache License Version 2.0
+  Retrofit under Apache 2.0
   servlet-api under Commons Development and Distribution License, Version 1.0
-  SLF4J API Module under MIT License
+  SLF4J API Module under MIT
   Spring AOP under Apache License, Version 2.0
   Spring Beans under Apache License, Version 2.0
   Spring Binding under The Apache Software License, Version 2.0

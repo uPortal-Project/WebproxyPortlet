@@ -109,7 +109,7 @@ The description of the portlet itself lives in the portlet definition file:
             custom operations, in this case to also set the window name to the calculated field.
         -->
         <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="MyZimbra"
-              p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png"
+              p:iconUrl="/resource-server/rs/tango/0.8.90/32x32/apps/internet-mail.png"
               p:javascriptFile="/WebProxyPortlet/scripts/custom-javascript.js">
 
             <!-- Custom java form fields.  Beans in list must implement org.jasig.portlet.proxy.mvc.service.web.IAuthenticationFormModifier
@@ -273,7 +273,7 @@ This is how you might add IAuthenticationFormModifier to your portlet definition
 
   ```
           <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="MyZimbra"
-              p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-mail.png">
+              p:iconUrl="/resource-server/rs/tango/0.8.90/32x32/apps/internet-mail.png">
 
             <property name="authenticationFormModifier">
                 <util:list>
@@ -302,7 +302,7 @@ GatewayEntry bean; e.g.
 
   ```
 <bean class="org.jasig.portlet.proxy.mvc.portlet.gateway.GatewayEntry" p:name="WebAdvisor"
-      p:iconUrl="/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/internet-web-browser.png"
+      p:iconUrl="/resource-server/rs/tango/0.8.90/32x32/apps/internet-web-browser.png"
       p:javascriptFile="/WebProxyPortlet/scripts/custom-javascript.js">
 ...
 </bean>

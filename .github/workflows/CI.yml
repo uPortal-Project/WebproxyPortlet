@@ -35,17 +35,16 @@ jobs:
         platform:
           - ubuntu-latest
         java-distribution:
-          - adopt-hotspot
           - temurin
           - zulu
         java-version:
           - 11
         include:
           - platform: windows-latest
-            java-distribution: adopt-hotspot
+            java-distribution: temurin
             java-version: 11
           - platform: macos-latest
-            java-distribution: adopt-hotspot
+            java-distribution: temurin
             java-version: 11
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 5
@@ -53,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}

@@ -40,6 +40,37 @@
       ],
       "allowedVersions": "< 5.0",
       "description": "Mockito 5 defaults to the inline MockMaker and ships a newer byte-buddy that references ClassFileVersion.JAVA_V21 — incompatible with the byte-buddy pulled transitively via Javassist on this portlet's classpath (NoSuchFieldError at MockMaker init). Stay on Mockito 4.x until the fleet is ready to reconcile byte-buddy at the parent level."
+    },
+    {
+      "matchPackageNames": [
+        "com.sun.xml.bind:jaxb-impl",
+        "com.sun.xml.bind:jaxb-xjc",
+        "jakarta.xml.bind:jakarta.xml.bind-api",
+        "org.glassfish.jaxb:jaxb-runtime"
+      ],
+      "allowedVersions": "< 3.0",
+      "description": "The 2.x releases preserve the javax.xml.bind.* package namespace. 3+ moves to jakarta.xml.bind as part of Jakarta EE 9+, which this portlet is not migrating to yet."
+    },
+    {
+      "matchPackagePrefixes": ["org.apache.portals.pluto:"],
+      "allowedVersions": "< 3.0",
+      "description": "Apache Pluto is in the Attic; pluto-taglib 3.x and the rest of Pluto 3.x ship in the jakarta.portlet namespace, which uPortal cannot move to since the embedded Pluto container has no jakarta path. Stay on 2.1.0-M3 (the last javax.portlet release)."
+    },
+    {
+      "matchPackageNames": ["jaxen:jaxen"],
+      "allowedVersions": "< 2.0",
+      "description": "uportal-portlet-parent pins jaxen to Atlassian's 1.2.0-atlassian-2 fork (same pattern used for commons-lang and ehcache-spring-annotations). Jaxen 2.x is the mainline release and would back out of the fork-tracking convention; ignore until the fork policy is revisited."
+    },
+    {
+      "matchPackagePrefixes": ["org.junit.jupiter:", "org.junit.platform:"],
+      "matchPackageNames": ["org.junit:junit-bom"],
+      "enabled": false,
+      "description": "Tests are JUnit 4 (4.13.2 via uportal-portlet-parent) + Mockito. JUnit 5 (Jupiter) is a separate test engine; migrating would require re-annotating every @Before/@Test/@RunWith and is out of scope for the current parent."
+    },
+    {
+      "matchPackagePrefixes": ["com.liferay.portletmvc4spring:"],
+      "allowedVersions": "< 6.0",
+      "description": "Currently on portletmvc4spring 5.2.0 (Spring 4.3.x line). The 6.0.0-M1 milestone exists in Liferay's git but has not been published to Maven Central, and the upgrade requires Spring 6 + Jakarta EE + Java 17 — three migrations this portlet is not doing yet."
     }
   ]
 }

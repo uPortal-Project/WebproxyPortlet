@@ -58,9 +58,7 @@ public class HttpContentServiceImplTest {
 
 	@Test
 	public void testPostFormNoParams() {
-		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
-		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("POST");
-		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		setupSpringELProcessorProcessAndGetParameterStubs2("POST");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -75,9 +73,7 @@ public class HttpContentServiceImplTest {
 		params.put("param1", new String[]{"value1"});
 		params.put("param2", new String[]{"value3", "value4"});
 
-		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
-		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		setupSpringELProcessorProcessAndGetParameterStubs2("GET");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -88,9 +84,7 @@ public class HttpContentServiceImplTest {
 
 	@Test
 	public void testGetFormNoParams() {
-		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("true");
-		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn("GET");
-		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		setupSpringELProcessorProcessAndGetParameterStubs2("GET");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -103,8 +97,7 @@ public class HttpContentServiceImplTest {
 	@Test
 	public void testNonForm() {
 
-		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn("false");
-		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+		setupSpringELProcessorProcessAndGetParameterStubs("false");
 		HttpContentRequestImpl proxyRequest = new HttpContentRequestImpl(request, processor);
 
 		final HttpUriRequest httpRequest = service.getHttpRequest(proxyRequest, request);
@@ -113,5 +106,13 @@ public class HttpContentServiceImplTest {
 
 	}
 
+	private void setupSpringELProcessorProcessAndGetParameterStubs(String getParameterReturnValue) {
+		when(request.getParameter(HttpContentServiceImpl.IS_FORM_PARAM)).thenReturn(getParameterReturnValue);
+		when(processor.process(any(String.class), any(PortletRequest.class))).thenReturn("http://somewhere.com/path/page.html");
+	}
 
+	private void setupSpringELProcessorProcessAndGetParameterStubs2(String getParameterReturnValue) {
+		setupSpringELProcessorProcessAndGetParameterStubs("true");
+		when(request.getParameter(HttpContentServiceImpl.FORM_METHOD_PARAM)).thenReturn(getParameterReturnValue);
+	}
 }
